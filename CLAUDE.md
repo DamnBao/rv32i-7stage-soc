@@ -99,16 +99,72 @@ Bóc tách bus: `slave_id = addr[27:12]`, `reg_offset = addr[11:0]`.
 
 ---
 
+## Chip Boundary — External Peripheral Interface
+
+`soc_top` không chứa SFR nội bộ. Thay vào đó, `soc_top` expose các bus slave port ra ngoài chip. Bất kỳ peripheral nào tuân thủ SFR Standard đều cắm vào được mà không cần sửa RTL trong chip.
+
+```
+                ┌─────────────────────────────┐
+clk_cpu ───────►│                             │◄── axi_S0_irq / S1 / S2
+clk_ahb ───────►│   soc_top                   │══► AXI-Lite slave ports × 3
+rst_n ─────────►│   (CPU + bus infrastructure)│══► AHB-Lite slave ports × 3
+                │                             │◄── ahb_S0_irq_i / S1 / S2
+                │                             │──► rst_cpu_n_o / rst_ahb_n_o
+                └─────────────────────────────┘
+                           (chip boundary)
+                  External peripherals plug in here
+```
+
+**Outputs từ soc_top:**
+- `rst_cpu_n_o`, `rst_ahb_n_o` — reset đã sync, peripheral dùng để reset FF của mình
+- `axi_S{0,1,2}_*` — AXI-Lite slave port đầy đủ (AWADDR, WDATA, ARADDR, RDATA, ...)
+- `ahb_HADDR_o`, `ahb_HSIZE_o`, `ahb_HTRANS_o`, `ahb_HWRITE_o`, `ahb_HWDATA_o` — shared AHB bus
+- `ahb_S{0,1,2}_HSEL_o`, `ahb_S{0,1,2}_HREADY_o` — per-slave AHB select
+
+**Inputs vào soc_top:**
+- `axi_S{0,1,2}_AWREADY`, `WREADY`, `BRESP`, `BVALID`, `ARREADY`, `RDATA`, `RRESP`, `RVALID`
+- `axi_S{0,1,2}_irq` — IRQ từ AXI peripheral (đồng bộ 1GHz)
+- `ahb_S{0,1,2}_HREADYOUT_i`, `HRDATA_i`, `HRESP_i`, `irq_i` — từ AHB peripheral (500MHz)
+
+---
+
+## SFR Standard Register Map (OpenTitan-inspired)
+
+Mọi peripheral muốn kết nối với `soc_top` phải implement register map này:
+
+| Offset | Tên | Access | Mô tả |
+|--------|-----|--------|-------|
+| `0x00` | `CTRL` | RW | `bit[0]` = enable; bits[31:1] = peripheral-specific |
+| `0x04` | `STATUS` | RO | Trạng thái read-only do peripheral drive |
+| `0x08` | `INTR_ENABLE` | RW | Mask từng nguồn IRQ |
+| `0x0C` | `INTR_STATE` | RW1C | Pending flags — ghi 1 để clear |
+| `0x10` | `INTR_TEST` | WO | Ghi 1 để force-set `INTR_STATE` (debug/test) |
+| `0x14` | `DATA0` | RW | General-purpose (peripheral-specific) |
+| `0x18` | `DATA1` | RW | |
+| `0x1C` | `DATA2` | RW | |
+| `0xFC` | `PERIPH_ID` | RO | Hardcoded peripheral identifier (parameterized) |
+
+**IRQ rule:** `irq = |(INTR_STATE & INTR_ENABLE)`
+
+**Address decode:** `AWADDR[7:2]` (AXI) hoặc `HADDR[7:2]` (AHB) — 6-bit index.
+
+---
+
 ## Phân Nhóm Module
 
-### Nhóm CPU (1GHz)
-`if1_stage`, `if2_stage`, `id_decoder`, `register_file`, `alu`, pipeline registers (if1_if2_reg, if2_id_reg, id_ex_reg, ...), Hazard Unit, Forwarding Unit, Zicsr (bao gồm 2-FF sync)
+### Nhóm CPU (1GHz) — trong soc_top
+`if1_stage`, `if2_stage`, `id_decoder`, `register_file`, `alu`, pipeline registers (if1_if2_reg, if2_id_reg, id_ex_reg, ...), Hazard Unit, Forwarding Unit, Zicsr (bao gồm 2-FF sync AHB IRQ)
 
-### Nhóm AXI (1GHz)
-AXI-Lite Interface, AXI Interconnect, AXI peripheral SFRs
+### Nhóm AXI (1GHz) — trong soc_top
+`axi_interface`, `axi_interconnect` (address decode 3 slaves, OR irq lines)
 
-### Nhóm AHB (CDC + 500MHz)
-`async_fifo` (Request + Response), `reset_sync`, AHB-Lite Interface FSM, AHB Interconnect, AHB peripheral SFRs
+### Nhóm AHB (CDC + 500MHz) — trong soc_top
+`async_fifo` (Request + Response), `reset_sync` ×2, `ahb_interface`, `ahb_interconnect`
+
+### External Peripherals (ngoài soc_top, cắm vào slave ports)
+`axi_sfr` — generic AXI-Lite SFR, implement SFR standard; tham số `PERIPH_ID_VAL`
+`ahb_sfr` — generic AHB-Lite SFR, implement SFR standard
+`gpio_sfr` — AXI-Lite GPIO peripheral: `DATA0`→`gpio_out`, `gpio_in`→`STATUS`, edge-detect IRQ
 
 ---
 
