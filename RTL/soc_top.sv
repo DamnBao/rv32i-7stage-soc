@@ -12,7 +12,7 @@
 //                  mem1_mem2_reg, mem2_stage, mem2_wb_reg, wb_stage
 //   Control      : hazard_unit, forwarding_unit, zicsr
 //   AXI group    : axi_interface, axi_interconnect, 3x axi_sfr
-//   AHB group    : reset_sync, 2x async_fifo_depth2,
+//   AHB group    : 2x reset_sync (cpu+ahb), 2x async_fifo_depth2,
 //                  ahb_interface, ahb_interconnect, 3x ahb_sfr
 
 module soc_top #(
@@ -24,9 +24,16 @@ module soc_top #(
 );
 
     //=========================================================
-    // 0. AHB Domain Reset Synchronizer
+    // 0. Domain Reset Synchronizers
     //=========================================================
+    logic rst_cpu_n;
     logic rst_ahb_n;
+
+    reset_sync u_rst_cpu (
+        .clk        (clk_cpu),
+        .async_rst_n(rst_n),
+        .sync_rst_n (rst_cpu_n)
+    );
 
     reset_sync u_rst_ahb (
         .clk        (clk_ahb),
@@ -238,7 +245,7 @@ module soc_top #(
     //=========================================================
     if1_stage #(.PC_RESET_VAL(PC_RESET_VAL)) u_if1 (
         .clk       (clk_cpu),
-        .rst_n     (rst_n),
+        .rst_n     (rst_cpu_n),
         .stall     (stall_pc),
         .flush     (flush_if1if2),    // zicsr_flush | ctrl_flush
         .jump_addr (if1_jump_addr),
@@ -261,7 +268,7 @@ module soc_top #(
     //=========================================================
     if1_if2_reg u_if1if2 (
         .clk   (clk_cpu),
-        .rst_n (rst_n),
+        .rst_n (rst_cpu_n),
         .stall (stall_if1if2),
         .flush (flush_if1if2),
         .pc_in (if1_pc),
@@ -283,7 +290,7 @@ module soc_top #(
     //=========================================================
     if2_id_reg u_if2id (
         .clk      (clk_cpu),
-        .rst_n    (rst_n),
+        .rst_n    (rst_cpu_n),
         .stall    (stall_if2id),
         .flush    (flush_if2id),
         .pc_in    (if2_pc),
@@ -326,7 +333,7 @@ module soc_top #(
 
     register_file u_rf (
         .clk     (clk_cpu),
-        .rst_n   (rst_n),
+        .rst_n   (rst_cpu_n),
         .rs1_addr(id_rs1_addr),
         .rs1_data(rf_rs1_data),
         .rs2_addr(id_rs2_addr),
@@ -341,7 +348,7 @@ module soc_top #(
     //=========================================================
     id_ex_reg u_idex (
         .clk             (clk_cpu),
-        .rst_n           (rst_n),
+        .rst_n           (rst_cpu_n),
         .stall           (stall_idex),
         .flush           (flush_idex),
         .pc_in           (if2id_pc),
@@ -477,7 +484,7 @@ module soc_top #(
     //=========================================================
     ex_mem1_reg u_exmem1 (
         .clk              (clk_cpu),
-        .rst_n            (rst_n),
+        .rst_n            (rst_cpu_n),
         .stall            (stall_exmem1),
         .flush            (flush_exmem1),
         .pc_in            (idex_pc),
@@ -527,7 +534,7 @@ module soc_top #(
     //=========================================================
     mem1_stage u_mem1 (
         .clk              (clk_cpu),
-        .rst_n            (rst_n),
+        .rst_n            (rst_cpu_n),
         .addr_in          (exmem1_alu_result),
         .wdata_in         (exmem1_rs2_data),
         .rs1_data_in      (exmem1_rs1_data),
@@ -614,7 +621,7 @@ module soc_top #(
     //=========================================================
     mem1_mem2_reg u_mem1mem2 (
         .clk              (clk_cpu),
-        .rst_n            (rst_n),
+        .rst_n            (rst_cpu_n),
         .stall            (stall_mem1mem2),
         .flush            (flush_mem1mem2),
         .pc_in            (mem1_pc),
@@ -712,7 +719,7 @@ module soc_top #(
     //=========================================================
     mem2_wb_reg u_mem2wb (
         .clk              (clk_cpu),
-        .rst_n            (rst_n),
+        .rst_n            (rst_cpu_n),
         .stall            (stall_mem2wb),
         .flush            (flush_mem2wb),
         .pc_in            (mem2_pc),
@@ -778,7 +785,7 @@ module soc_top #(
 
     zicsr u_zicsr (
         .clk              (clk_cpu),
-        .rst_n            (rst_n),
+        .rst_n            (rst_cpu_n),
         .wb_pc            (wb_pc),
         .wb_rs1_data      (wb_rs1_data),
         .wb_imm           (wb_imm),
@@ -873,7 +880,7 @@ module soc_top #(
 
     axi_interface u_axi_if (
         .clk            (clk_cpu),
-        .rst_n          (rst_n),
+        .rst_n          (rst_cpu_n),
         .axi_req_valid  (axi_req_valid),
         .axi_req_addr   (axi_req_addr),
         .axi_req_we     (axi_req_we),
@@ -890,7 +897,7 @@ module soc_top #(
     );
 
     axi_interconnect u_axi_xbar (
-        .clk(clk_cpu), .rst_n(rst_n),
+        .clk(clk_cpu), .rst_n(rst_cpu_n),
         .M_AWADDR(axi_M_AWADDR), .M_AWPROT(axi_M_AWPROT), .M_AWVALID(axi_M_AWVALID), .M_AWREADY(axi_M_AWREADY),
         .M_WDATA (axi_M_WDATA),  .M_WSTRB (axi_M_WSTRB),  .M_WVALID (axi_M_WVALID),  .M_WREADY (axi_M_WREADY),
         .M_BRESP (axi_M_BRESP),  .M_BVALID(axi_M_BVALID), .M_BREADY (axi_M_BREADY),
@@ -917,7 +924,7 @@ module soc_top #(
         .axi_irq(axi_irq)
     );
 
-    axi_sfr u_axi_sfr0 (.clk(clk_cpu),.rst_n(rst_n),
+    axi_sfr u_axi_sfr0 (.clk(clk_cpu),.rst_n(rst_cpu_n),
         .AWADDR(axi_S0_AWADDR),.AWPROT(axi_S0_AWPROT),.AWVALID(axi_S0_AWVALID),.AWREADY(axi_S0_AWREADY),
         .WDATA (axi_S0_WDATA), .WSTRB (axi_S0_WSTRB), .WVALID (axi_S0_WVALID), .WREADY (axi_S0_WREADY),
         .BRESP (axi_S0_BRESP), .BVALID(axi_S0_BVALID),.BREADY (axi_S0_BREADY),
@@ -925,7 +932,7 @@ module soc_top #(
         .RDATA (axi_S0_RDATA), .RRESP (axi_S0_RRESP), .RVALID (axi_S0_RVALID), .RREADY (axi_S0_RREADY),
         .irq(axi_irq0));
 
-    axi_sfr u_axi_sfr1 (.clk(clk_cpu),.rst_n(rst_n),
+    axi_sfr u_axi_sfr1 (.clk(clk_cpu),.rst_n(rst_cpu_n),
         .AWADDR(axi_S1_AWADDR),.AWPROT(axi_S1_AWPROT),.AWVALID(axi_S1_AWVALID),.AWREADY(axi_S1_AWREADY),
         .WDATA (axi_S1_WDATA), .WSTRB (axi_S1_WSTRB), .WVALID (axi_S1_WVALID), .WREADY (axi_S1_WREADY),
         .BRESP (axi_S1_BRESP), .BVALID(axi_S1_BVALID),.BREADY (axi_S1_BREADY),
@@ -933,7 +940,7 @@ module soc_top #(
         .RDATA (axi_S1_RDATA), .RRESP (axi_S1_RRESP), .RVALID (axi_S1_RVALID), .RREADY (axi_S1_RREADY),
         .irq(axi_irq1));
 
-    axi_sfr u_axi_sfr2 (.clk(clk_cpu),.rst_n(rst_n),
+    axi_sfr u_axi_sfr2 (.clk(clk_cpu),.rst_n(rst_cpu_n),
         .AWADDR(axi_S2_AWADDR),.AWPROT(axi_S2_AWPROT),.AWVALID(axi_S2_AWVALID),.AWREADY(axi_S2_AWREADY),
         .WDATA (axi_S2_WDATA), .WSTRB (axi_S2_WSTRB), .WVALID (axi_S2_WVALID), .WREADY (axi_S2_WREADY),
         .BRESP (axi_S2_BRESP), .BVALID(axi_S2_BVALID),.BREADY (axi_S2_BREADY),
@@ -952,7 +959,7 @@ module soc_top #(
 
     async_fifo_depth2 #(.DATA_WIDTH(67)) u_req_fifo (
         .wr_clk  (clk_cpu),
-        .wr_rst_n(rst_n),
+        .wr_rst_n(rst_cpu_n),
         .wr_en   (req_fifo_wr_en),
         .wr_data (req_fifo_wr_data),
         .rd_clk  (clk_ahb),
@@ -972,7 +979,7 @@ module soc_top #(
         .wr_en   (resp_fifo_wr_en),
         .wr_data (resp_fifo_wr_data),
         .rd_clk  (clk_cpu),
-        .rd_rst_n(rst_n),
+        .rd_rst_n(rst_cpu_n),
         .rd_en   (resp_fifo_rd_en),
         .rd_data (resp_fifo_rd_data),
         .rd_empty(resp_fifo_rd_empty)
