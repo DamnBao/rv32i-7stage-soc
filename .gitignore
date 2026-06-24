@@ -1,0 +1,18 @@
+# Icarus Verilog compiled simulation
+*.vvp
+
+# Waveform dumps
+*.vcd
+
+# Compiled ELF (rebuild with riscv toolchain)
+*.elf
+
+# Object files
+*.o
+
+# Vim swap files
+*.swp
+*.swo
+
+# Sensitive files
+Document/Github_Token_Code
