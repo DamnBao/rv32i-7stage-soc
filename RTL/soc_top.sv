@@ -11,16 +11,95 @@
 //                  ex_mem1_reg, mem1_stage, dmem,
 //                  mem1_mem2_reg, mem2_stage, mem2_wb_reg, wb_stage
 //   Control      : hazard_unit, forwarding_unit, zicsr
-//   AXI group    : axi_interface, axi_interconnect, 3x axi_sfr
+//   AXI group    : axi_interface, axi_interconnect (3 slave ports exposed externally)
 //   AHB group    : 2x reset_sync (cpu+ahb), 2x async_fifo_depth2,
-//                  ahb_interface, ahb_interconnect, 3x ahb_sfr
+//                  ahb_interface, ahb_interconnect (3 slave ports exposed externally)
+//
+// Chip boundary: AXI slave ports (×3) and AHB slave ports (×3) are exposed as module
+// I/O.  Any peripheral implementing the SFR standard register map may be connected.
 
 module soc_top #(
     parameter PC_RESET_VAL = 32'h0000_0000
 )(
     input  logic clk_cpu,   // 1GHz — CPU + AXI
     input  logic clk_ahb,   // 500MHz — AHB peripherals
-    input  logic rst_n      // Async active-low reset
+    input  logic rst_n,     // Async active-low reset (async assert, sync deassert internally)
+
+    // ── Synchronized reset outputs (for external peripherals) ──
+    output logic rst_cpu_n_o,
+    output logic rst_ahb_n_o,
+
+    // ── AXI-Lite Slave ports × 3 (1GHz) ──
+    // Slave 0 (base=0x2000_0000)
+    output logic [31:0] axi_S0_AWADDR,  output logic [2:0]  axi_S0_AWPROT,
+    output logic        axi_S0_AWVALID, input  logic        axi_S0_AWREADY,
+    output logic [31:0] axi_S0_WDATA,   output logic [3:0]  axi_S0_WSTRB,
+    output logic        axi_S0_WVALID,  input  logic        axi_S0_WREADY,
+    input  logic [1:0]  axi_S0_BRESP,   input  logic        axi_S0_BVALID,
+    output logic        axi_S0_BREADY,
+    output logic [31:0] axi_S0_ARADDR,  output logic [2:0]  axi_S0_ARPROT,
+    output logic        axi_S0_ARVALID, input  logic        axi_S0_ARREADY,
+    input  logic [31:0] axi_S0_RDATA,   input  logic [1:0]  axi_S0_RRESP,
+    input  logic        axi_S0_RVALID,  output logic        axi_S0_RREADY,
+    input  logic        axi_S0_irq,
+
+    // Slave 1 (base=0x2000_1000)
+    output logic [31:0] axi_S1_AWADDR,  output logic [2:0]  axi_S1_AWPROT,
+    output logic        axi_S1_AWVALID, input  logic        axi_S1_AWREADY,
+    output logic [31:0] axi_S1_WDATA,   output logic [3:0]  axi_S1_WSTRB,
+    output logic        axi_S1_WVALID,  input  logic        axi_S1_WREADY,
+    input  logic [1:0]  axi_S1_BRESP,   input  logic        axi_S1_BVALID,
+    output logic        axi_S1_BREADY,
+    output logic [31:0] axi_S1_ARADDR,  output logic [2:0]  axi_S1_ARPROT,
+    output logic        axi_S1_ARVALID, input  logic        axi_S1_ARREADY,
+    input  logic [31:0] axi_S1_RDATA,   input  logic [1:0]  axi_S1_RRESP,
+    input  logic        axi_S1_RVALID,  output logic        axi_S1_RREADY,
+    input  logic        axi_S1_irq,
+
+    // Slave 2 (base=0x2000_2000)
+    output logic [31:0] axi_S2_AWADDR,  output logic [2:0]  axi_S2_AWPROT,
+    output logic        axi_S2_AWVALID, input  logic        axi_S2_AWREADY,
+    output logic [31:0] axi_S2_WDATA,   output logic [3:0]  axi_S2_WSTRB,
+    output logic        axi_S2_WVALID,  input  logic        axi_S2_WREADY,
+    input  logic [1:0]  axi_S2_BRESP,   input  logic        axi_S2_BVALID,
+    output logic        axi_S2_BREADY,
+    output logic [31:0] axi_S2_ARADDR,  output logic [2:0]  axi_S2_ARPROT,
+    output logic        axi_S2_ARVALID, input  logic        axi_S2_ARREADY,
+    input  logic [31:0] axi_S2_RDATA,   input  logic [1:0]  axi_S2_RRESP,
+    input  logic        axi_S2_RVALID,  output logic        axi_S2_RREADY,
+    input  logic        axi_S2_irq,
+
+    // ── AHB-Lite shared bus outputs (500MHz, broadcast to all AHB slaves) ──
+    output logic [31:0] ahb_HADDR_o,
+    output logic [2:0]  ahb_HSIZE_o,
+    output logic [1:0]  ahb_HTRANS_o,
+    output logic        ahb_HWRITE_o,
+    output logic [31:0] ahb_HWDATA_o,
+
+    // ── AHB-Lite Slave ports × 3 (500MHz) ──
+    // Slave 0 (base=0x3000_0000)
+    output logic        ahb_S0_HSEL_o,
+    output logic        ahb_S0_HREADY_o,
+    input  logic        ahb_S0_HREADYOUT_i,
+    input  logic [31:0] ahb_S0_HRDATA_i,
+    input  logic        ahb_S0_HRESP_i,
+    input  logic        ahb_S0_irq_i,
+
+    // Slave 1 (base=0x3000_1000)
+    output logic        ahb_S1_HSEL_o,
+    output logic        ahb_S1_HREADY_o,
+    input  logic        ahb_S1_HREADYOUT_i,
+    input  logic [31:0] ahb_S1_HRDATA_i,
+    input  logic        ahb_S1_HRESP_i,
+    input  logic        ahb_S1_irq_i,
+
+    // Slave 2 (base=0x3000_2000)
+    output logic        ahb_S2_HSEL_o,
+    output logic        ahb_S2_HREADY_o,
+    input  logic        ahb_S2_HREADYOUT_i,
+    input  logic [31:0] ahb_S2_HRDATA_i,
+    input  logic        ahb_S2_HRESP_i,
+    input  logic        ahb_S2_irq_i
 );
 
     //=========================================================
@@ -854,30 +933,6 @@ module soc_top #(
     logic [31:0] axi_M_ARADDR; logic [2:0] axi_M_ARPROT; logic axi_M_ARVALID, axi_M_ARREADY;
     logic [31:0] axi_M_RDATA;  logic [1:0] axi_M_RRESP;  logic axi_M_RVALID,  axi_M_RREADY;
 
-    // Interconnect ↔ Slave 0
-    logic [31:0] axi_S0_AWADDR; logic [2:0] axi_S0_AWPROT; logic axi_S0_AWVALID, axi_S0_AWREADY;
-    logic [31:0] axi_S0_WDATA;  logic [3:0] axi_S0_WSTRB;  logic axi_S0_WVALID,  axi_S0_WREADY;
-    logic [1:0]  axi_S0_BRESP;  logic axi_S0_BVALID, axi_S0_BREADY;
-    logic [31:0] axi_S0_ARADDR; logic [2:0] axi_S0_ARPROT; logic axi_S0_ARVALID, axi_S0_ARREADY;
-    logic [31:0] axi_S0_RDATA;  logic [1:0] axi_S0_RRESP;  logic axi_S0_RVALID,  axi_S0_RREADY;
-    logic axi_irq0;
-
-    // Interconnect ↔ Slave 1
-    logic [31:0] axi_S1_AWADDR; logic [2:0] axi_S1_AWPROT; logic axi_S1_AWVALID, axi_S1_AWREADY;
-    logic [31:0] axi_S1_WDATA;  logic [3:0] axi_S1_WSTRB;  logic axi_S1_WVALID,  axi_S1_WREADY;
-    logic [1:0]  axi_S1_BRESP;  logic axi_S1_BVALID, axi_S1_BREADY;
-    logic [31:0] axi_S1_ARADDR; logic [2:0] axi_S1_ARPROT; logic axi_S1_ARVALID, axi_S1_ARREADY;
-    logic [31:0] axi_S1_RDATA;  logic [1:0] axi_S1_RRESP;  logic axi_S1_RVALID,  axi_S1_RREADY;
-    logic axi_irq1;
-
-    // Interconnect ↔ Slave 2
-    logic [31:0] axi_S2_AWADDR; logic [2:0] axi_S2_AWPROT; logic axi_S2_AWVALID, axi_S2_AWREADY;
-    logic [31:0] axi_S2_WDATA;  logic [3:0] axi_S2_WSTRB;  logic axi_S2_WVALID,  axi_S2_WREADY;
-    logic [1:0]  axi_S2_BRESP;  logic axi_S2_BVALID, axi_S2_BREADY;
-    logic [31:0] axi_S2_ARADDR; logic [2:0] axi_S2_ARPROT; logic axi_S2_ARVALID, axi_S2_ARREADY;
-    logic [31:0] axi_S2_RDATA;  logic [1:0] axi_S2_RRESP;  logic axi_S2_RVALID,  axi_S2_RREADY;
-    logic axi_irq2;
-
     axi_interface u_axi_if (
         .clk            (clk_cpu),
         .rst_n          (rst_cpu_n),
@@ -908,45 +963,21 @@ module soc_top #(
         .S0_BRESP (axi_S0_BRESP), .S0_BVALID(axi_S0_BVALID),.S0_BREADY (axi_S0_BREADY),
         .S0_ARADDR(axi_S0_ARADDR),.S0_ARPROT(axi_S0_ARPROT),.S0_ARVALID(axi_S0_ARVALID),.S0_ARREADY(axi_S0_ARREADY),
         .S0_RDATA (axi_S0_RDATA), .S0_RRESP (axi_S0_RRESP), .S0_RVALID (axi_S0_RVALID), .S0_RREADY (axi_S0_RREADY),
-        .irq0(axi_irq0),
+        .irq0(axi_S0_irq),
         .S1_AWADDR(axi_S1_AWADDR),.S1_AWPROT(axi_S1_AWPROT),.S1_AWVALID(axi_S1_AWVALID),.S1_AWREADY(axi_S1_AWREADY),
         .S1_WDATA (axi_S1_WDATA), .S1_WSTRB (axi_S1_WSTRB), .S1_WVALID (axi_S1_WVALID), .S1_WREADY (axi_S1_WREADY),
         .S1_BRESP (axi_S1_BRESP), .S1_BVALID(axi_S1_BVALID),.S1_BREADY (axi_S1_BREADY),
         .S1_ARADDR(axi_S1_ARADDR),.S1_ARPROT(axi_S1_ARPROT),.S1_ARVALID(axi_S1_ARVALID),.S1_ARREADY(axi_S1_ARREADY),
         .S1_RDATA (axi_S1_RDATA), .S1_RRESP (axi_S1_RRESP), .S1_RVALID (axi_S1_RVALID), .S1_RREADY (axi_S1_RREADY),
-        .irq1(axi_irq1),
+        .irq1(axi_S1_irq),
         .S2_AWADDR(axi_S2_AWADDR),.S2_AWPROT(axi_S2_AWPROT),.S2_AWVALID(axi_S2_AWVALID),.S2_AWREADY(axi_S2_AWREADY),
         .S2_WDATA (axi_S2_WDATA), .S2_WSTRB (axi_S2_WSTRB), .S2_WVALID (axi_S2_WVALID), .S2_WREADY (axi_S2_WREADY),
         .S2_BRESP (axi_S2_BRESP), .S2_BVALID(axi_S2_BVALID),.S2_BREADY (axi_S2_BREADY),
         .S2_ARADDR(axi_S2_ARADDR),.S2_ARPROT(axi_S2_ARPROT),.S2_ARVALID(axi_S2_ARVALID),.S2_ARREADY(axi_S2_ARREADY),
         .S2_RDATA (axi_S2_RDATA), .S2_RRESP (axi_S2_RRESP), .S2_RVALID (axi_S2_RVALID), .S2_RREADY (axi_S2_RREADY),
-        .irq2(axi_irq2),
+        .irq2(axi_S2_irq),
         .axi_irq(axi_irq)
     );
-
-    axi_sfr u_axi_sfr0 (.clk(clk_cpu),.rst_n(rst_cpu_n),
-        .AWADDR(axi_S0_AWADDR),.AWPROT(axi_S0_AWPROT),.AWVALID(axi_S0_AWVALID),.AWREADY(axi_S0_AWREADY),
-        .WDATA (axi_S0_WDATA), .WSTRB (axi_S0_WSTRB), .WVALID (axi_S0_WVALID), .WREADY (axi_S0_WREADY),
-        .BRESP (axi_S0_BRESP), .BVALID(axi_S0_BVALID),.BREADY (axi_S0_BREADY),
-        .ARADDR(axi_S0_ARADDR),.ARPROT(axi_S0_ARPROT),.ARVALID(axi_S0_ARVALID),.ARREADY(axi_S0_ARREADY),
-        .RDATA (axi_S0_RDATA), .RRESP (axi_S0_RRESP), .RVALID (axi_S0_RVALID), .RREADY (axi_S0_RREADY),
-        .irq(axi_irq0));
-
-    axi_sfr u_axi_sfr1 (.clk(clk_cpu),.rst_n(rst_cpu_n),
-        .AWADDR(axi_S1_AWADDR),.AWPROT(axi_S1_AWPROT),.AWVALID(axi_S1_AWVALID),.AWREADY(axi_S1_AWREADY),
-        .WDATA (axi_S1_WDATA), .WSTRB (axi_S1_WSTRB), .WVALID (axi_S1_WVALID), .WREADY (axi_S1_WREADY),
-        .BRESP (axi_S1_BRESP), .BVALID(axi_S1_BVALID),.BREADY (axi_S1_BREADY),
-        .ARADDR(axi_S1_ARADDR),.ARPROT(axi_S1_ARPROT),.ARVALID(axi_S1_ARVALID),.ARREADY(axi_S1_ARREADY),
-        .RDATA (axi_S1_RDATA), .RRESP (axi_S1_RRESP), .RVALID (axi_S1_RVALID), .RREADY (axi_S1_RREADY),
-        .irq(axi_irq1));
-
-    axi_sfr u_axi_sfr2 (.clk(clk_cpu),.rst_n(rst_cpu_n),
-        .AWADDR(axi_S2_AWADDR),.AWPROT(axi_S2_AWPROT),.AWVALID(axi_S2_AWVALID),.AWREADY(axi_S2_AWREADY),
-        .WDATA (axi_S2_WDATA), .WSTRB (axi_S2_WSTRB), .WVALID (axi_S2_WVALID), .WREADY (axi_S2_WREADY),
-        .BRESP (axi_S2_BRESP), .BVALID(axi_S2_BVALID),.BREADY (axi_S2_BREADY),
-        .ARADDR(axi_S2_ARADDR),.ARPROT(axi_S2_ARPROT),.ARVALID(axi_S2_ARVALID),.ARREADY(axi_S2_ARREADY),
-        .RDATA (axi_S2_RDATA), .RRESP (axi_S2_RRESP), .RVALID (axi_S2_RVALID), .RREADY (axi_S2_RREADY),
-        .irq(axi_irq2));
 
     //=========================================================
     // 19. AHB Group — CDC FIFOs + Interface + Interconnect + SFRs
@@ -1039,19 +1070,42 @@ module soc_top #(
         .ahb_irq     (ahb_irq_raw)
     );
 
-    ahb_sfr u_ahb_sfr0 (.clk_ahb(clk_ahb),.rst_ahb_n(rst_ahb_n),
-        .HSEL(ahb_HSEL0),.HREADY(ahb_HREADY0_in),
-        .HADDR(ahb_HADDR),.HTRANS(ahb_HTRANS),.HWRITE(ahb_HWRITE),.HWDATA(ahb_HWDATA),
-        .HRDATA(ahb_HRDATA0),.HREADYOUT(ahb_HREADYOUT0),.HRESP(ahb_HRESP0),.irq(ahb_irq0));
+    //=========================================================
+    // 20. External Peripheral Interface — route internal signals to ports
+    //=========================================================
 
-    ahb_sfr u_ahb_sfr1 (.clk_ahb(clk_ahb),.rst_ahb_n(rst_ahb_n),
-        .HSEL(ahb_HSEL1),.HREADY(ahb_HREADY1_in),
-        .HADDR(ahb_HADDR),.HTRANS(ahb_HTRANS),.HWRITE(ahb_HWRITE),.HWDATA(ahb_HWDATA),
-        .HRDATA(ahb_HRDATA1),.HREADYOUT(ahb_HREADYOUT1),.HRESP(ahb_HRESP1),.irq(ahb_irq1));
+    assign rst_cpu_n_o = rst_cpu_n;
+    assign rst_ahb_n_o = rst_ahb_n;
 
-    ahb_sfr u_ahb_sfr2 (.clk_ahb(clk_ahb),.rst_ahb_n(rst_ahb_n),
-        .HSEL(ahb_HSEL2),.HREADY(ahb_HREADY2_in),
-        .HADDR(ahb_HADDR),.HTRANS(ahb_HTRANS),.HWRITE(ahb_HWRITE),.HWDATA(ahb_HWDATA),
-        .HRDATA(ahb_HRDATA2),.HREADYOUT(ahb_HREADYOUT2),.HRESP(ahb_HRESP2),.irq(ahb_irq2));
+    // AHB shared bus → external slaves
+    assign ahb_HADDR_o  = ahb_HADDR;
+    assign ahb_HSIZE_o  = ahb_HSIZE;
+    assign ahb_HTRANS_o = ahb_HTRANS;
+    assign ahb_HWRITE_o = ahb_HWRITE;
+    assign ahb_HWDATA_o = ahb_HWDATA;
+
+    // AHB Slave 0
+    assign ahb_S0_HSEL_o   = ahb_HSEL0;
+    assign ahb_S0_HREADY_o = ahb_HREADY0_in;
+    assign ahb_HREADYOUT0  = ahb_S0_HREADYOUT_i;
+    assign ahb_HRDATA0     = ahb_S0_HRDATA_i;
+    assign ahb_HRESP0      = ahb_S0_HRESP_i;
+    assign ahb_irq0        = ahb_S0_irq_i;
+
+    // AHB Slave 1
+    assign ahb_S1_HSEL_o   = ahb_HSEL1;
+    assign ahb_S1_HREADY_o = ahb_HREADY1_in;
+    assign ahb_HREADYOUT1  = ahb_S1_HREADYOUT_i;
+    assign ahb_HRDATA1     = ahb_S1_HRDATA_i;
+    assign ahb_HRESP1      = ahb_S1_HRESP_i;
+    assign ahb_irq1        = ahb_S1_irq_i;
+
+    // AHB Slave 2
+    assign ahb_S2_HSEL_o   = ahb_HSEL2;
+    assign ahb_S2_HREADY_o = ahb_HREADY2_in;
+    assign ahb_HREADYOUT2  = ahb_S2_HREADYOUT_i;
+    assign ahb_HRDATA2     = ahb_S2_HRDATA_i;
+    assign ahb_HRESP2      = ahb_S2_HRESP_i;
+    assign ahb_irq2        = ahb_S2_irq_i;
 
 endmodule

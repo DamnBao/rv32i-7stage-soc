@@ -2,8 +2,15 @@
     .global _start
 _start:
 
-# ── AXI IRQ path: SFR REG7[0]=1 → axi_irq → mip.MEIP → MEI trap ──
-# Handler clears the SFR via AXI write, then redirects to pass.
+# ── AXI IRQ path: SFR standard map — INTR_ENABLE + INTR_TEST → axi_irq → MEI trap ──
+#
+# Standard register map offsets in SFR (base=0x2000_0000):
+#   INTR_ENABLE = 0x08  (RW)
+#   INTR_STATE  = 0x0C  (RW1C: write 1 to clear)
+#   INTR_TEST   = 0x10  (WO:   write 1 to force INTR_STATE[0]=1)
+#
+# Sequence: set INTR_ENABLE[0]=1, then write INTR_TEST[0]=1 to trigger IRQ.
+# Handler W1C-clears INTR_STATE[0] and disables MEIE before MRET.
 
     # Set mtvec to handler (Direct mode, aligned)
     la    x1, axi_mei_handler
@@ -18,14 +25,17 @@ _start:
     addi  x3, x0, 8
     csrrs x0, mstatus, x3
 
-    # Write 1 to AXI SFR0 REG7 (0x2000_001C) → asserts axi_irq
-    # bus_stall holds pipeline until AXI write completes; after that axi_irq=1
     lui   x4, 0x20000       # x4 = 0x2000_0000
     addi  x5, x0, 1
-    sw    x5, 0x1C(x4)
 
-    # AXI is synchronous: axi_irq rises at the same cycle the write commits.
-    # CPU samples mip.MEIP one cycle later. A few NOPs give the interrupt time to fire.
+    # Step 1: enable INTR_ENABLE[0] (bus_stall until AXI write completes)
+    sw    x5, 0x08(x4)
+
+    # Step 2: force INTR_STATE[0] via INTR_TEST (AXI write → irq rises immediately)
+    sw    x5, 0x10(x4)
+
+    # AXI is synchronous: irq = |(INTR_STATE & INTR_ENABLE) rises after write commit.
+    # A few NOPs give the interrupt time to sample.
     nop
     nop
     nop
@@ -44,13 +54,12 @@ axi_mei_handler:
     andi  x23, x22, 8
     bne   x23, x0, fail
 
-    # Clear IRQ: write 0 to AXI SFR0 REG7
+    # Clear IRQ: W1C write 1 to INTR_STATE[0] (offset 0x0C)
     lui   x24, 0x20000
-    sw    x0, 0x1C(x24)
+    sw    x5,  0x0C(x24)    # x5=1; clears INTR_STATE[0]
 
-    # Disable MEIE to prevent re-interrupt on MRET (AXI clears synchronously,
-    # but the clear write is in-flight — disabling MEIE is the safe path)
-    csrrc x0, mie, x2      # x2 = 0x800
+    # Disable MEIE to prevent re-interrupt on MRET
+    csrrc x0, mie, x2       # x2 = 0x800
 
     la    x25, pass
     csrw  mepc, x25

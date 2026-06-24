@@ -141,11 +141,12 @@ AXI-Lite Interface, AXI Interconnect, AXI peripheral SFRs
 | `zicsr.sv` | Hoàn thành (2-FF sync AHB IRQ, 6 CSR regs, vectored) |
 | `ahb_interface.sv` | Hoàn thành |
 | `ahb_interconnect.sv` | Hoàn thành (3 slaves, addr[27:12] decode) |
-| `ahb_sfr.sv` | Hoàn thành (8×32-bit regs, IRQ = REG7[0]) |
+| `ahb_sfr.sv` | Hoàn thành (Standard Register Map: CTRL/STATUS/INTR_ENABLE/INTR_STATE(W1C)/INTR_TEST/DATA0-2/PERIPH_ID; HADDR[7:2]; AHB pipeline capture) |
 | `axi_interface.sv` | Hoàn thành |
 | `axi_interconnect.sv` | Hoàn thành (3 slaves, addr[27:12] decode) |
-| `axi_sfr.sv` | Hoàn thành (8×32-bit regs, IRQ = REG7[0]) |
-| `soc_top.sv` | Hoàn thành (30 modules, 0 errors; wire stall→imem, CSR-use ports→hazard_unit) |
+| `axi_sfr.sv` | Hoàn thành (Standard Register Map: CTRL/STATUS/INTR_ENABLE/INTR_STATE(W1C)/INTR_TEST/DATA0-2/PERIPH_ID; irq=|(INTR_STATE&INTR_ENABLE)) |
+| `gpio_sfr.sv` | Hoàn thành (AXI-Lite peripheral: wraps axi_sfr với PERIPH_ID=4750_4900; STATUS=gpio_in; edge-detect irq qua 2-FF sync; DATA0=gpio_out; DATA1[0]=OE) |
+| `soc_top.sv` | Hoàn thành (SFRs external: expose 3×AXI + 3×AHB slave ports + rst_cpu_n_o/rst_ahb_n_o; bất cứ peripheral nào tuân chuẩn SFR standard đều cắm vào được) |
 
 ---
 
@@ -158,9 +159,9 @@ AXI-Lite Interface, AXI Interconnect, AXI peripheral SFRs
 | Phase 3 | Integration: tb_pipeline_cpu (9 programs qua soc_top) | 9/9 PASS |
 | Phase 4a | tb_axi_interface (axi_interface + slave model) | 49/49 PASS |
 | Phase 4b | tb_ahb_interface (ahb_interface + CDC FIFOs + slave model) | 29/29 PASS |
-| Phase 4c | tb_axi_full (axi_interface + axi_interconnect + 3×axi_sfr) | 40/40 PASS |
-| Phase 4d | tb_ahb_full (ahb_interface + CDC + ahb_interconnect + 3×ahb_sfr) | 35/35 PASS |
-| Phase 5 | tb_pipeline_cpu (4 programs: AXI/AHB SFR write/read + AXI/AHB IRQ) | 4/4 PASS |
+| Phase 4c | tb_axi_full (axi_interface + axi_interconnect + 3×axi_sfr — Standard Map) | 47/47 PASS |
+| Phase 4d | tb_ahb_full (ahb_interface + CDC + ahb_interconnect + 3×ahb_sfr — Standard Map) | 38/38 PASS |
+| Phase 5 | tb_pipeline_cpu (4 programs: AXI/AHB SFR write/read + AXI/AHB IRQ via INTR_TEST) | 4/4 PASS |
 | Phase 6a | tb_soc_top (batch runner: tất cả 16 programs Phase3+5+6 qua soc_top với reset) | 16/16 PASS |
 | Phase 6b | tb_compliance (compliance framework: shifts, compare, dmem_endurance) | 3/3 TEST_PASS |
 

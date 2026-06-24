@@ -2,8 +2,19 @@
     .global _start
 _start:
 
-# ── AHB IRQ path: SFR REG7[0]=1 → ahb_irq_raw → 2-FF sync (1GHz) → mip.MEIP ──
-# Extra NOP margin accounts for the 2-cycle synchronizer latency after SW completes.
+# ── AHB IRQ path: SFR standard map — INTR_ENABLE + INTR_TEST → ahb_irq → 2-FF sync → MEI ──
+#
+# Standard register map offsets in SFR (base=0x3000_0000):
+#   INTR_ENABLE = 0x08  (RW)
+#   INTR_STATE  = 0x0C  (RW1C: write 1 to clear)
+#   INTR_TEST   = 0x10  (WO:   write 1 to force INTR_STATE[0]=1)
+#
+# Sequence:
+#   1. Write INTR_ENABLE[0]=1 → bus_stall (CDC FIFO round-trip)
+#   2. Write INTR_TEST[0]=1   → bus_stall (ahb_sfr sets INTR_STATE[0] in 500MHz domain)
+#   3. After stall: ahb_irq_raw=1 (500MHz), 2-FF sync at 1GHz adds ~2 cycle latency
+#   4. Extra NOPs bridge the synchronizer latency
+# Handler W1C-clears INTR_STATE[0], disables MEIE to prevent re-interrupt during sync clearing.
 
     # Set mtvec to handler (Direct mode, aligned)
     la    x1, ahb_mei_handler
@@ -18,15 +29,17 @@ _start:
     addi  x3, x0, 8
     csrrs x0, mstatus, x3
 
-    # Write 1 to AHB SFR0 REG7 (0x3000_001C) → asserts ahb_irq_raw (500MHz domain)
-    # bus_stall holds pipeline until response FIFO returns (AHB write complete).
-    # After stall releases: ahb_irq_raw=1 in 500MHz domain.
-    # 2-FF sync at 1GHz adds ~2 extra clk_cpu cycles before mip.MEIP=1.
     lui   x4, 0x30000       # x4 = 0x3000_0000
     addi  x5, x0, 1
-    sw    x5, 0x1C(x4)
 
-    # Safety margin for 2-FF synchronizer latency
+    # Step 1: enable INTR_ENABLE[0]
+    sw    x5, 0x08(x4)
+
+    # Step 2: force INTR_STATE[0] via INTR_TEST
+    # bus_stall holds until AHB response FIFO returns (write complete in 500MHz domain)
+    sw    x5, 0x10(x4)
+
+    # Extra NOPs for 2-FF synchronizer latency (ahb_irq_raw → mip.MEIP takes ~2 1GHz cycles)
     nop
     nop
     nop
@@ -47,14 +60,12 @@ ahb_mei_handler:
     andi  x23, x22, 8
     bne   x23, x0, fail
 
-    # Clear IRQ: write 0 to AHB SFR0 REG7 (another AHB transaction)
+    # Clear IRQ: W1C write 1 to INTR_STATE[0] (offset 0x0C) via AHB
     lui   x24, 0x30000
-    sw    x0, 0x1C(x24)
+    sw    x5,  0x0C(x24)    # x5=1; clears INTR_STATE[0] in 500MHz domain
 
-    # Disable MEIE: ahb_irq_sync will stay 1 for ~2 more 1GHz cycles after
-    # the AHB write completes (2-FF sync clearing takes time). Must prevent
-    # re-interrupt on MRET.
-    csrrc x0, mie, x2      # x2 = 0x800
+    # Disable MEIE: 2-FF sync clearing takes ~2 more 1GHz cycles; prevent re-interrupt on MRET
+    csrrc x0, mie, x2       # x2 = 0x800
 
     la    x25, pass
     csrw  mepc, x25

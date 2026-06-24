@@ -20,7 +20,7 @@ RTL_CPU   = $(RTL)/if1_stage.sv $(RTL)/if1_if2_reg.sv \
             $(RTL)/mem2_wb_reg.sv $(RTL)/wb_stage.sv \
             $(RTL)/hazard_unit.sv $(RTL)/forwarding_unit.sv $(RTL)/zicsr.sv
 
-RTL_AXI   = $(RTL)/axi_interface.sv $(RTL)/axi_interconnect.sv $(RTL)/axi_sfr.sv
+RTL_AXI   = $(RTL)/axi_interface.sv $(RTL)/axi_interconnect.sv $(RTL)/axi_sfr.sv $(RTL)/gpio_sfr.sv
 RTL_AHB   = $(RTL)/ahb_interface.sv $(RTL)/ahb_interconnect.sv $(RTL)/ahb_sfr.sv
 
 RTL_ALL   = $(RTL_INFRA) $(RTL_MEM) $(RTL_CPU) $(RTL_AXI) $(RTL_AHB) $(RTL)/soc_top.sv

@@ -15,14 +15,16 @@ _start:
     addi  x3, x0, 8
     csrrs x0, mstatus, x3
 
-    # Write 1 to AXI_SFR0 REG7 (0x2000_001C) → asserts axi_irq
-    # AXI transaction: bus_stall_req=1, take_interrupt gated until done
+    # Trigger AXI SFR0 IRQ via standard register map:
+    #   INTR_ENABLE (0x08): unmask bit0
+    #   INTR_TEST   (0x10): force INTR_STATE[0]=1 → axi_irq=1 after write commits
     lui   x4, 0x20000       # x4 = 0x2000_0000 (AXI_SFR0 base)
     addi  x5, x0, 1
-    sw    x5, 0x1C(x4)      # REG7[0]=1 → axi_irq=1 after write completes
+    sw    x5, 0x08(x4)      # INTR_ENABLE[0]=1
+    sw    x5, 0x10(x4)      # INTR_TEST[0]=1 → sets INTR_STATE[0] → axi_irq=1
 
-    # Interrupt fires at the WB cycle when SW commits (bus done, axi_irq=1)
-    # mepc = SW_PC + 4; handler redirects to pass so NOPs are safety margin
+    # AXI is synchronous: irq rises at the cycle the INTR_TEST write commits.
+    # A few NOPs give the interrupt time to sample.
     nop
     nop
     nop
@@ -43,10 +45,9 @@ mei_handler:
     bne   x23, x0, fail
 
     # Disable MEIE to prevent re-interrupt after MRET
-    # (AXI REG7 is still 1; clearing mie.MEIE is simpler than another AXI write)
     csrrc x0, mie, x2       # x2 = 0x800 (MEIE bit)
 
-    # Override return address to pass (skip NOPs that follow SW)
+    # Override return address to pass
     la    x24, pass
     csrw  mepc, x24
 

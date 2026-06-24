@@ -1,6 +1,9 @@
 `timescale 1ns/1ps
 // Phase 4d: ahb_interface (via CDC FIFOs) → ahb_interconnect → 3 × ahb_sfr
-// Tests: address decode (addr[27:12]), write-read-back, IRQ aggregation,
+// Standard register map: CTRL(0x00), STATUS(0x04/RO), INTR_ENABLE(0x08),
+//                        INTR_STATE(0x0C/W1C), INTR_TEST(0x10/WO),
+//                        DATA0(0x14), DATA1(0x18), DATA2(0x1C), PERIPH_ID(0xFC/RO)
+// Tests: address decode, write-read-back, IRQ via INTR_ENABLE+INTR_TEST+W1C,
 //        multi-reg in one slave, cross-slave isolation.
 module tb_ahb_full;
     // ── Clocks / Resets ──────────────────────────────────────────
@@ -87,21 +90,27 @@ module tb_ahb_full;
         .clk_ahb(clk_ahb), .rst_ahb_n(rst_ahb_n),
         .HSEL(HSEL0), .HREADY(HREADY0_in),
         .HADDR(HADDR), .HTRANS(HTRANS), .HWRITE(HWRITE), .HWDATA(HWDATA),
-        .HRDATA(HRDATA0), .HREADYOUT(HREADYOUT0), .HRESP(HRESP0), .irq(irq0)
+        .HRDATA(HRDATA0), .HREADYOUT(HREADYOUT0), .HRESP(HRESP0),
+        .status_in(32'd0), .irq_src(1'b0),
+        .data0_out(), .data1_out(), .data2_out(), .irq(irq0)
     );
 
     ahb_sfr u_sfr1 (
         .clk_ahb(clk_ahb), .rst_ahb_n(rst_ahb_n),
         .HSEL(HSEL1), .HREADY(HREADY1_in),
         .HADDR(HADDR), .HTRANS(HTRANS), .HWRITE(HWRITE), .HWDATA(HWDATA),
-        .HRDATA(HRDATA1), .HREADYOUT(HREADYOUT1), .HRESP(HRESP1), .irq(irq1)
+        .HRDATA(HRDATA1), .HREADYOUT(HREADYOUT1), .HRESP(HRESP1),
+        .status_in(32'd0), .irq_src(1'b0),
+        .data0_out(), .data1_out(), .data2_out(), .irq(irq1)
     );
 
     ahb_sfr u_sfr2 (
         .clk_ahb(clk_ahb), .rst_ahb_n(rst_ahb_n),
         .HSEL(HSEL2), .HREADY(HREADY2_in),
         .HADDR(HADDR), .HTRANS(HTRANS), .HWRITE(HWRITE), .HWDATA(HWDATA),
-        .HRDATA(HRDATA2), .HREADYOUT(HREADYOUT2), .HRESP(HRESP2), .irq(irq2)
+        .HRDATA(HRDATA2), .HREADYOUT(HREADYOUT2), .HRESP(HRESP2),
+        .status_in(32'd0), .irq_src(1'b0),
+        .data0_out(), .data1_out(), .data2_out(), .irq(irq2)
     );
 
     // ── Scoreboard ────────────────────────────────────────────────
@@ -112,7 +121,6 @@ module tb_ahb_full;
         else pass_cnt=pass_cnt+1;
     endtask
 
-    // ── Tasks (same interface as tb_ahb_interface) ────────────────
     task push_req(input [31:0] addr, wdata, input write, input [1:0] size);
         @(negedge clk_1g);
         req_wr_en   = 1;
@@ -161,12 +169,11 @@ module tb_ahb_full;
         rst_1g_n=1; rst_ahb_n=1;
         repeat(4) @(posedge clk_1g);
 
-        // ── Group 1: Address decode — each slave independently ───
+        // ── Group 1: Address decode — CTRL (0x00) in each slave ──
         // Slave 0 (addr[27:12]=0x0000, base=0x3000_0000)
         tnum=tnum+1;
         do_txn(32'h3000_0000, 32'hAABB_CCDD, 1'b1, 2'b10, rdata, err);
         pass_if(err === 1'b0);
-
         tnum=tnum+1;
         do_txn(32'h3000_0000, 32'd0, 1'b0, 2'b10, rdata, err);
         pass_if(err   === 1'b0);
@@ -177,7 +184,6 @@ module tb_ahb_full;
         tnum=tnum+1;
         do_txn(32'h3000_1000, 32'h1122_3344, 1'b1, 2'b10, rdata, err);
         pass_if(err === 1'b0);
-
         tnum=tnum+1;
         do_txn(32'h3000_1000, 32'd0, 1'b0, 2'b10, rdata, err);
         pass_if(err   === 1'b0);
@@ -188,96 +194,103 @@ module tb_ahb_full;
         tnum=tnum+1;
         do_txn(32'h3000_2000, 32'h5566_7788, 1'b1, 2'b10, rdata, err);
         pass_if(err === 1'b0);
-
         tnum=tnum+1;
         do_txn(32'h3000_2000, 32'd0, 1'b0, 2'b10, rdata, err);
         pass_if(err   === 1'b0);
         tnum=tnum+1;
         pass_if(rdata === 32'h5566_7788);
 
-        // ── Group 2: IRQ path — REG7[0] (offset 0x1C, addr[4:2]=7) ──
-        // Write S0 REG7[0]=1
+        // ── Group 2: IRQ — INTR_ENABLE (0x08) + INTR_TEST (0x10) ──
+        // S0: enable bit0, trigger via INTR_TEST → irq0=1 → ahb_irq=1
         tnum=tnum+1;
-        do_txn(32'h3000_001C, 32'h0000_0001, 1'b1, 2'b10, rdata, err);
+        do_txn(32'h3000_0008, 32'h0000_0001, 1'b1, 2'b10, rdata, err);
         pass_if(err === 1'b0);
-        repeat(2) @(posedge clk_ahb);                // settle 500MHz domain
-        tnum=tnum+1; pass_if(ahb_irq === 1'b1);
-
-        // Write S1 REG7[0]=1 → ahb_irq still 1 (OR)
         tnum=tnum+1;
-        do_txn(32'h3000_101C, 32'h0000_0001, 1'b1, 2'b10, rdata, err);
+        do_txn(32'h3000_0010, 32'h0000_0001, 1'b1, 2'b10, rdata, err);
         pass_if(err === 1'b0);
         repeat(2) @(posedge clk_ahb);
         tnum=tnum+1; pass_if(ahb_irq === 1'b1);
 
-        // Clear S0 → ahb_irq still 1 (S1 still set)
+        // S1: enable + trigger → ahb_irq still 1 (OR)
         tnum=tnum+1;
-        do_txn(32'h3000_001C, 32'h0000_0000, 1'b1, 2'b10, rdata, err);
+        do_txn(32'h3000_1008, 32'h0000_0001, 1'b1, 2'b10, rdata, err);
+        pass_if(err === 1'b0);
+        tnum=tnum+1;
+        do_txn(32'h3000_1010, 32'h0000_0001, 1'b1, 2'b10, rdata, err);
         pass_if(err === 1'b0);
         repeat(2) @(posedge clk_ahb);
         tnum=tnum+1; pass_if(ahb_irq === 1'b1);
 
-        // Clear S1 → ahb_irq=0
+        // W1C clear S0 INTR_STATE → ahb_irq=1 (S1 still set)
         tnum=tnum+1;
-        do_txn(32'h3000_101C, 32'h0000_0000, 1'b1, 2'b10, rdata, err);
+        do_txn(32'h3000_000C, 32'h0000_0001, 1'b1, 2'b10, rdata, err);
+        pass_if(err === 1'b0);
+        repeat(2) @(posedge clk_ahb);
+        tnum=tnum+1; pass_if(ahb_irq === 1'b1);
+
+        // W1C clear S1 → ahb_irq=0
+        tnum=tnum+1;
+        do_txn(32'h3000_100C, 32'h0000_0001, 1'b1, 2'b10, rdata, err);
         pass_if(err === 1'b0);
         repeat(2) @(posedge clk_ahb);
         tnum=tnum+1; pass_if(ahb_irq === 1'b0);
 
-        // Write S2 REG7[0]=1 → ahb_irq=1
+        // S2: trigger → ahb_irq=1
         tnum=tnum+1;
-        do_txn(32'h3000_201C, 32'h0000_0001, 1'b1, 2'b10, rdata, err);
+        do_txn(32'h3000_2008, 32'h0000_0001, 1'b1, 2'b10, rdata, err);
+        pass_if(err === 1'b0);
+        tnum=tnum+1;
+        do_txn(32'h3000_2010, 32'h0000_0001, 1'b1, 2'b10, rdata, err);
         pass_if(err === 1'b0);
         repeat(2) @(posedge clk_ahb);
         tnum=tnum+1; pass_if(ahb_irq === 1'b1);
 
-        // Clear S2 → ahb_irq=0
+        // W1C clear S2 → ahb_irq=0
         tnum=tnum+1;
-        do_txn(32'h3000_201C, 32'h0000_0000, 1'b1, 2'b10, rdata, err);
+        do_txn(32'h3000_200C, 32'h0000_0001, 1'b1, 2'b10, rdata, err);
         pass_if(err === 1'b0);
         repeat(2) @(posedge clk_ahb);
         tnum=tnum+1; pass_if(ahb_irq === 1'b0);
 
-        // ── Group 3: Multiple regs in Slave 1 ────────────────────
+        // ── Group 3: Multiple regs in Slave 1 — DATA0 (0x14), DATA1 (0x18) ──
         tnum=tnum+1;
-        do_txn(32'h3000_1004, 32'hDEAD_BEEF, 1'b1, 2'b10, rdata, err);
+        do_txn(32'h3000_1014, 32'hDEAD_BEEF, 1'b1, 2'b10, rdata, err);
         pass_if(err === 1'b0);
         tnum=tnum+1;
-        do_txn(32'h3000_1008, 32'hCAFE_BABE, 1'b1, 2'b10, rdata, err);
+        do_txn(32'h3000_1018, 32'hCAFE_BABE, 1'b1, 2'b10, rdata, err);
         pass_if(err === 1'b0);
 
         tnum=tnum+1;
-        do_txn(32'h3000_1004, 32'd0, 1'b0, 2'b10, rdata, err);
+        do_txn(32'h3000_1014, 32'd0, 1'b0, 2'b10, rdata, err);
         pass_if(err === 1'b0);
         tnum=tnum+1; pass_if(rdata === 32'hDEAD_BEEF);
 
         tnum=tnum+1;
-        do_txn(32'h3000_1008, 32'd0, 1'b0, 2'b10, rdata, err);
+        do_txn(32'h3000_1018, 32'd0, 1'b0, 2'b10, rdata, err);
         pass_if(err === 1'b0);
         tnum=tnum+1; pass_if(rdata === 32'hCAFE_BABE);
 
         // ── Group 4: Cross-slave isolation ───────────────────────
-        // Write same reg index to S0 and S2 with different values
         tnum=tnum+1;
-        do_txn(32'h3000_0004, 32'hF0F0_AAAA, 1'b1, 2'b10, rdata, err);
+        do_txn(32'h3000_0014, 32'hF0F0_AAAA, 1'b1, 2'b10, rdata, err); // S0 DATA0
         pass_if(err === 1'b0);
         tnum=tnum+1;
-        do_txn(32'h3000_2004, 32'h0F0F_BBBB, 1'b1, 2'b10, rdata, err);
+        do_txn(32'h3000_2014, 32'h0F0F_BBBB, 1'b1, 2'b10, rdata, err); // S2 DATA0
         pass_if(err === 1'b0);
 
-        // Read S0 reg1 — must see F0F0_AAAA
+        // Read S0 DATA0 — must see F0F0_AAAA
         tnum=tnum+1;
-        do_txn(32'h3000_0004, 32'd0, 1'b0, 2'b10, rdata, err);
+        do_txn(32'h3000_0014, 32'd0, 1'b0, 2'b10, rdata, err);
         pass_if(err === 1'b0);
         tnum=tnum+1; pass_if(rdata === 32'hF0F0_AAAA);
 
-        // Read S2 reg1 — must see 0F0F_BBBB
+        // Read S2 DATA0 — must see 0F0F_BBBB
         tnum=tnum+1;
-        do_txn(32'h3000_2004, 32'd0, 1'b0, 2'b10, rdata, err);
+        do_txn(32'h3000_2014, 32'd0, 1'b0, 2'b10, rdata, err);
         pass_if(err === 1'b0);
         tnum=tnum+1; pass_if(rdata === 32'h0F0F_BBBB);
 
-        // S0 reg0 must still be from Group 1 (no S2 write affected S0)
+        // S0 CTRL still from Group 1 (no cross-contamination)
         tnum=tnum+1;
         do_txn(32'h3000_0000, 32'd0, 1'b0, 2'b10, rdata, err);
         pass_if(err === 1'b0);

@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
-// Phase 4c: axi_interface → axi_interconnect → 3 × axi_sfr
-// Tests: address decode (addr[27:12]), write-read-back, IRQ aggregation,
-//        multi-reg in one slave, cross-slave isolation.
+// Phase 4c: axi_interface → axi_interconnect → 3 × axi_sfr (standard register map)
+// Tests: address decode, write-read-back, IRQ via INTR_ENABLE+INTR_TEST+W1C,
+//        multi-reg in one slave, cross-slave isolation, PERIPH_ID read.
 module tb_axi_full;
     logic clk, rst_n;
     initial clk = 0;
@@ -104,7 +104,8 @@ module tb_axi_full;
         .BRESP(S0_BRESP),  .BVALID(S0_BVALID), .BREADY(S0_BREADY),
         .ARADDR(S0_ARADDR),.ARPROT(S0_ARPROT),.ARVALID(S0_ARVALID),.ARREADY(S0_ARREADY),
         .RDATA(S0_RDATA),  .RRESP(S0_RRESP),  .RVALID(S0_RVALID), .RREADY(S0_RREADY),
-        .irq(irq0)
+        .status_in(32'd0), .irq_src(1'b0),
+        .data0_out(), .data1_out(), .data2_out(), .irq(irq0)
     );
 
     axi_sfr u_sfr1 (
@@ -114,7 +115,8 @@ module tb_axi_full;
         .BRESP(S1_BRESP),  .BVALID(S1_BVALID), .BREADY(S1_BREADY),
         .ARADDR(S1_ARADDR),.ARPROT(S1_ARPROT),.ARVALID(S1_ARVALID),.ARREADY(S1_ARREADY),
         .RDATA(S1_RDATA),  .RRESP(S1_RRESP),  .RVALID(S1_RVALID), .RREADY(S1_RREADY),
-        .irq(irq1)
+        .status_in(32'd0), .irq_src(1'b0),
+        .data0_out(), .data1_out(), .data2_out(), .irq(irq1)
     );
 
     axi_sfr u_sfr2 (
@@ -124,7 +126,8 @@ module tb_axi_full;
         .BRESP(S2_BRESP),  .BVALID(S2_BVALID), .BREADY(S2_BREADY),
         .ARADDR(S2_ARADDR),.ARPROT(S2_ARPROT),.ARVALID(S2_ARVALID),.ARREADY(S2_ARREADY),
         .RDATA(S2_RDATA),  .RRESP(S2_RRESP),  .RVALID(S2_RVALID), .RREADY(S2_RREADY),
-        .irq(irq2)
+        .status_in(32'd0), .irq_src(1'b0),
+        .data0_out(), .data1_out(), .data2_out(), .irq(irq2)
     );
 
     // ── Scoreboard ────────────────────────────────────────────────
@@ -135,7 +138,6 @@ module tb_axi_full;
         else pass_cnt=pass_cnt+1;
     endtask
 
-    // ── Write / Read tasks (same structure as tb_axi_interface) ──
     task do_write(input [31:0] addr, wdata, input [1:0] size, input [3:0] exp_wstrb);
         @(negedge clk);
         req_valid=1; req_we=1; req_addr=addr; req_wdata=wdata; req_size=size;
@@ -165,10 +167,10 @@ module tb_axi_full;
         repeat(4) @(posedge clk);
         @(negedge clk); rst_n=1;
 
-        // ── Group 1: Address decode — each slave independently ───
+        // ── Group 1: Address decode — CTRL (0x00) in each slave ──
         // Slave 0 (addr[27:12]=0x0000, base=0x2000_0000)
-        do_write(32'h2000_0000, 32'hAABB_1100, 2'b10, 4'b1111);
-        do_read (32'h2000_0000, 32'hAABB_1100);
+        do_write(32'h2000_0000, 32'hAABB_1100, 2'b10, 4'b1111); // write CTRL
+        do_read (32'h2000_0000, 32'hAABB_1100);                   // read CTRL back
 
         // Slave 1 (addr[27:12]=0x0001, base=0x2000_1000)
         do_write(32'h2000_1000, 32'hCCDD_2200, 2'b10, 4'b1111);
@@ -178,49 +180,56 @@ module tb_axi_full;
         do_write(32'h2000_2000, 32'hEEFF_3300, 2'b10, 4'b1111);
         do_read (32'h2000_2000, 32'hEEFF_3300);
 
-        // ── Group 2: IRQ path — REG7[0] (offset 0x1C, addr[4:2]=7) ──
-        // Write S0 REG7[0]=1 → irq0=1 → axi_irq=1
-        do_write(32'h2000_001C, 32'h0000_0001, 2'b10, 4'b1111);
+        // ── Group 2: IRQ — INTR_ENABLE (0x08) + INTR_TEST (0x10) ──
+        // S0: enable bit0, trigger via INTR_TEST → irq0=1 → axi_irq=1
+        do_write(32'h2000_0008, 32'h0000_0001, 2'b10, 4'b1111); // INTR_ENABLE[0]=1
+        do_write(32'h2000_0010, 32'h0000_0001, 2'b10, 4'b1111); // INTR_TEST[0]=1 → set INTR_STATE[0]
         tnum=tnum+1; pass_if(axi_irq === 1'b1);
 
-        // Write S1 REG7[0]=1 → axi_irq still 1 (OR)
-        do_write(32'h2000_101C, 32'h0000_0001, 2'b10, 4'b1111);
+        // S1: same → axi_irq still 1 (OR)
+        do_write(32'h2000_1008, 32'h0000_0001, 2'b10, 4'b1111);
+        do_write(32'h2000_1010, 32'h0000_0001, 2'b10, 4'b1111);
         tnum=tnum+1; pass_if(axi_irq === 1'b1);
 
-        // Clear S0 REG7 → axi_irq=1 (S1 still set)
-        do_write(32'h2000_001C, 32'h0000_0000, 2'b10, 4'b1111);
+        // W1C clear S0: write 1 to INTR_STATE → irq0 clears; axi_irq=1 (S1 still set)
+        do_write(32'h2000_000C, 32'h0000_0001, 2'b10, 4'b1111); // INTR_STATE W1C
         tnum=tnum+1; pass_if(axi_irq === 1'b1);
 
-        // Clear S1 REG7 → axi_irq=0
-        do_write(32'h2000_101C, 32'h0000_0000, 2'b10, 4'b1111);
+        // W1C clear S1 → axi_irq=0
+        do_write(32'h2000_100C, 32'h0000_0001, 2'b10, 4'b1111);
         tnum=tnum+1; pass_if(axi_irq === 1'b0);
 
-        // Write S2 REG7[0]=1 → axi_irq=1
-        do_write(32'h2000_201C, 32'h0000_0001, 2'b10, 4'b1111);
+        // S2: trigger → axi_irq=1
+        do_write(32'h2000_2008, 32'h0000_0001, 2'b10, 4'b1111);
+        do_write(32'h2000_2010, 32'h0000_0001, 2'b10, 4'b1111);
         tnum=tnum+1; pass_if(axi_irq === 1'b1);
 
-        // Clear S2 → axi_irq=0
-        do_write(32'h2000_201C, 32'h0000_0000, 2'b10, 4'b1111);
+        // W1C clear S2 → axi_irq=0
+        do_write(32'h2000_200C, 32'h0000_0001, 2'b10, 4'b1111);
         tnum=tnum+1; pass_if(axi_irq === 1'b0);
 
-        // ── Group 3: Multiple regs in Slave 0 ────────────────────
-        do_write(32'h2000_0004, 32'h1111_AAAA, 2'b10, 4'b1111); // reg1
-        do_write(32'h2000_0008, 32'h2222_BBBB, 2'b10, 4'b1111); // reg2
-        do_write(32'h2000_000C, 32'h3333_CCCC, 2'b10, 4'b1111); // reg3
-        do_read (32'h2000_0004, 32'h1111_AAAA);
-        do_read (32'h2000_0008, 32'h2222_BBBB);
-        do_read (32'h2000_000C, 32'h3333_CCCC);
+        // ── Group 3: Multiple standard regs in Slave 0 ────────────
+        // DATA0 (0x14), DATA1 (0x18), DATA2 (0x1C)
+        do_write(32'h2000_0014, 32'h1111_AAAA, 2'b10, 4'b1111);
+        do_write(32'h2000_0018, 32'h2222_BBBB, 2'b10, 4'b1111);
+        do_write(32'h2000_001C, 32'h3333_CCCC, 2'b10, 4'b1111);
+        do_read (32'h2000_0014, 32'h1111_AAAA);
+        do_read (32'h2000_0018, 32'h2222_BBBB);
+        do_read (32'h2000_001C, 32'h3333_CCCC);
 
         // ── Group 4: Cross-slave isolation ───────────────────────
-        // Write same reg offset to S0 and S1 with different values
-        do_write(32'h2000_0010, 32'hDEAD_BEEF, 2'b10, 4'b1111);
-        do_write(32'h2000_1010, 32'hCAFE_BABE, 2'b10, 4'b1111);
-        do_read (32'h2000_0010, 32'hDEAD_BEEF); // S0 unaffected
-        do_read (32'h2000_1010, 32'hCAFE_BABE); // S1 unaffected
-
-        // Also check S0 reg0 still has original value (no cross-contamination)
+        // Write DATA0 to S0 and S2 with different values
+        do_write(32'h2000_0014, 32'hF0F0_AAAA, 2'b10, 4'b1111); // S0 DATA0
+        do_write(32'h2000_2014, 32'h0F0F_BBBB, 2'b10, 4'b1111); // S2 DATA0
+        do_read (32'h2000_0014, 32'hF0F0_AAAA); // S0 not affected by S2 write
+        do_read (32'h2000_2014, 32'h0F0F_BBBB); // S2 holds own value
+        do_read (32'h2000_1014, 32'h0000_0000); // S1 DATA0 never written → 0
+        // S0 CTRL still from Group 1
         do_read (32'h2000_0000, 32'hAABB_1100);
-        do_read (32'h2000_1000, 32'hCCDD_2200);
+        do_read (32'h2000_2000, 32'hEEFF_3300);
+
+        // ── Bonus: PERIPH_ID read (offset 0xFC = idx 63) ─────────
+        do_read (32'h2000_00FC, 32'h5346_5230); // default PERIPH_ID_VAL
 
         $display("=== tb_axi_full: %0d/%0d PASS ===", pass_cnt, pass_cnt+fail_cnt);
         if (fail_cnt==0) $display("ALL PASS");
