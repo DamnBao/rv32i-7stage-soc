@@ -67,9 +67,14 @@ inst_6:
 TEST_JALR_OP(x15, x30, x12, 0x10, x10, 24,0)
 
 inst_7:
-// rs1==x31, rd==x0, imm_val == 32, 
-// opcode: jalr; op1:x31; dest:x0; immval:0x20; align:0 
-TEST_JALR_OP(x15, x0, x31, 0x20, x10, 28,0)
+// rs1==x31, rd==x0, imm_val == 32,
+// opcode: jalr; op1:x31; dest:x0; immval:0x20; align:0
+// Patched: TEST_JALR_OP generates 'la x0,label' rejected by binutils>=2.39.
+// rd=x0 is hardwired 0; JALR x0 = pure jump (no link). Signature = 0 (matches reference).
+    LA(x31, 1f)
+    addi x31, x31, -0x20
+    jalr x0, 0x20(x31)
+1:  RVTEST_SIGUPD(x10, x0, 28)
 
 inst_8:
 // rs1==x20, rd==x3, imm_val == 128, 

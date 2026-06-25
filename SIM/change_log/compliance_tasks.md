@@ -32,7 +32,7 @@ Hardware SoC production vẫn dùng 64KB (default). Không ảnh hưởng RTL sy
 
 ---
 
-## Task B — Fix jalr-01 (1 test) 🔲 TODO
+## Task B — Fix jalr-01 (1 test) ✅ DONE (2026-06-25)
 
 **Mục tiêu:** 36 → 37 PASS; jal-01 vẫn SKIP
 
@@ -57,7 +57,7 @@ Cần cẩn thận giữ nguyên test intent.
 
 ---
 
-## Task C — Update CLAUDE.md 🔲 TODO (sau A+B)
+## Task C — Update CLAUDE.md ✅ DONE (2026-06-25)
 
 Sau khi Task A+B hoàn thành:
 - Cập nhật dòng `rv32i_compliance` trong testing table:
