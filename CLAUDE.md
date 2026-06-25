@@ -235,7 +235,7 @@ Mọi peripheral muốn kết nối với `soc_top` phải implement register ma
 | Phase 7 | unit: tb_plic (31); system: prog_plic_basic + priority + threshold | 31/31 + 3/3 PASS |
 | Phase 8 | unit: tb_ex_stage (23); system: prog_csr_hazard (CSR-use stall gaps 0–4) | 23/23 + 1/1 PASS |
 | New unit | tb_irq_sync2ff (10), tb_gpio_sfr (22), tb_zicsr (38) | 70/70 PASS |
-| integ_bus_err | tb_soc_bus_err (AXI BRESP SLVERR → store_access_fault → exception handler) | 1/1 PASS |
+| integ_bus_err | tb_soc_bus_err: BRESP SLVERR→store_fault(mcause=7); RRESP SLVERR→load_fault(mcause=5) | 2/2 PASS |
 
 **Lệnh chạy:**
 ```bash

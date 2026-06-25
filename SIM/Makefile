@@ -206,9 +206,10 @@ integ_ahb_full:
 	$(VVP) integration/tb_ahb_full.vvp
 
 integ_bus_err:
-	@echo "=== tb_soc_bus_err (AXI BRESP error → store_access_fault) ==="
+	@echo "=== tb_soc_bus_err (AXI bus error: BRESP/RRESP → store/load access fault) ==="
 	$(IV) -o integration/tb_soc_bus_err.vvp integration/tb_soc_bus_err.sv $(RTL_ALL)
 	$(VVP) integration/tb_soc_bus_err.vvp +HEX=programs/prog_bus_err.hex
+	$(VVP) integration/tb_soc_bus_err.vvp +HEX=programs/prog_read_err.hex
 
 integ_all: integ_cpu integ_axi integ_ahb integ_axi_full integ_ahb_full integ_bus_err
 
