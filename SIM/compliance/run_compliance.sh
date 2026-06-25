@@ -18,13 +18,18 @@ GCC="riscv64-unknown-elf-gcc"
 OBJCOPY="riscv64-unknown-elf-objcopy"
 NM="riscv64-unknown-elf-nm"
 IV="iverilog -g2012 -Wall"
-IMEM_MAX=65536  # 64KB IMEM
+IMEM_MAX=524288  # 512KB for compliance (branch tests need up to ~294KB)
 
 CFLAGS="-march=rv32i_zicsr -mabi=ilp32 -nostdlib -nostartfiles \
         -DXLEN=32 \
         -T $SCRIPT_DIR/link_compliance.ld \
+        -Wl,--no-check-sections \
         -I $SCRIPT_DIR \
         -I $SCRIPT_DIR/env"
+# --no-check-sections: suppresses linker LMA overlap check.
+# In our Harvard architecture simulation, IMEM and DMEM are separate arrays
+# ($readmemh loads them independently), so branch tests with code >64KB that
+# "overlap" the DMEM LMA range (0x10000) are safe at runtime.
 
 mkdir -p "$WORK_DIR"
 

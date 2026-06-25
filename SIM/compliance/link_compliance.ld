@@ -10,7 +10,7 @@
 ENTRY(rvtest_entry_point)
 
 MEMORY {
-    IMEM (rx)   : ORIGIN = 0x00000000, LENGTH = 64K
+    IMEM (rx)   : ORIGIN = 0x00000000, LENGTH = 512K
     DMEM (rw)   : ORIGIN = 0x00010000, LENGTH = 64K
 }
 

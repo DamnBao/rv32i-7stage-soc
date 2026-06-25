@@ -21,7 +21,8 @@
 // plugged in externally without modifying this file.
 
 module soc_top #(
-    parameter PC_RESET_VAL = 32'h0000_0000
+    parameter PC_RESET_VAL = 32'h0000_0000,
+    parameter IMEM_SIZE_KB = 64   // Override to 256 for compliance testbench; production default = 64
 )(
     input  logic clk_cpu,   // 1GHz — CPU + AXI domain
     input  logic clk_ahb,   // 500MHz — AHB peripheral domain
@@ -330,7 +331,7 @@ module soc_top #(
     //=========================================================
     // 2. IMEM — Synchronous instruction memory (1GHz)
     //=========================================================
-    imem #(.SIZE_KB(64)) u_imem (
+    imem #(.SIZE_KB(IMEM_SIZE_KB)) u_imem (
         .clk      (clk_cpu),      // input:  1GHz clock
         .stall    (stall_if1if2), // input:  hold output in sync with if1_if2_reg freeze
         .flush    (flush_if1if2), // input:  output NOP to prevent ghost instruction at ID

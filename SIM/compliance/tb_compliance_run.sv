@@ -66,8 +66,8 @@ module tb_compliance_run;
     logic        ahb_S2_HREADYOUT_i, ahb_S2_HRESP_i, ahb_S2_irq_i;
     logic [31:0] ahb_S2_HRDATA_i;
 
-    // ── SoC Top ───────────────────────────────────────────────────────────────
-    soc_top u_soc (
+    // ── SoC Top (512KB IMEM for compliance — branch tests need up to ~294KB) ─
+    soc_top #(.IMEM_SIZE_KB(512)) u_soc (
         .clk_cpu(clk_cpu), .clk_ahb(clk_ahb), .rst_n(rst_n),
         .rst_cpu_n_o(rst_cpu_n_o), .rst_ahb_n_o(rst_ahb_n_o),
         .axi_S0_AWADDR(axi_S0_AWADDR), .axi_S0_AWPROT(axi_S0_AWPROT),

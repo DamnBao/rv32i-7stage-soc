@@ -237,7 +237,7 @@ Mọi peripheral muốn kết nối với `soc_top` phải implement register ma
 | New unit | tb_irq_sync2ff (10), tb_gpio_sfr (22), tb_zicsr (38) | 70/70 PASS |
 | integ_bus_err | tb_soc_bus_err: BRESP SLVERR→store_fault(mcause=7); RRESP SLVERR→load_fault(mcause=5) | 2/2 PASS |
 | integ_ahb_err | tb_soc_ahb_err: AHB HRESP ERROR→store_fault(mcause=7); HRESP ERROR→load_fault(mcause=5) | 2/2 PASS |
-| rv32i_compliance | riscv-arch-test old-framework-2.x: 30/30 PASS; 7 SKIP (branch/jal tests > 64KB IMEM); 1 N/A (jalr-01 binutils bug `la x0,label`) | **30/30 PASS** |
+| rv32i_compliance | riscv-arch-test old-framework-2.x: 36/36 PASS; 1 SKIP (jal-01 ~1.7MB); 1 N/A (jalr-01 binutils bug `la x0,label`) | **36/36 PASS** |
 
 **Lệnh chạy:**
 ```bash
