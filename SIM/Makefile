@@ -220,7 +220,7 @@ integ_ahb_err:
 integ_all: integ_cpu integ_axi integ_ahb integ_axi_full integ_ahb_full integ_bus_err integ_ahb_err
 
 # ───────── System Tests (Phase 6) ─────────
-.PHONY: system compliance_compile compliance p6_compliance p6_all
+.PHONY: system compliance_compile compliance p6_compliance p6_all rv32i_compliance
 
 P6_PROGS = programs/prog_rv32i_shifts.hex programs/prog_rv32i_compare.hex \
            programs/prog_dmem_endurance.hex
@@ -269,6 +269,12 @@ p6_compliance: system/tb_compliance.vvp $(P6_PROGS)
 	$(VVP) system/tb_compliance.vvp +HEX=programs/prog_dmem_endurance.hex
 
 p6_all: system p6_compliance
+
+# RV32I Formal Compliance (riscv-arch-test old-framework-2.x)
+# Runs 38 tests, reports PASS/SKIP/FAIL
+rv32i_compliance:
+	@echo "=== RV32I Compliance Tests (riscv-arch-test old-framework-2.x) ==="
+	cd $(dir $(abspath $(lastword $(MAKEFILE_LIST)))) && bash compliance/run_compliance.sh
 
 # ───────── Hex Program Build ─────────
 programs/%.hex: programs/%.s

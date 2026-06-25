@@ -237,6 +237,7 @@ Mọi peripheral muốn kết nối với `soc_top` phải implement register ma
 | New unit | tb_irq_sync2ff (10), tb_gpio_sfr (22), tb_zicsr (38) | 70/70 PASS |
 | integ_bus_err | tb_soc_bus_err: BRESP SLVERR→store_fault(mcause=7); RRESP SLVERR→load_fault(mcause=5) | 2/2 PASS |
 | integ_ahb_err | tb_soc_ahb_err: AHB HRESP ERROR→store_fault(mcause=7); HRESP ERROR→load_fault(mcause=5) | 2/2 PASS |
+| rv32i_compliance | riscv-arch-test old-framework-2.x: 30/30 PASS; 7 SKIP (branch/jal tests > 64KB IMEM); 1 N/A (jalr-01 binutils bug `la x0,label`) | **30/30 PASS** |
 
 **Lệnh chạy:**
 ```bash
@@ -256,6 +257,8 @@ make unit_gpio                 # New: gpio_sfr unit test (22 cases)
 make unit_zicsr                # New: zicsr unit test (38 cases)
 make unit_all                  # Tất cả unit tests (Phase 1+2+7+8+new)
 make integ_bus_err             # Bus error integration test
+make integ_ahb_err             # AHB bus error integration test
+make rv32i_compliance          # RV32I formal compliance (riscv-arch-test)
 make p3_wave_csr               # dump VCD để debug Phase 3
 ```
 Chi tiết xem `SIM/TEST_LOG.md`.
