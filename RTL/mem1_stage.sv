@@ -72,6 +72,12 @@ module mem1_stage (
     output logic        resp_fifo_rd_en,
     input  logic [32:0] resp_fifo_rd_data, // [32]=HRESP err, [31:0]=rdata
 
+    //----------------- PLIC INTERFACE (1GHz, synchronous — no stall) -----------------
+    output logic        plic_re,
+    output logic        plic_we,
+    output logic [23:0] plic_addr,
+    output logic [31:0] plic_wdata,
+
     //----------------- HAZARD UNIT -----------------
     output logic        bus_stall_req,
 
@@ -106,14 +112,17 @@ module mem1_stage (
     //=========================================================
     logic [15:0] addr_31_16;
     logic [3:0]  addr_31_28;
+    logic [7:0]  addr_31_24;
     assign addr_31_16 = addr_in[31:16];
     assign addr_31_28 = addr_in[31:28];
+    assign addr_31_24 = addr_in[31:24];
 
-    logic dmem_sel, axi_sel, ahb_sel, fault_sel;
+    logic dmem_sel, axi_sel, ahb_sel, plic_sel, fault_sel;
     assign dmem_sel  = (addr_31_16 == 16'h0001);
     assign axi_sel   = (addr_31_28 == 4'h2);
     assign ahb_sel   = (addr_31_28 == 4'h3);
-    assign fault_sel = ~dmem_sel & ~axi_sel & ~ahb_sel;
+    assign plic_sel  = (addr_31_24 == 8'h0C);  // 0x0C000000 – 0x0CFFFFFF
+    assign fault_sel = ~dmem_sel & ~axi_sel & ~ahb_sel & ~plic_sel;
 
     logic is_mem_access;
     assign is_mem_access = mem_read_in | mem_write_in;
@@ -181,6 +190,14 @@ module mem1_stage (
     assign req_fifo_wr_data = {addr_in, wdata_in, mem_write_in, mem_size_in};
 
     //=========================================================
+    // 6b. PLIC Interface (synchronous, 1 cycle — không cần FSM/stall)
+    //=========================================================
+    assign plic_re    = is_mem_access & plic_sel & mem_read_in;
+    assign plic_we    = is_mem_access & plic_sel & mem_write_in;
+    assign plic_addr  = addr_in[23:0];
+    assign plic_wdata = wdata_in;
+
+    //=========================================================
     // 7. AHB Response FIFO
     // Pop FIFO ngay khi có phản hồi (trong AHB_WAIT)
     //=========================================================
@@ -240,6 +257,9 @@ module mem1_stage (
     assign illegal_instr_out = illegal_instr_in;
 
     // mem_src cho MEM2 biết lấy rdata từ nguồn nào
-    assign mem_src_out = dmem_sel ? 2'b00 : (axi_sel ? 2'b01 : 2'b10);
+    // 2'b00=DMEM, 2'b01=AXI, 2'b10=AHB, 2'b11=PLIC
+    assign mem_src_out = dmem_sel  ? 2'b00 :
+                         axi_sel   ? 2'b01 :
+                         ahb_sel   ? 2'b10 : 2'b11;
 
 endmodule

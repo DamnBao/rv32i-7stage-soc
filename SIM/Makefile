@@ -23,7 +23,8 @@ RTL_CPU   = $(RTL)/if1_stage.sv $(RTL)/if1_if2_reg.sv \
 RTL_AXI   = $(RTL)/axi_interface.sv $(RTL)/axi_interconnect.sv $(RTL)/axi_sfr.sv $(RTL)/gpio_sfr.sv
 RTL_AHB   = $(RTL)/ahb_interface.sv $(RTL)/ahb_interconnect.sv $(RTL)/ahb_sfr.sv
 
-RTL_ALL   = $(RTL_INFRA) $(RTL_MEM) $(RTL_CPU) $(RTL_AXI) $(RTL_AHB) $(RTL)/soc_top.sv
+RTL_PLIC  = $(RTL)/plic.sv
+RTL_ALL   = $(RTL_INFRA) $(RTL_MEM) $(RTL_CPU) $(RTL_PLIC) $(RTL_AXI) $(RTL_AHB) $(RTL)/soc_top.sv
 
 # ───────── Unit Tests ─────────
 .PHONY: unit_alu unit_branch unit_decoder unit_rf unit_fwd unit_haz unit_fifo unit_all

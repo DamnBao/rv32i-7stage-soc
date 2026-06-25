@@ -295,6 +295,17 @@ module soc_top #(
     logic        zicsr_flush;
     logic [31:0] zicsr_pc;
 
+    // --- PLIC ---
+    logic        plic_re, plic_we;
+    logic [23:0] plic_addr;
+    logic [31:0] plic_wdata, plic_rdata;
+    logic        plic_meip;
+
+    // --- AHB IRQ 2-FF Sync (500MHz → 1GHz, per-source) ---
+    logic ahb_irq0_ff1, ahb_irq0_sync;
+    logic ahb_irq1_ff1, ahb_irq1_sync;
+    logic ahb_irq2_ff1, ahb_irq2_sync;
+
     // --- Hazard unit ---
     logic stall_pc;
     logic flush_pc; // Driven by hazard_unit (=zicsr_flush); subsumed by flush_if1if2
@@ -655,6 +666,11 @@ module soc_top #(
         .resp_fifo_rd_empty(resp_fifo_rd_empty),
         .resp_fifo_rd_en  (resp_fifo_rd_en),
         .resp_fifo_rd_data(resp_fifo_rd_data),
+        // PLIC
+        .plic_re          (plic_re),
+        .plic_we          (plic_we),
+        .plic_addr        (plic_addr),
+        .plic_wdata       (plic_wdata),
         // Hazard
         .bus_stall_req    (bus_stall_req),
         // Faults
@@ -773,6 +789,7 @@ module soc_top #(
         .load_fault_in    (mem1mem2_load_fault),
         .store_fault_in   (mem1mem2_store_fault),
         .dmem_rdata       (dmem_rdata),
+        .plic_rdata       (plic_rdata),
         .pc_out           (mem2_pc),
         .alu_result_out   (mem2_alu_result),
         .mem_rdata_out    (mem2_mem_rdata),
@@ -859,8 +876,10 @@ module soc_top #(
     // 16. Zicsr — CSR Register File + Exception/Interrupt Controller
     //=========================================================
 
-    // AHB/AXI IRQ wires (declared here for scope)
-    logic ahb_irq_raw, axi_irq;
+    // axi_irq: OR'd output từ axi_interconnect (giữ wire để binding port, không dùng nữa)
+    // ahb_irq_raw: OR'd output từ ahb_interconnect (giữ wire để binding port, không dùng nữa)
+    // IRQ routing mới: từng source đi vào PLIC, PLIC output meip → zicsr
+    logic axi_irq, ahb_irq_raw;
 
     zicsr u_zicsr (
         .clk              (clk_cpu),
@@ -878,8 +897,7 @@ module soc_top #(
         .wb_illegal_instr (wb_illegal),
         .wb_load_fault    (wb_load_fault),
         .wb_store_fault   (wb_store_fault),
-        .ahb_irq          (ahb_irq_raw),
-        .axi_irq          (axi_irq),
+        .meip_in          (plic_meip),
         .bus_stall_req    (bus_stall_req),
         .csr_rdata        (csr_rdata),
         .zicsr_flush      (zicsr_flush),
@@ -887,7 +905,60 @@ module soc_top #(
     );
 
     //=========================================================
-    // 17. Hazard Unit
+    // 17. AHB IRQ CDC — 3× 2-FF Synchronizer (500MHz → 1GHz)
+    //
+    // Mỗi AHB IRQ source có bộ sync riêng để tránh glitch khi OR trước sync.
+    // AXI IRQ đã ở domain 1GHz — kết nối thẳng vào PLIC, không cần sync.
+    //=========================================================
+    always_ff @(posedge clk_cpu or negedge rst_cpu_n) begin
+        if (!rst_cpu_n) begin
+            ahb_irq0_ff1 <= 1'b0; ahb_irq0_sync <= 1'b0;
+            ahb_irq1_ff1 <= 1'b0; ahb_irq1_sync <= 1'b0;
+            ahb_irq2_ff1 <= 1'b0; ahb_irq2_sync <= 1'b0;
+        end else begin
+            ahb_irq0_ff1 <= ahb_irq0; ahb_irq0_sync <= ahb_irq0_ff1;
+            ahb_irq1_ff1 <= ahb_irq1; ahb_irq1_sync <= ahb_irq1_ff1;
+            ahb_irq2_ff1 <= ahb_irq2; ahb_irq2_sync <= ahb_irq2_ff1;
+        end
+    end
+
+    //=========================================================
+    // 18. PLIC — Platform-Level Interrupt Controller
+    //
+    // Source mapping (irq_src[5:0]):
+    //   [0] = axi_S0_irq  (1GHz, thẳng)
+    //   [1] = axi_S1_irq  (1GHz, thẳng)
+    //   [2] = axi_S2_irq  (1GHz, thẳng)
+    //   [3] = ahb_S0_irq  (đã 2-FF sync → 1GHz)
+    //   [4] = ahb_S1_irq  (đã 2-FF sync → 1GHz)
+    //   [5] = ahb_S2_irq  (đã 2-FF sync → 1GHz)
+    //=========================================================
+    plic u_plic (
+        // ── Inputs: Clock & Reset ──
+        .clk     (clk_cpu),                    // input:  1GHz system clock
+        .rst_n   (rst_cpu_n),                  // input:  synchronized CPU reset
+
+        // ── Inputs: IRQ sources (tất cả đã ở domain 1GHz) ──
+        .irq_src ({ahb_irq2_sync,              // input [5]: ahb_S2 (sau 2-FF sync)
+                   ahb_irq1_sync,              // input [4]: ahb_S1 (sau 2-FF sync)
+                   ahb_irq0_sync,              // input [3]: ahb_S0 (sau 2-FF sync)
+                   axi_S2_irq,                 // input [2]: axi_S2 (1GHz, thẳng)
+                   axi_S1_irq,                 // input [1]: axi_S1 (1GHz, thẳng)
+                   axi_S0_irq}),               // input [0]: axi_S0 (1GHz, thẳng)
+
+        // ── Inputs: CPU Register Access (từ mem1_stage, 1-cycle) ──
+        .re      (plic_re),                    // input:  read enable
+        .we      (plic_we),                    // input:  write enable
+        .addr    (plic_addr),                  // input:  register address [23:0]
+        .wdata   (plic_wdata),                 // input:  write data [31:0]
+
+        // ── Outputs ──
+        .rdata   (plic_rdata),                 // output: read data → mem2_stage (1-cycle latency)
+        .meip    (plic_meip)                   // output: Machine External IRQ Pending → zicsr
+    );
+
+    //=========================================================
+    // 20. Hazard Unit
     //=========================================================
     hazard_unit u_haz (
         .bus_stall_req  (bus_stall_req),
@@ -923,7 +994,7 @@ module soc_top #(
     );
 
     //=========================================================
-    // 18. AXI Group (1GHz domain)
+    // 21. AXI Group (1GHz domain)
     //=========================================================
 
     // AXI master ↔ interconnect buses
@@ -980,7 +1051,7 @@ module soc_top #(
     );
 
     //=========================================================
-    // 19. AHB Group — CDC FIFOs + Interface + Interconnect + SFRs
+    // 22. AHB Group — CDC FIFOs + Interface + Interconnect + SFRs
     //=========================================================
 
     // Request FIFO: CPU (1GHz write) → AHB (500MHz read)
@@ -1071,7 +1142,7 @@ module soc_top #(
     );
 
     //=========================================================
-    // 20. External Peripheral Interface — route internal signals to ports
+    // 23. External Peripheral Interface — route internal signals to ports
     //=========================================================
 
     assign rst_cpu_n_o = rst_cpu_n;

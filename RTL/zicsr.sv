@@ -50,8 +50,7 @@ module zicsr (
     input  logic        wb_store_fault,
 
     //----------------- NGẮT NGOÀI -----------------
-    input  logic        ahb_irq,        // Từ AHB domain — cần 2-FF sync
-    input  logic        axi_irq,        // Từ AXI domain — cùng 1GHz, kết nối thẳng
+    input  logic        meip_in,        // Từ PLIC (đã arbiter priority, đã sync) → MEIP
 
     //----------------- TỪ HAZARD UNIT -----------------
     input  logic        bus_stall_req,  // Không flush khi đang có bus transaction
@@ -65,21 +64,8 @@ module zicsr (
 );
 
     //=========================================================
-    // 1. AHB Interrupt 2-FF Synchronizer (AHB domain → 1GHz)
-    //=========================================================
-    logic ahb_irq_ff1, ahb_irq_sync;
-    always_ff @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin
-            ahb_irq_ff1  <= 1'b0;
-            ahb_irq_sync <= 1'b0;
-        end else begin
-            ahb_irq_ff1  <= ahb_irq;
-            ahb_irq_sync <= ahb_irq_ff1;
-        end
-    end
-
-    //=========================================================
-    // 2. CSR Register File
+    // 1. CSR Register File
+    // (2-FF sync cho AHB IRQ đã chuyển sang soc_top — PLIC nhận các source riêng)
     //=========================================================
     logic [31:0] mstatus, mie, mtvec, mepc, mcause;
     logic        mip_msip;   // Software interrupt pending (writable)
@@ -99,9 +85,9 @@ module zicsr (
     assign mtvec_mode = mtvec[1:0];
     assign mtvec_base = {mtvec[31:2], 2'b00};
 
-    // mip full value (MEIP read-only from hardware)
+    // mip full value (MEIP read-only from hardware — driven by PLIC output)
     logic mip_meip;
-    assign mip_meip = ahb_irq_sync | axi_irq;
+    assign mip_meip = meip_in;
 
     logic [31:0] mip_val;
     assign mip_val = {20'b0, mip_meip, 3'b0, 1'b0, 3'b0, mip_msip, 3'b0};

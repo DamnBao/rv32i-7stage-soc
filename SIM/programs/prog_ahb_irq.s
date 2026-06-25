@@ -20,6 +20,17 @@ _start:
     la    x1, ahb_mei_handler
     csrw  mtvec, x1
 
+    # === PLIC Init ===
+    # Source 4 = ahb_S0 (irq_src[3], sau 2-FF sync); PRIORITY=1, ENABLE bit[4]=1, THRESHOLD=0
+    lui   x6, 0x0C000          # x6 = 0x0C000000 (PLIC base)
+    addi  x7, x0, 1
+    sw    x7, 16(x6)           # PRIORITY[4] = 1 (offset 0x10 = 16)
+    lui   x9, 0x0C002          # x9 = 0x0C002000 (ENABLE)
+    addi  x8, x0, 16           # value: bit[4]=1 → enable source 4
+    sw    x8, 0(x9)
+    lui   x10, 0x0C200         # x10 = 0x0C200000 (THRESHOLD)
+    sw    x0, 0(x10)           # THRESHOLD = 0
+
     # Enable MEIE: mie[11] = 0x800
     addi  x2, x0, 1
     slli  x2, x2, 11      # x2 = 0x800
@@ -39,7 +50,9 @@ _start:
     # bus_stall holds until AHB response FIFO returns (write complete in 500MHz domain)
     sw    x5, 0x10(x4)
 
-    # Extra NOPs for 2-FF synchronizer latency (ahb_irq_raw → mip.MEIP takes ~2 1GHz cycles)
+    # NOPs bridge: 2-FF sync (2 cycles) + PLIC pending register (+1 cycle) = 3 cycles total
+    nop
+    nop
     nop
     nop
     nop

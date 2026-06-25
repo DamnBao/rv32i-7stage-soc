@@ -17,7 +17,7 @@ module mem2_stage (
     input  logic [31:0] imm_in,
     input  logic [4:0]  rd_addr_in,
     input  logic [11:0] csr_addr_in,
-    input  logic [1:0]  mem_src_in,      // 2'b00=DMEM, 2'b01=AXI, 2'b10=AHB
+    input  logic [1:0]  mem_src_in,      // 2'b00=DMEM, 2'b01=AXI, 2'b10=AHB, 2'b11=PLIC
     input  logic        mem_ext_in,      // 0=zero-extend, 1=sign-extend
     input  logic [1:0]  mem_size_in,     // 00=byte, 01=half, 10=word
     input  logic        reg_write_in,
@@ -34,6 +34,9 @@ module mem2_stage (
 
     //----------------- DMEM (kết nối trực tiếp, không qua pipeline reg) -----------------
     input  logic [31:0] dmem_rdata,      // Output đã register của DMEM, valid ở chu kỳ MEM2
+
+    //----------------- PLIC (kết nối trực tiếp, 1-cycle latency như DMEM) -----------------
+    input  logic [31:0] plic_rdata,      // Output đã register của PLIC, valid ở chu kỳ MEM2
 
     //----------------- SANG MEM2/WB REGISTER -----------------
     output logic [31:0] pc_out,
@@ -60,7 +63,8 @@ module mem2_stage (
     // 1. Chọn nguồn dữ liệu (Combinational)
     //=========================================================
     logic [31:0] raw_rdata;
-    assign raw_rdata = (mem_src_in == 2'b00) ? dmem_rdata : rdata_in;
+    assign raw_rdata = (mem_src_in == 2'b00) ? dmem_rdata  :
+                       (mem_src_in == 2'b11) ? plic_rdata  : rdata_in;
 
     //=========================================================
     // 2. Pre-extract byte offset ngoài always (Icarus-safe)
