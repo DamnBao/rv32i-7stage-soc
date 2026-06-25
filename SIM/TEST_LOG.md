@@ -157,7 +157,7 @@ prog_load_fault    → PASS
 | 1 | `unit/tb_register_file.sv` | `register_file.sv` | 17 | PASS |
 | 1 | `unit/tb_id_decoder.sv` | `id_decoder.sv` | 112 | PASS |
 | 2 | `unit/tb_forwarding_unit.sv` | `forwarding_unit.sv` | 19 | PASS |
-| 2 | `unit/tb_hazard_unit.sv` | `hazard_unit.sv` | 60 | PASS |
+| 2 | `unit/tb_hazard_unit.sv` | `hazard_unit.sv` | 73 | PASS |
 | 2 | `unit/tb_async_fifo.sv` | `async_fifo.sv` | 22 | PASS |
 | 3 | `integration/tb_pipeline_cpu.sv` | `soc_top.sv` (full pipeline) | 9 programs | PASS |
 | 4a | `integration/tb_axi_interface.sv` | `axi_interface.sv` + `axi_slave_model.sv` | 49 | PASS |
@@ -165,13 +165,17 @@ prog_load_fault    → PASS
 | 4c | `integration/tb_axi_full.sv` | `axi_interface.sv` + `axi_interconnect.sv` + 3×`axi_sfr.sv` | 47 | PASS |
 | 4d | `integration/tb_ahb_full.sv` | `ahb_interface.sv` + CDC + `ahb_interconnect.sv` + 3×`ahb_sfr.sv` | 38 | PASS |
 | 5 | `integration/tb_pipeline_cpu.sv` | `soc_top.sv` — AXI/AHB SFR + IRQ từ CPU | 4 programs | PASS |
-| 6a | `system/tb_soc_top.sv` | `soc_top.sv` — batch runner **18 programs** (Phase3+5+6+7) | 18 programs | PASS |
+| 6a | `system/tb_soc_top.sv` | `soc_top.sv` — batch runner **20 programs** | 20 programs | PASS |
 | 6b | `system/tb_compliance.sv` | `soc_top.sv` — compliance framework (shifts, compare, dmem_endurance) | 3 programs | PASS |
 | 7 | `unit/tb_plic.sv` | `plic.sv` — 6-source priority arbiter | 31 | PASS |
-| 7 | `integration/tb_pipeline_cpu.sv` | `soc_top.sv` — prog_plic_basic, prog_plic_priority | 2 programs | PASS |
+| 7 | `integration/tb_pipeline_cpu.sv` | `soc_top.sv` — prog_plic_basic/priority/threshold | 3 programs | PASS |
 | 8 | `unit/tb_ex_stage.sv` | `ex_stage.sv` + ALU/branch_comp/addr_adder/forwarding_unit | 23 | PASS |
+| 8 | `integration/tb_pipeline_cpu.sv` | `soc_top.sv` — prog_csr_hazard (CSR-use stall) | 1 program | PASS |
+| new | `unit/tb_irq_sync2ff.sv` | `irq_sync2ff.sv` — 2-FF synchronizer | 10 | PASS |
+| new | `unit/tb_gpio_sfr.sv` | `gpio_sfr.sv` + `axi_sfr.sv` — GPIO peripheral | 22 | PASS |
+| new | `unit/tb_zicsr.sv` | `zicsr.sv` — CSR unit, exceptions, interrupts | 38 | PASS |
 | integ | `integration/tb_soc_bus_err.sv` | `soc_top.sv` — AXI BRESP error → store_access_fault | 1 program | PASS |
-| **Total** | | | **519 cases + 34 progs** | **All PASS** |
+| **Total** | | | **621 cases + 36 progs** | **All PASS** |
 
 ---
 
@@ -1111,3 +1115,100 @@ PASS  [programs/prog_plic_priority.hex]
 | `programs/prog_plic_basic.s` | Viết mới: PLIC basic claim/complete |
 | `system/tb_soc_top.sv` | Cập nhật: N_PROGS=18, thêm plic_basic + plic_priority |
 | `SIM/Makefile` | Thêm: `unit_ex`, `integ_bus_err`, `p7_plic_priority` targets; P7_PROGS list; unit_all includes unit_ex |
+
+---
+
+## Nhật Ký Session 2026-06-25 (tiếp) — Unit Tests Mới + Programs P7/P8
+
+### Tổng Kết
+
+Hoàn thành tất cả item còn lại từ backlog:
+
+| Hạng mục | Kết quả |
+|----------|---------|
+| `unit/tb_irq_sync2ff.sv` | 10/10 PASS |
+| `unit/tb_gpio_sfr.sv` | 22/22 PASS |
+| `unit/tb_zicsr.sv` | 38/38 PASS |
+| `programs/prog_plic_threshold.s` | PASS (system test) |
+| `programs/prog_csr_hazard.s` | PASS (system test) |
+| `system/tb_soc_top.sv` N_PROGS | 18 → 20, **20/20 PASS** |
+
+---
+
+### Bugs Tìm Ra và Sửa
+
+#### 1. Race condition trong tb_irq_sync2ff T6 (1-cycle pulse test)
+
+**Triệu chứng:** T6 FAIL — got=0, expected=1.
+
+**Root cause:** `d=0` được set trong cùng Active region với `ff1 <= d` của always_ff. Nếu Icarus chạy initial block trước: d=0 trước khi always_ff sample → ff1 capture 0 thay vì 1.
+
+**Fix:** Set `d=0` tại negedge (0.5ns SAU posedge), không phải tại posedge+delta:
+```sv
+d = 1;
+@(posedge clk); @(negedge clk);  // ff1 captures 1 at posedge; negedge safe
+d = 0;                            // 0.5ns before next posedge → no race
+@(posedge clk); @(negedge clk);  // ff1←0, q←1
+```
+
+#### 2. AXI task timing trong tb_gpio_sfr (toàn bộ reads = 0)
+
+**Triệu chứng:** 13/22 FAIL — tất cả AXI read trả về 0, một số AXI write không tác dụng.
+
+**Root cause:** `AWVALID=0` và `ARVALID=0` được deassert trong CÙNG Active region với `always_ff` sample `aw_now = AWVALID && AWREADY`. Nếu Icarus chạy initial block trước: AWVALID=0 → aw_now=0 → handshake không fire.
+
+**Fix:** Deassert tất cả Valid signals tại negedge (sau posedge đã committed handshake):
+```sv
+@(posedge clk);   // handshake fires (AWVALID still 1 in pre-NB active region)
+@(negedge clk);   // safe to deassert
+AWVALID = 0; WVALID = 0;
+BREADY = 1;
+@(posedge clk);   // B handshake
+@(negedge clk);
+BREADY = 0;
+```
+Và sample RDATA tại negedge (sau posedge R handshake), không tại posedge.
+
+**Thêm:** T10 (irq=0 before edge) FAIL vì INTR_STATE bị set từ rising edge trong G4 setup (gpio_in bit0 0→1). Fix: thêm W1C clear `axi_write(OFF_INTR_STATE, 32'hFFFF_FFFF)` trước khi enable INTR_EN.
+
+#### 3. tb_zicsr: flush check sau NBA
+
+**Triệu chứng:** T26 (flush on MEI) FAIL got=0; T32/T33 (MSI) sai giá trị.
+
+**Root cause 1 (T26/T27):** `zicsr_flush` là combinational từ `take_interrupt`. Tại posedge+#0.1 (sau NBA), NB đã commit `mstatus.MIE←0` → `take_interrupt=0` → `flush=0`. Cần check tại posedge TRƯỚC #0.1 (active region, pre-NB).
+
+**Fix T26/T27:**
+```sv
+@(posedge clk);
+// Active region: mstatus still old (MIE=1) → flush=1
+check1("T26: flush on MEI", 1'b1, zicsr_flush);
+check32("T27: zicsr_pc = BASE+44", 32'h0000_202C, zicsr_pc);
+#0.1;  // now NBA commits
+```
+
+**Root cause 2 (T32):** Expected value sai — `0x80000003` (mcause) thay vì `0x200C` (zicsr_pc = mtvec_base+12 cho MSI vectored).
+
+**Root cause 3 (T33):** Ghi `mip.MSIP=1` tại posedge P_write → `reg_msip` commit sau NBA. Interrupt FIRE tại posedge P_write+1 (lần đầu always_ff thấy `reg_msip=1` ở đầu cycle). `mcause` chỉ commit tại P_write+1, không phải P_write+0.1.
+
+**Fix:** Thêm `@(posedge clk); #0.1;` sau T32 để chờ interrupt fire trước khi check mcause.
+
+#### 4. prog_csr_hazard.s assembler error
+
+**Triệu chứng:** `Error: illegal operands 'addi x1,x1,(fail-_start)'`.
+
+**Fix:** Dùng `la x1, fail; csrw mtvec, x1` thay vì `auipc + addi (label - _start)`.
+
+---
+
+### Files Thêm Mới / Cập Nhật
+
+| File | Thay đổi |
+|------|---------|
+| `unit/tb_irq_sync2ff.sv` | Viết mới: 2-FF synchronizer unit test (10/10 PASS) |
+| `unit/tb_gpio_sfr.sv` | Viết mới: GPIO SFR unit test; fix AXI task timing (22/22 PASS) |
+| `unit/tb_zicsr.sv` | Viết mới: Zicsr unit test; fix interrupt check timing (38/38 PASS) |
+| `programs/prog_plic_threshold.s` | Viết mới: PLIC threshold filtering test; fix `la` usage |
+| `programs/prog_csr_hazard.s` | Viết mới: CSR-use stall gaps 0-4 test; fix `la` usage |
+| `system/tb_soc_top.sv` | N_PROGS 18→20, thêm prog_plic_threshold + prog_csr_hazard |
+| `Makefile` | Thêm unit_irq_sync/unit_gpio/unit_zicsr targets; P7_PROGS += threshold; P8_PROGS |
+| `TEST_LOG.md` | Cập nhật bảng tổng kết: Total 621 cases + 36 programs |

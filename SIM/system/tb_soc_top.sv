@@ -170,7 +170,7 @@ module tb_soc_top;
     //=========================================================
     // Program list (hardcoded)
     //=========================================================
-    localparam int N_PROGS = 18;
+    localparam int N_PROGS = 20;
 
     string programs [0:N_PROGS-1];
     int    pass_cnt, fail_cnt;
@@ -200,6 +200,9 @@ module tb_soc_top;
         // Phase 7
         programs[16] = "programs/prog_plic_basic.hex";
         programs[17] = "programs/prog_plic_priority.hex";
+        programs[18] = "programs/prog_plic_threshold.hex";
+        // Phase 8
+        programs[19] = "programs/prog_csr_hazard.hex";
 
         pass_cnt = 0;
         fail_cnt = 0;

@@ -223,17 +223,18 @@ Mọi peripheral muốn kết nối với `soc_top` phải implement register ma
 | Phase | Testbench | Kết quả |
 |-------|-----------|---------|
 | Phase 1 | Unit: alu, branch_comp, register_file, id_decoder | 192/192 PASS |
-| Phase 2 | Unit: forwarding_unit, hazard_unit, async_fifo | 114/114 PASS (hazard: +16 CSR-use tests) |
+| Phase 2 | Unit: forwarding_unit, hazard_unit, async_fifo | 114/114 PASS (hazard: 73 total) |
 | Phase 3 | Integration: tb_pipeline_cpu (9 programs qua soc_top) | 9/9 PASS |
 | Phase 4a | tb_axi_interface (axi_interface + slave model) | 49/49 PASS |
 | Phase 4b | tb_ahb_interface (ahb_interface + CDC FIFOs + slave model) | 29/29 PASS |
 | Phase 4c | tb_axi_full (axi_interface + axi_interconnect + 3×axi_sfr — Standard Map) | 47/47 PASS |
 | Phase 4d | tb_ahb_full (ahb_interface + CDC + ahb_interconnect + 3×ahb_sfr — Standard Map) | 38/38 PASS |
 | Phase 5 | tb_pipeline_cpu (4 programs: AXI/AHB SFR write/read + AXI/AHB IRQ via INTR_TEST) | 4/4 PASS |
-| Phase 6a | tb_soc_top (batch runner: tất cả **18 programs** Phase3+5+6+7 qua soc_top với reset) | **18/18 PASS** |
+| Phase 6a | tb_soc_top (batch runner: tất cả **20 programs** qua soc_top với reset) | **20/20 PASS** |
 | Phase 6b | tb_compliance (compliance framework: shifts, compare, dmem_endurance) | 3/3 TEST_PASS |
-| Phase 7 | unit: tb_plic (31 test cases); system: prog_plic_basic + prog_plic_priority | 31/31 + 2/2 PASS |
-| Phase 8 | unit: tb_ex_stage (EX stage integration: forwarding+ALU+branch+addr) | 23/23 PASS |
+| Phase 7 | unit: tb_plic (31); system: prog_plic_basic + priority + threshold | 31/31 + 3/3 PASS |
+| Phase 8 | unit: tb_ex_stage (23); system: prog_csr_hazard (CSR-use stall gaps 0–4) | 23/23 + 1/1 PASS |
+| New unit | tb_irq_sync2ff (10), tb_gpio_sfr (22), tb_zicsr (38) | 70/70 PASS |
 | integ_bus_err | tb_soc_bus_err (AXI BRESP SLVERR → store_access_fault → exception handler) | 1/1 PASS |
 
 **Lệnh chạy:**
@@ -244,12 +245,15 @@ make integ_ahb                 # Phase 4b: AHB interface
 make integ_axi_full            # Phase 4c: AXI full path
 make integ_ahb_full            # Phase 4d: AHB full path
 make p5_all                    # Phase 5: 4 programs AXI/AHB SFR + IRQ
-make system                    # Phase 6a+7+8: batch runner 18 programs
+make system                    # Phase 6a+7+8: batch runner 20 programs
 make p6_compliance             # Phase 6b: compliance programs
 make p6_all                    # Phase 6: cả 6a + 6b
 make unit_plic                 # Phase 7: PLIC unit test (31 cases)
 make unit_ex                   # Phase 8: EX stage unit test (23 cases)
-make unit_all                  # Tất cả unit tests (Phase 1+2+7+8)
+make unit_irq_sync             # New: irq_sync2ff unit test (10 cases)
+make unit_gpio                 # New: gpio_sfr unit test (22 cases)
+make unit_zicsr                # New: zicsr unit test (38 cases)
+make unit_all                  # Tất cả unit tests (Phase 1+2+7+8+new)
 make integ_bus_err             # Bus error integration test
 make p3_wave_csr               # dump VCD để debug Phase 3
 ```

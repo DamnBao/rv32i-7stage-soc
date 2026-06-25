@@ -29,6 +29,7 @@ RTL_ALL   = $(RTL_INFRA) $(RTL_MEM) $(RTL_CPU) $(RTL_PLIC) $(RTL_AXI) $(RTL_AHB)
 
 # ───────── Unit Tests ─────────
 .PHONY: unit_alu unit_branch unit_decoder unit_rf unit_fwd unit_haz unit_fifo unit_plic unit_ex unit_all
+.PHONY: unit_irq_sync unit_gpio unit_zicsr
 
 unit_alu:
 	@echo "=== tb_alu ==="
@@ -77,7 +78,24 @@ unit_ex:
 	    $(RTL)/alu.sv $(RTL)/branch_comp.sv $(RTL)/addr_adder.sv
 	$(VVP) unit/tb_ex_stage.vvp
 
-unit_all: unit_alu unit_branch unit_decoder unit_rf unit_fwd unit_haz unit_fifo unit_plic unit_ex
+unit_irq_sync:
+	@echo "=== tb_irq_sync2ff ==="
+	$(IV) -o unit/tb_irq_sync2ff.vvp unit/tb_irq_sync2ff.sv $(RTL)/irq_sync2ff.sv
+	$(VVP) unit/tb_irq_sync2ff.vvp
+
+unit_gpio:
+	@echo "=== tb_gpio_sfr ==="
+	$(IV) -o unit/tb_gpio_sfr.vvp unit/tb_gpio_sfr.sv \
+	    $(RTL)/gpio_sfr.sv $(RTL)/axi_sfr.sv
+	$(VVP) unit/tb_gpio_sfr.vvp
+
+unit_zicsr:
+	@echo "=== tb_zicsr ==="
+	$(IV) -o unit/tb_zicsr.vvp unit/tb_zicsr.sv $(RTL)/zicsr.sv
+	$(VVP) unit/tb_zicsr.vvp
+
+unit_all: unit_alu unit_branch unit_decoder unit_rf unit_fwd unit_haz unit_fifo unit_plic unit_ex \
+          unit_irq_sync unit_gpio unit_zicsr
 
 # ───────── Integration Tests ─────────
 .PHONY: integ_cpu integ_axi integ_ahb integ_all
@@ -200,7 +218,10 @@ integ_all: integ_cpu integ_axi integ_ahb integ_axi_full integ_ahb_full integ_bus
 P6_PROGS = programs/prog_rv32i_shifts.hex programs/prog_rv32i_compare.hex \
            programs/prog_dmem_endurance.hex
 
-P7_PROGS = programs/prog_plic_basic.hex programs/prog_plic_priority.hex
+P7_PROGS = programs/prog_plic_basic.hex programs/prog_plic_priority.hex \
+           programs/prog_plic_threshold.hex
+
+P8_PROGS = programs/prog_csr_hazard.hex
 
 SYSTEM_PROGS = programs/prog_arithmetic.hex programs/prog_forwarding.hex \
                programs/prog_load_store.hex programs/prog_branch_jump.hex \
@@ -209,7 +230,7 @@ SYSTEM_PROGS = programs/prog_arithmetic.hex programs/prog_forwarding.hex \
                programs/prog_load_fault.hex \
                programs/prog_axi_sfr.hex programs/prog_ahb_sfr.hex \
                programs/prog_axi_irq.hex programs/prog_ahb_irq.hex \
-               $(P6_PROGS) $(P7_PROGS)
+               $(P6_PROGS) $(P7_PROGS) $(P8_PROGS)
 
 # Phase 6a / 7: system batch test (all 18 programs)
 system/tb_soc_top.vvp: system/tb_soc_top.sv $(RTL_ALL)
