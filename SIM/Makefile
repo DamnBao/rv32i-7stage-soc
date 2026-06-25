@@ -211,7 +211,13 @@ integ_bus_err:
 	$(VVP) integration/tb_soc_bus_err.vvp +HEX=programs/prog_bus_err.hex
 	$(VVP) integration/tb_soc_bus_err.vvp +HEX=programs/prog_read_err.hex
 
-integ_all: integ_cpu integ_axi integ_ahb integ_axi_full integ_ahb_full integ_bus_err
+integ_ahb_err:
+	@echo "=== tb_soc_ahb_err (AHB bus error: HRESP → store/load access fault) ==="
+	$(IV) -o integration/tb_soc_ahb_err.vvp integration/tb_soc_ahb_err.sv $(RTL_ALL)
+	$(VVP) integration/tb_soc_ahb_err.vvp +HEX=programs/prog_ahb_store_err.hex
+	$(VVP) integration/tb_soc_ahb_err.vvp +HEX=programs/prog_ahb_load_err.hex
+
+integ_all: integ_cpu integ_axi integ_ahb integ_axi_full integ_ahb_full integ_bus_err integ_ahb_err
 
 # ───────── System Tests (Phase 6) ─────────
 .PHONY: system compliance_compile compliance p6_compliance p6_all
@@ -233,13 +239,13 @@ SYSTEM_PROGS = programs/prog_arithmetic.hex programs/prog_forwarding.hex \
                programs/prog_axi_irq.hex programs/prog_ahb_irq.hex \
                $(P6_PROGS) $(P7_PROGS) $(P8_PROGS)
 
-# Phase 6a / 7: system batch test (all 18 programs)
+# Phase 6a / 7: system batch test (all 20 programs)
 system/tb_soc_top.vvp: system/tb_soc_top.sv $(RTL_ALL)
 	@echo "=== Compiling tb_soc_top ==="
 	$(IV) -o $@ system/tb_soc_top.sv $(RTL_ALL)
 
 system: system/tb_soc_top.vvp $(SYSTEM_PROGS)
-	@echo "=== System Batch Test (18 programs) ==="
+	@echo "=== System Batch Test (20 programs) ==="
 	$(VVP) system/tb_soc_top.vvp
 
 # Phase 6b: compliance testbench

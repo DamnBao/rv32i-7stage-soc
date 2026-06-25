@@ -13,7 +13,7 @@
 | PLIC arbitration + threshold | ✅ Hoàn thành | 31 unit cases + 3 system programs |
 | Bus error (AXI write / BRESP SLVERR) | ✅ Hoàn thành | BRESP SLVERR → store_access_fault (mcause=7) |
 | Bus error (AXI read / RRESP SLVERR) | ✅ Hoàn thành | prog_read_err.s: LW → RRESP SLVERR → mcause=5 — PASS |
-| Bus error (AHB / HRESP ERROR) | ⚠️ Gap | HRESP ERROR path chưa được test end-to-end |
+| Bus error (AHB / HRESP ERROR) | ✅ Hoàn thành | prog_ahb_store/load_err.s: HRESP ERROR → mcause=7/5 — PASS |
 | RV32I ISA compliance formal | ⚠️ Gap | riscv-arch-test (bộ test chính thức) chưa chạy |
 | Synthesis / timing closure | 🔲 Optional | Chạy Yosys+OpenSTA để xác nhận 1GHz critical path |
 | Concrete peripheral (UART/SPI...) | 🔲 Optional | Minh chứng kiến trúc "plug-in peripheral" |
@@ -54,3 +54,4 @@ riscv-arch-test là bộ test chính thức của RISC-V Foundation (~200 cases)
 |------|---------|
 | 2026-06-25 | Tạo bảng đánh giá ban đầu |
 | 2026-06-25 | Gap 1 (AXI read error) → implement và PASS: prog_read_err.s, integ_bus_err 2/2 |
+| 2026-06-25 | Gap 2 (AHB error) → implement và PASS: prog_ahb_store/load_err.s, integ_ahb_err 2/2 |
