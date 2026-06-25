@@ -1,0 +1,19 @@
+\chapter*{TÓM TẮT}
+\label{tomtat}
+\addcontentsline{toc}{chapter}{TÓM TẮT}
+
+Khóa luận này trình bày quá trình thiết kế và kiểm chứng một hệ thống trên chip (SoC) dựa trên kiến trúc tập lệnh RISC-V mở, nhằm mục tiêu nghiên cứu và học thuật. Hệ thống bao gồm lõi vi xử lý RV32I+Zicsr với kiến trúc pipeline 7 tầng hoạt động ở tần số 1\,GHz, tích hợp bộ nhớ SRAM nội bộ (IMEM 64\,KB và DMEM 64\,KB), giao thức bus AXI4-Lite (1\,GHz) và AHB-Lite (500\,MHz), cùng cơ chế đồng bộ hóa qua biên miền xung nhịp (CDC) bằng FIFO bất đồng bộ với con trỏ Gray code. Hệ thống ngắt bao gồm PLIC 6 nguồn tương thích chuẩn SiFive và khối Zicsr xử lý ngắt/ngoại lệ M-mode. Toàn bộ RTL được viết bằng SystemVerilog có thể tổng hợp và mô phỏng bằng Icarus Verilog.
+
+Quá trình kiểm chứng được tổ chức thành nhiều pha tăng dần về độ phức tạp: từ unit test (hơn 430 test case), integration test (163 test case), system test (37 chương trình), đến bộ kiểm thử tuân thủ chính thức riscv-arch-test. Kết quả: tất cả test case PASS và đạt 37/38 PASS trong bộ kiểm thử tuân thủ RV32I (một bài SKIP do giới hạn kích thước code của framework). Trong quá trình kiểm thử, năm bug RTL quan trọng được phát hiện và sửa chữa, bao gồm gap-4 RAW hazard, IMEM stall mismatch, CSR-use hazard stall, ghost instruction sau flush, và bus stall kết hợp load-use hazard.
+
+\textbf{Từ khóa} --- RISC-V, SoC, pipeline, AXI-Lite, AHB-Lite, CDC, PLIC, SystemVerilog, kiểm chứng RTL.
+
+\begin{center}
+    \textbf{ABSTRACT}
+\end{center}
+
+This thesis presents the design and verification of a RISC-V-based System-on-Chip (SoC) for academic research purposes. The system features an RV32I+Zicsr processor with a 7-stage in-order pipeline targeting 1\,GHz, integrated with on-chip SRAM (64\,KB IMEM and 64\,KB DMEM), AXI4-Lite (1\,GHz) and AHB-Lite (500\,MHz) bus interfaces, and safe Clock Domain Crossing (CDC) via asynchronous FIFO with Gray-code pointers. The interrupt subsystem includes a SiFive-compatible 6-source PLIC and a Zicsr block handling M-mode exceptions and interrupts. All RTL is written in synthesizable SystemVerilog and simulated using Icarus Verilog.
+
+Verification follows a multi-level strategy: unit tests (430+ test cases), integration tests (163 test cases), system-level programs (37 programs), and the official riscv-arch-test compliance suite. All test cases pass, and 37/38 RV32I compliance tests pass (one SKIP due to framework code-size limitations). Five RTL bugs were discovered and fixed during testing, including gap-4 RAW hazard, IMEM stall mismatch, CSR-use hazard stall, ghost instruction after flush, and a concurrent bus-stall/load-use hazard interaction.
+
+\textbf{Keywords} --- RISC-V, SoC, pipeline, AXI-Lite, AHB-Lite, CDC, PLIC, SystemVerilog, RTL verification.

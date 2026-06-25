@@ -1,0 +1,67 @@
+\chapter{TỔNG QUAN NGHIÊN CỨU}
+\label{Chapter2}
+
+\section{Các Dự Án RISC-V SoC Tiêu Biểu}
+
+Kể từ khi đặc tả RISC-V được công bố mở năm 2014, một số lượng lớn các dự án thiết kế SoC dựa trên RISC-V đã xuất hiện từ các tổ chức học thuật, công ty công nghiệp và cộng đồng mã nguồn mở. Việc khảo sát các dự án này cung cấp nền tảng để định vị thiết kế của khóa luận trong bức tranh tổng thể của lĩnh vực.
+
+\subsection{SiFive FE310 và HiFive1}
+
+SiFive, công ty khởi nghiệp được sáng lập bởi các nhà nghiên cứu RISC-V từ UC Berkeley, đã phát triển dòng vi xử lý Freedom E310 (FE310) -- một trong những SoC thương mại đầu tiên dựa trên RISC-V \cite{sifive-fe310}. FE310 sử dụng lõi E31 với pipeline 5 tầng, kiến trúc RV32IMAC, và được tích hợp trên board phát triển HiFive1. Đặc điểm nổi bật của FE310 bao gồm PLIC (Platform-Level Interrupt Controller) tương thích đặc tả SiFive, CLINT (Core Local Interruptor), và các ngoại vi SPI/UART/GPIO. Tuy nhiên, FE310 sử dụng giao thức TileLink thay vì AMBA AXI/AHB, nên không trực tiếp tương thích với hệ sinh thái ngoại vi AMBA phổ biến.
+
+\subsection{Dự Án OpenTitan}
+
+OpenTitan là dự án nguồn mở của Google và các đối tác công nghiệp, nhằm tạo ra một Root of Trust chip theo thiết kế mở \cite{opentitan}. OpenTitan sử dụng lõi Ibex (dựa trên RI5CY) và giao thức bus TileLink-UL cho kết nối nội bộ. Điểm đáng chú ý của OpenTitan là hệ thống quản lý thanh ghi ngoại vi (SFR -- Special Function Register) được chuẩn hóa theo OpenTitan Register Tool, cung cấp giao diện nhất quán cho mọi ngoại vi. Thiết kế đề xuất trong khóa luận này lấy cảm hứng từ cách tổ chức thanh ghi của OpenTitan để xây dựng SFR Standard Register Map.
+
+\subsection{VexRiscv}
+
+VexRiscv là một vi xử lý RISC-V linh hoạt được viết bằng SpinalHDL, được thiết kế theo kiến trúc plugin cho phép tùy chỉnh sâu pipeline và tính năng \cite{vexriscv}. VexRiscv hỗ trợ từ pipeline 2 tầng đơn giản đến pipeline 5 tầng đầy đủ với cache L1 và MMU. Giao thức bus sử dụng WishBone hoặc AXI4. Điểm khác biệt so với thiết kế trong khóa luận là VexRiscv không hỗ trợ AHB-Lite natively và không tích hợp CDC cho đa miền xung nhịp.
+
+\subsection{PicoRV32}
+
+PicoRV32 là một lõi RISC-V RV32IMC nhỏ gọn, được viết thuần túy bằng Verilog và tối ưu cho FPGA \cite{picorv32}. PicoRV32 sử dụng kiến trúc không pipeline (hay pipeline tối giản), ưu tiên tính đơn giản và tài nguyên phần cứng thấp. Giao thức bus riêng của nó (PicoRV32 Memory Interface) không tương thích với AMBA. Thiết kế này phù hợp cho các ứng dụng nhúng cực nhỏ nhưng không phù hợp cho các hệ thống yêu cầu hiệu suất cao và kết nối ngoại vi phong phú.
+
+\subsection{Các Dự Án Học Thuật Khác}
+
+Trong giới học thuật, nhiều trường đại học đã công bố thiết kế RISC-V SoC như một phần của nghiên cứu. Điển hình là BOOM (Berkeley Out-of-Order Machine) từ UC Berkeley -- một vi xử lý RISC-V 64-bit out-of-order phức tạp phục vụ nghiên cứu về vi kiến trúc hiệu suất cao \cite{boom}. Tuy nhiên, BOOM tập trung vào nghiên cứu kiến trúc thuần túy và không đặt trọng tâm vào tích hợp bus chuẩn công nghiệp hay kiểm chứng đa miền xung nhịp. Bài báo~\cite{riscv-survey} cung cấp một khảo sát toàn diện về các triển khai và mở rộng RISC-V tính đến năm 2023.
+
+\section{So Sánh Với Thiết Kế Đề Xuất}
+
+Bảng~\ref{tab:comparison} so sánh đặc điểm thiết kế của các dự án tiêu biểu với thiết kế được đề xuất trong khóa luận này.
+
+\begin{table}[htbp]
+\caption{So sánh các dự án RISC-V SoC tiêu biểu}
+\label{tab:comparison}
+\begin{center}
+\begin{tabular}{|l|c|c|c|c|c|}
+\hline
+\textbf{Đặc điểm} & \textbf{FE310} & \textbf{VexRiscv} & \textbf{PicoRV32} & \textbf{OpenTitan} & \textbf{Đề xuất} \\ \hline
+ISA & RV32IMAC & RV32I/IM(A) & RV32IMC & RV32I & RV32I+Zicsr \\ \hline
+Pipeline & 5 tầng & 2--5 tầng & Không & 2 tầng & \textbf{7 tầng} \\ \hline
+Bus AXI-Lite & Không & Có & Không & Không & \textbf{Có} \\ \hline
+Bus AHB-Lite & Không & Không & Không & Không & \textbf{Có} \\ \hline
+CDC đa miền & Không & Không & Không & Không & \textbf{Có (FIFO)} \\ \hline
+PLIC tích hợp & Có & Tùy chọn & Không & Có & \textbf{Có (6 nguồn)} \\ \hline
+SFR chuẩn hóa & Không & Không & Không & Có & \textbf{Có} \\ \hline
+RV32I compliance & Không rõ & Có & Có & Có & \textbf{37/38 PASS} \\ \hline
+RTL Language & Chisel & SpinalHDL & Verilog & SV & \textbf{SystemVerilog} \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+Từ bảng so sánh, có thể thấy thiết kế đề xuất có một số điểm khác biệt đáng chú ý so với các giải pháp hiện có:
+
+\begin{itemize}
+    \item \textbf{Pipeline 7 tầng:} Hầu hết các thiết kế học thuật và nhúng chọn pipeline 2--5 tầng để đơn giản hóa xử lý hazard. Pipeline 7 tầng của thiết kế này tăng throughput tiềm năng và là thách thức lớn hơn về mặt xử lý RAW hazard, forwarding, và precise exception.
+    \item \textbf{Tích hợp đồng thời AXI-Lite và AHB-Lite:} Không có thiết kế nào trong danh sách khảo sát hỗ trợ cả hai giao thức AMBA trong cùng một SoC với CDC. Đây là tính năng đặc trưng của thiết kế này, phản ánh thực tế công nghiệp nơi các SoC phải kết nối với nhiều loại ngoại vi từ các nhà cung cấp khác nhau.
+    \item \textbf{CDC với Async FIFO:} Việc triển khai CDC bằng FIFO bất đồng bộ Gray code giữa hai miền xung nhịp là một giải pháp kỹ thuật phức tạp, phổ biến trong ASIC nhưng hiếm thấy trong các dự án học thuật cấp đại học cử nhân.
+    \item \textbf{SFR Standard Register Map:} Thiết kế một chuẩn thanh ghi thống nhất cho tất cả ngoại vi (lấy cảm hứng từ OpenTitan) giúp đảm bảo tính mở rộng của hệ thống mà không cần thay đổi RTL lõi.
+\end{itemize}
+
+\section{Khoảng Trống Nghiên Cứu}
+
+Qua khảo sát tài liệu, có thể xác định một số khoảng trống mà thiết kế đề xuất nhằm lấp đầy trong phạm vi một khóa luận cử nhân:
+
+Thứ nhất, đa số các thiết kế học thuật RISC-V tập trung vào một giao thức bus duy nhất (hoặc giao thức bus riêng). Việc tích hợp đồng thời AXI-Lite (1\,GHz) và AHB-Lite (500\,MHz) trong cùng một SoC với CDC an toàn là một kịch bản kỹ thuật thực tế nhưng chưa được trình bày rõ ràng ở cấp độ học thuật với đầy đủ kiểm chứng.
+
+Thứ hai, kiểm chứng đa cấp độ -- từ unit test qua integration test đến system test và compliance test chính thức -- thường không được trình bày đầy đủ trong các công bố học thuật về thiết kế vi xử lý. Khóa luận này đặt trọng tâm vào quy trình kiểm chứng có hệ thống như một đóng góp phương pháp luận.

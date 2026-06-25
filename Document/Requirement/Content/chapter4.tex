@@ -1,0 +1,262 @@
+\chapter{THIẾT KẾ VÀ TRIỂN KHAI HỆ THỐNG}
+\label{Chapter4}
+
+\section{Kiến Trúc Tổng Thể SoC}
+
+\subsection{Sơ Đồ Khối Hệ Thống}
+
+Hệ thống SoC được thiết kế xoay quanh module tổng hợp \texttt{soc\_top}, bao gồm ba phân vùng chức năng chính: \textbf{CPU domain} (1\,GHz), \textbf{AXI-Lite subsystem} (1\,GHz), và \textbf{AHB-Lite subsystem} (500\,MHz với CDC). Module \texttt{soc\_top} không chứa bất kỳ logic datapath nào -- tất cả logic được đóng gói trong các module con và \texttt{soc\_top} chỉ kết dây (wire-up) giữa chúng. Triết lý thiết kế này giúp mỗi khối có thể kiểm thử độc lập.
+
+\begin{figure}[htp]
+\centering
+\fbox{\parbox{0.85\textwidth}{\centering\textit{[Chèn hình: Sơ đồ khối tổng thể SoC -- CPU Pipeline (IF1, IF2, ID, EX, MEM1, MEM2, WB) + Hazard Unit + Forwarding + Zicsr + PLIC + IMEM + DMEM; AXI-Lite subsystem (axi\_interface, axi\_interconnect, 3×axi\_sfr); AHB-Lite subsystem (Request FIFO, Response FIFO, ahb\_interface, ahb\_interconnect, 3×ahb\_sfr); các luồng dữ liệu và điều khiển giữa các khối]}\vspace{5cm}}}
+\caption{Sơ đồ khối tổng thể hệ thống SoC RISC-V}
+\label{fig:soc-top-block}
+\end{figure}
+
+\subsection{Bản Đồ Bộ Nhớ}
+
+CPU sử dụng không gian địa chỉ 32 bit (4\,GB). Bảng~\ref{tab:memory-map} mô tả các vùng địa chỉ được decode trong hệ thống.
+
+\begin{table}[htbp]
+\caption{Bản đồ bộ nhớ hệ thống SoC}
+\label{tab:memory-map}
+\begin{center}
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+\textbf{Vùng} & \textbf{Địa chỉ bắt đầu} & \textbf{Địa chỉ kết thúc} & \textbf{Kích thước} & \textbf{Bus/Latency} \\ \hline
+IMEM & \texttt{0x0000\_0000} & \texttt{0x0000\_FFFF} & 64\,KB & Direct / 1 cycle \\ \hline
+DMEM & \texttt{0x0001\_0000} & \texttt{0x0001\_FFFF} & 64\,KB & Direct / 1 cycle \\ \hline
+PLIC & \texttt{0x0C00\_0000} & \texttt{0x0CFF\_FFFF} & 16\,MB & Direct / 1 cycle \\ \hline
+AXI-Lite & \texttt{0x2000\_0000} & \texttt{0x2FFF\_FFFF} & 256\,MB & AXI / 4--6 cycle \\ \hline
+AHB-Lite & \texttt{0x3000\_0000} & \texttt{0x3FFF\_FFFF} & 256\,MB & AHB+CDC / 6--12 cycle \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+Trong phạm vi vùng AXI và AHB, các slave được phân biệt bằng các bit địa chỉ \texttt{addr[27:12]} (slave ID) và \texttt{addr[11:0]} (offset trong slave). Việc này cho phép mở rộng tối đa 65536 slave mỗi bus và 4\,KB thanh ghi mỗi slave.
+
+\subsection{Miền Xung Nhịp}
+
+Hệ thống có hai miền xung nhịp:
+\begin{itemize}
+    \item \textbf{clk\_cpu (1\,GHz):} Toàn bộ CPU pipeline, IMEM, DMEM, PLIC, AXI interface, và Zicsr.
+    \item \textbf{clk\_ahb (500\,MHz):} AHB interface FSM, ahb\_interconnect, và các AHB SFR slave.
+\end{itemize}
+
+Reset được thiết kế theo cơ chế \textbf{async assert, sync deassert}: khi mất reset, tín hiệu lan truyền ngay lập tức đến tất cả flip-flop; khi cấp lại reset, module \texttt{reset\_sync} cần 2 chu kỳ \texttt{clk\_ahb} để phục hồi an toàn tín hiệu \texttt{rst\_ahb\_n} cho domain 500\,MHz.
+
+\section{Pipeline CPU 7 Tầng}
+
+Pipeline CPU được tổ chức thành 7 tầng như minh họa trong Hình~\ref{fig:pipeline-block}. Giữa mỗi cặp tầng liên tiếp là một thanh ghi pipeline lưu trữ tất cả tín hiệu dữ liệu và điều khiển cần cho tầng kế tiếp.
+
+\begin{figure}[htp]
+\centering
+\fbox{\parbox{0.85\textwidth}{\centering\textit{[Chèn hình: Sơ đồ pipeline chi tiết 7 tầng -- IF1 (PC), IF2 (IMEM read), ID (decode + regfile), EX (ALU + branch\_comp + addr\_adder), MEM1 (addr decode + bus dispatch), MEM2 (data mux + sign extension), WB (regfile write); các thanh ghi pipeline giữa các tầng; mũi tên forwarding từ MEM1/MEM2/WB về EX; mũi tên flush/stall từ hazard\_unit]}\vspace{4.5cm}}}
+\caption{Sơ đồ chi tiết pipeline CPU 7 tầng}
+\label{fig:pipeline-block}
+\end{figure}
+
+\subsection{Tầng IF1 -- Instruction Fetch Stage 1}
+
+Tầng IF1 quản lý Program Counter (PC). Mỗi chu kỳ không bị stall, PC tăng thêm 4 (word-aligned fetch). Khi xảy ra branch taken hoặc trap/MRET, PC nhận địa chỉ mới từ \texttt{addr\_adder} (EX stage) hoặc từ \texttt{zicsr\_pc}. Ưu tiên: Zicsr > EX. PC được gửi trực tiếp đến IMEM trong cùng chu kỳ.
+
+\subsection{Tầng IF2 -- Instruction Fetch Stage 2}
+
+IMEM có latency 1 chu kỳ, nên kết quả đọc instruction xuất hiện ở tầng IF2. Tầng IF2 hội tụ (merge) giữa instruction từ IMEM và PC từ thanh ghi IF1/IF2, tạo ra cặp (PC, instr) chuyển sang ID. Module \texttt{imem} hỗ trợ tín hiệu \texttt{stall} (giữ output) và \texttt{flush} (xuất NOP -- \texttt{addi x0,x0,0}) để đồng bộ với pipeline.
+
+\subsection{Tầng ID -- Instruction Decode}
+
+Tầng ID bao gồm hai module: \texttt{id\_decoder} giải mã lệnh 32 bit thành tất cả tín hiệu điều khiển cần thiết, và \texttt{register\_file} đọc hai thanh ghi nguồn rs1/rs2. Module \texttt{id\_decoder} xác định loại lệnh, địa chỉ thanh ghi, immediate value, và các tín hiệu điều khiển cho các tầng sau.
+
+Một điểm thiết kế quan trọng là \textbf{WBR bypass} trong \texttt{register\_file}: đọc thanh ghi kết hợp kiểm tra xem WB stage có đang ghi vào cùng địa chỉ không. Nếu có (và rd $\neq$ x0), dữ liệu từ WB được trả về trực tiếp thay vì đọc từ mảng thanh ghi. Điều này xử lý gap-4 RAW hazard mà không cần stall.
+
+\subsection{Tầng EX -- Execute}
+
+Tầng EX được đóng gói trong module \texttt{ex\_stage}, bao gồm:
+\begin{itemize}
+    \item \textbf{ALU:} Thực hiện 11 phép tính (ADD, SUB, AND, OR, XOR, SLL, SRL, SRA, SLT, SLTU, PASSB cho LUI).
+    \item \textbf{Branch Comparator:} Đánh giá điều kiện branch (BEQ, BNE, BLT, BGE, BLTU, BGEU).
+    \item \textbf{Address Adder:} Tính địa chỉ đích branch/jump (PC-relative hoặc register-relative cho JALR); JALR mask bit 0 theo đặc tả ISA.
+    \item \textbf{Forwarding Unit và MUX:} Chọn giữa dữ liệu từ register file và forwarding từ MEM1/MEM2/WB.
+\end{itemize}
+
+\texttt{ex\_stage} xuất \texttt{branch\_taken} và \texttt{addr\_out} về hazard unit để quyết định flush pipeline khi branch taken hoặc jump.
+
+\subsection{Tầng MEM1 -- Memory Access Stage 1}
+
+Tầng MEM1 là điểm phân nhánh của địa chỉ: module \texttt{mem1\_stage} decode địa chỉ từ ALU result và phát tín hiệu điều khiển đến đúng subsystem:
+
+\begin{itemize}
+    \item \texttt{addr[31:16] == 16'h0001}: Truy cập DMEM -- không stall.
+    \item \texttt{addr[31:24] == 8'h0C}: Truy cập PLIC -- không stall, latency 1 chu kỳ.
+    \item \texttt{addr[31:28] == 4'h2}: Truy cập AXI-Lite -- phát \texttt{bus\_stall\_req = 1}.
+    \item \texttt{addr[31:28] == 4'h3}: Truy cập AHB-Lite -- phát \texttt{bus\_stall\_req = 1}.
+    \item Không khớp: Phát \texttt{load\_fault}/\texttt{store\_fault} để Zicsr sinh ngoại lệ.
+\end{itemize}
+
+Khi \texttt{bus\_stall\_req = 1}, toàn bộ pipeline từ IF1 đến MEM1 bị đóng băng (stall) cho đến khi bus transaction hoàn thành.
+
+\subsection{Tầng MEM2 -- Memory Access Stage 2}
+
+Tầng MEM2 thu kết quả từ DMEM (1 chu kỳ latency), AXI interface, hoặc AHB (qua Response FIFO). Tín hiệu \texttt{mem\_src[1:0]} chọn nguồn dữ liệu: DMEM, AXI, hoặc AHB. Tầng này cũng xử lý sign/zero extension cho các lệnh load byte và halfword (LB, LBU, LH, LHU) dựa trên \texttt{mem\_size} và \texttt{mem\_ext}.
+
+\subsection{Tầng WB -- Write Back}
+
+Tầng WB chọn dữ liệu kết quả cuối cùng và ghi vào register file. Tín hiệu \texttt{wb\_sel[1:0]} chọn từ bốn nguồn: kết quả ALU (00), dữ liệu load từ MEM2 (01), PC+4 cho JAL/JALR link (10), và dữ liệu CSR đọc (11).
+
+\section{Xử Lý Hazard và Forwarding}
+
+\subsection{Forwarding Unit}
+
+Module \texttt{forwarding\_unit} phát hiện và giải quyết RAW hazard theo ưu tiên từ cao đến thấp: MEM1 (gap-1) $>$ MEM2 (gap-2) $>$ WB (gap-3). Kết quả là tín hiệu \texttt{fwd\_sel\_a[1:0]} và \texttt{fwd\_sel\_b[1:0]} chọn nguồn dữ liệu cho hai đầu vào của ALU. Nhờ forwarding, các lệnh RAW ở gap-1, gap-2, và gap-3 không cần stall.
+
+\subsection{Hazard Unit}
+
+Module \texttt{hazard\_unit} tổng hợp tất cả các tín hiệu stall và flush cho pipeline. Bảng~\ref{tab:hazard} tóm tắt các loại hazard và cách xử lý.
+
+\begin{table}[htbp]
+\caption{Tổng hợp các loại hazard và cơ chế xử lý trong pipeline 7 tầng}
+\label{tab:hazard}
+\begin{center}
+\begin{tabular}{|l|l|c|}
+\hline
+\textbf{Loại Hazard} & \textbf{Cơ chế xử lý} & \textbf{Số chu kỳ stall} \\ \hline
+Gap-1, 2, 3 RAW & Forwarding từ MEM1/MEM2/WB & 0 \\ \hline
+Gap-4 RAW & WBR bypass trong register\_file & 0 \\ \hline
+Load-use & Stall IF1..ID, bubble vào EX & 1 \\ \hline
+CSR-use (EX) & Stall IF1..ID & 3 \\ \hline
+CSR-use (MEM1) & Stall IF1..ID & 2 \\ \hline
+CSR-use (MEM2) & Stall IF1..ID & 1 \\ \hline
+Branch/Jump & Flush IF1/IF2 và IF2/ID & 2 (flush, không stall) \\ \hline
+Bus stall (AXI/AHB) & Stall toàn pipeline IF1..MEM1 & N (đến khi xong) \\ \hline
+Trap/MRET (Zicsr) & Flush toàn pipeline, load PC mới & -- \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+Một vấn đề thiết kế tinh tế là \textbf{bus stall kết hợp load-use hazard}: khi có lệnh SW ở MEM1 (đang bus stall), LW ở EX (có load-use với lệnh tiếp theo), và lệnh đọc ở ID -- ba điều kiện này có thể xảy ra đồng thời. Giải pháp đúng là khi \texttt{bus\_stall\_req = 1}, không được phát \texttt{flush\_id\_ex} cho load-use (vì toàn pipeline đã bị đóng băng, bubble sẽ được tạo tự nhiên sau khi bus giải phóng).
+
+\section{Hệ Thống Bộ Nhớ}
+
+IMEM và DMEM đều là bộ nhớ synchronous 1 chu kỳ latency, mỗi loại 64\,KB. Hệ thống sử dụng kiến trúc Harvard -- IMEM chỉ được đọc qua PC (instruction fetch path) và DMEM được truy cập qua ALU result (data path). Hai bộ nhớ này là hai mảng vật lý độc lập, nên không có structural hazard.
+
+IMEM được tham số hóa với \texttt{SIZE\_KB} (mặc định 64\,KB) để cho phép compliance testbench override lên 512\,KB khi chạy bộ kiểm thử RV32I (một số bài kiểm thử branch có code size lên đến 293\,KB).
+
+\section{Giao Diện Bus AXI-Lite}
+
+\subsection{AXI Interface FSM}
+
+Module \texttt{axi\_interface} là FSM (Finite State Machine) chuyển đổi từ giao thức nội bộ CPU (req\_valid/resp\_valid) sang AXI4-Lite 5 kênh. Đối với giao dịch \textbf{ghi}, FSM trải qua ba trạng thái: AW\_W\_PHASE (phát AWVALID và WVALID đồng thời), B\_PHASE (nhận BRESP), và trở về IDLE khi \texttt{axi\_resp\_valid = 1}. Đối với giao dịch \textbf{đọc}: AR\_PHASE (phát ARVALID), R\_PHASE (nhận RDATA), và trở về IDLE. Tín hiệu \texttt{axi\_resp\_valid = 1} báo hiệu \texttt{mem1\_stage} giải phóng \texttt{bus\_stall\_req}.
+
+Hình~\ref{fig:axi-fsm} minh họa sơ đồ trạng thái của AXI Interface FSM.
+
+\begin{figure}[htp]
+\centering
+\fbox{\parbox{0.85\textwidth}{\centering\textit{[Chèn hình: Sơ đồ FSM AXI Interface -- Write path: IDLE $\rightarrow$ AW\_W\_PHASE $\rightarrow$ B\_PHASE $\rightarrow$ IDLE; Read path: IDLE $\rightarrow$ AR\_PHASE $\rightarrow$ R\_PHASE $\rightarrow$ IDLE; điều kiện chuyển trạng thái trên từng mũi tên]}\vspace{3.5cm}}}
+\caption{Sơ đồ trạng thái AXI Interface FSM}
+\label{fig:axi-fsm}
+\end{figure}
+
+\subsection{AXI Interconnect và SFR Slave}
+
+Module \texttt{axi\_interconnect} decode địa chỉ \texttt{addr[27:12]} để chọn một trong ba slave (S0, S1, S2). Mỗi slave là một \texttt{axi\_sfr} -- triển khai SFR Standard Register Map 9 thanh ghi (xem Mục~\ref{sec:sfr-map}). Trong trường hợp địa chỉ không decode được, interconnect trả về DECERR (BRESP/RRESP = 2'b11), kích hoạt bus error exception.
+
+\section{Giao Diện Bus AHB-Lite và CDC}
+
+\subsection{Asynchronous FIFO (CDC)}
+
+Ranh giới giữa miền CPU (1\,GHz) và miền AHB (500\,MHz) được xử lý bởi hai FIFO bất đồng bộ:
+
+\begin{itemize}
+    \item \textbf{Request FIFO (1\,GHz $\rightarrow$ 500\,MHz):} Rộng 67 bit = Address(32) + WriteData(32) + Control(3: write/size). Được ghi bởi \texttt{mem1\_stage} và đọc bởi \texttt{ahb\_interface}.
+    \item \textbf{Response FIFO (500\,MHz $\rightarrow$ 1\,GHz):} Rộng 33 bit = HRDATA(32) + HRESP(1). Được ghi bởi \texttt{ahb\_interface} và đọc bởi \texttt{mem1\_stage}.
+\end{itemize}
+
+Cả hai FIFO có độ sâu 2 (lũy thừa của 2, yêu cầu tối thiểu cho Gray code). Vì CPU bị stall cứng trong suốt bus transaction, không có overflow -- chỉ cần flag \texttt{empty} để kiểm tra trạng thái. Không dùng flag \texttt{full}.
+
+\subsection{AHB Interface FSM}
+
+Module \texttt{ahb\_interface} chạy ở 500\,MHz, đọc request từ Request FIFO và thực thi giao dịch AHB-Lite. FSM có ba trạng thái: IDLE (chờ request), ADDR (phát HADDR và HTRANS=NONSEQ), và DATA (phát HWDATA hoặc đọc HRDATA khi HREADY=1). Khi giao dịch hoàn thành, kết quả được ghi vào Response FIFO.
+
+\subsection{Đồng Bộ IRQ AHB}
+
+Tín hiệu ngắt từ các AHB slave (500\,MHz) cần được đồng bộ hóa trước khi vào PLIC (1\,GHz). Module \texttt{irq\_sync2ff} (2-FF synchronizer, 1\,GHz) thực hiện việc này -- có một instance cho mỗi AHB slave (tổng cộng ba instance trong \texttt{soc\_top}). IRQ từ AXI slave (1\,GHz) được kết nối thẳng vào PLIC.
+
+\section{Bộ Điều Khiển Ngắt Ưu Tiên (PLIC)}
+
+Module \texttt{plic} triển khai PLIC theo đặc tả SiFive với 6 nguồn ngắt (3 từ AXI slave + 3 từ AHB slave sau khi đồng bộ). Các tính năng chính:
+
+\begin{itemize}
+    \item \textbf{Priority per source:} Mỗi nguồn có thanh ghi ưu tiên 3 bit (0 = vô hiệu hóa, 1-7 = mức ưu tiên).
+    \item \textbf{Threshold:} CPU có thể ghi ngưỡng ưu tiên; chỉ ngắt có ưu tiên cao hơn ngưỡng mới được chuyển lên.
+    \item \textbf{Claim/Complete:} CPU đọc register CLAIM để nhận ID của ngắt đang chờ (ngắt có ưu tiên cao nhất, cao hơn ngưỡng); ghi vào COMPLETE sau khi xử lý xong.
+    \item \textbf{Latency 1 chu kỳ:} PLIC được ánh xạ vào địa chỉ \texttt{0x0C000000}, phản hồi trong 1 chu kỳ, không gây stall.
+\end{itemize}
+
+PLIC xuất tín hiệu \texttt{meip\_in} đến module Zicsr để kích hoạt Machine External Interrupt.
+
+\section{Khối CSR và Xử Lý Ngắt/Ngoại Lệ (Zicsr)}
+
+Module \texttt{zicsr} quản lý sáu thanh ghi CSR và xử lý toàn bộ trap (ngắt + ngoại lệ) tại M-mode. Zicsr nhận tín hiệu từ tầng WB của pipeline (vì ngắt và ngoại lệ được xử lý khi lệnh gây ra nó đến WB -- đây là điều kiện \textbf{precise exception}).
+
+\subsection{Các Nguồn Trap}
+
+\begin{itemize}
+    \item \textbf{Exception:} ECALL, EBREAK, Illegal Instruction, Load/Store Access Fault -- khi lệnh đến WB.
+    \item \textbf{Interrupt:} Machine External Interrupt (từ PLIC), Machine Software Interrupt (từ phần mềm) -- được kiểm tra mỗi chu kỳ khi \texttt{mstatus.MIE = 1}.
+    \item \textbf{Bus Error:} BRESP/RRESP SLVERR (AXI) hoặc HRESP ERROR (AHB) -- được phát hiện và chuyển thành Load/Store Fault.
+\end{itemize}
+
+\subsection{Precise Exception}
+
+Khi có bus transaction đang diễn ra (\texttt{bus\_stall\_req = 1}), Zicsr \textbf{không} được flush pipeline. Điều này đảm bảo bus transaction không bị hủy ngang chừng -- \textbf{precise exception} đòi hỏi phải chờ giao dịch bus hoàn thành trước khi xử lý trap.
+
+\subsection{Vectored Interrupt Mode}
+
+Với \texttt{mtvec[1:0] = 01} (vectored mode), địa chỉ vector trap được tính là:
+\begin{equation}
+    \text{PC}_{\text{trap}} = (\texttt{mtvec} \, \& \, \sim3) + 4 \times \texttt{cause\_code}
+\end{equation}
+Mỗi nguyên nhân trap có vector riêng biệt, giúp giảm độ trễ xử lý ngắt bằng cách tránh switch-case trong phần mềm.
+
+\section{SFR Standard Register Map}
+\label{sec:sfr-map}
+
+Mọi ngoại vi kết nối vào hệ thống phải triển khai SFR Standard Register Map (lấy cảm hứng từ OpenTitan), đảm bảo tính nhất quán và khả năng plug-and-play. Bảng~\ref{tab:sfr-map} mô tả cấu trúc thanh ghi chuẩn.
+
+\begin{table}[htbp]
+\caption{SFR Standard Register Map -- bố cục thanh ghi chuẩn cho mọi ngoại vi}
+\label{tab:sfr-map}
+\begin{center}
+\begin{tabular}{|c|l|l|l|}
+\hline
+\textbf{Offset} & \textbf{Tên} & \textbf{Access} & \textbf{Mô tả} \\ \hline
+\texttt{0x00} & CTRL & RW & \texttt{bit[0]} = enable; bits[31:1] = peripheral-specific \\ \hline
+\texttt{0x04} & STATUS & RO & Trạng thái read-only do peripheral drive \\ \hline
+\texttt{0x08} & INTR\_ENABLE & RW & Mask từng nguồn IRQ \\ \hline
+\texttt{0x0C} & INTR\_STATE & RW1C & Pending flags -- ghi 1 để clear \\ \hline
+\texttt{0x10} & INTR\_TEST & WO & Ghi 1 để force-set INTR\_STATE (debug) \\ \hline
+\texttt{0x14} & DATA0 & RW & General-purpose (peripheral-specific) \\ \hline
+\texttt{0x18} & DATA1 & RW & General-purpose \\ \hline
+\texttt{0x1C} & DATA2 & RW & General-purpose \\ \hline
+\texttt{0xFC} & PERIPH\_ID & RO & Hardcoded peripheral identifier \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+Quy tắc IRQ: \texttt{irq = |(INTR\_STATE \& INTR\_ENABLE)} -- ngắt chỉ được phát khi có event đang pending VÀ được enable. Thanh ghi INTR\_TEST cho phép phần mềm kiểm tra đường ngắt mà không cần kích hoạt sự kiện thực sự.
+
+Trong khóa luận này, hai loại SFR được triển khai: \texttt{axi\_sfr} cho bus AXI-Lite và \texttt{ahb\_sfr} cho bus AHB-Lite. Ngoài ra, \texttt{gpio\_sfr} là một ví dụ ngoại vi hoàn chỉnh: \texttt{DATA0} điều khiển GPIO output, \texttt{STATUS} phản ánh GPIO input, và edge-detect circuit tạo IRQ khi có cạnh tín hiệu.
+
+\section{Kiến Trúc Chip Boundary}
+
+Module \texttt{soc\_top} được thiết kế như một \textbf{chip boundary}: tất cả các slave AXI và AHB được expose ra ngoài thông qua port declarations, cho phép kết nối với ngoại vi bên ngoài mà không cần sửa đổi RTL bên trong chip. \texttt{soc\_top} xuất:
+
+\begin{itemize}
+    \item \texttt{rst\_cpu\_n\_o}, \texttt{rst\_ahb\_n\_o}: Reset đã đồng bộ, để ngoại vi dùng reset flip-flop của mình.
+    \item \texttt{axi\_S\{0,1,2\}\_*}: Đầy đủ cổng AXI-Lite slave cho ba slave.
+    \item \texttt{ahb\_S\{0,1,2\}\_*}: Cổng AHB-Lite cho ba slave.
+\end{itemize}
+
+Triết lý này đảm bảo bất kỳ ngoại vi nào tuân thủ SFR Standard đều có thể được gắn vào mà không cần thay đổi RTL trong chip.

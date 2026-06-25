@@ -1,0 +1,177 @@
+%% references.bib — Tài liệu tham khảo cho khóa luận RISC-V SoC
+
+% ── RISC-V Specifications ────────────────────────────────────────────────────
+
+@manual{riscv-spec,
+  author       = {{RISC-V International}},
+  title        = {The RISC-V Instruction Set Manual, Volume I: Unprivileged ISA},
+  edition      = {20191213},
+  year         = {2019},
+  url          = {https://github.com/riscv/riscv-isa-manual},
+  note         = {Version 20191213}
+}
+
+@manual{riscv-priv-spec,
+  author       = {{RISC-V International}},
+  title        = {The RISC-V Instruction Set Manual, Volume II: Privileged Architecture},
+  edition      = {20211203},
+  year         = {2021},
+  url          = {https://github.com/riscv/riscv-isa-manual},
+  note         = {Version 20211203}
+}
+
+@misc{riscv-arch-test,
+  author       = {{RISC-V International}},
+  title        = {riscv-arch-test: RISC-V Architecture Tests},
+  year         = {2021},
+  url          = {https://github.com/riscv-non-isa/riscv-arch-test},
+  note         = {Old-framework version 2.x}
+}
+
+% ── AMBA Bus Specifications ──────────────────────────────────────────────────
+
+@manual{amba-axi-spec,
+  author       = {{ARM Limited}},
+  title        = {AMBA AXI and ACE Protocol Specification AXI3, AXI4, and AXI4-Lite},
+  year         = {2013},
+  note         = {ARM IHI 0022E}
+}
+
+@manual{amba-ahb-spec,
+  author       = {{ARM Limited}},
+  title        = {AMBA 3 AHB-Lite Protocol Specification},
+  year         = {2006},
+  note         = {ARM IHI 0033A}
+}
+
+% ── PLIC Specification ───────────────────────────────────────────────────────
+
+@misc{sifive-plic,
+  author       = {{SiFive, Inc.}},
+  title        = {SiFive Interrupt Cookbook},
+  year         = {2018},
+  url          = {https://sifive.cdn.prismic.io/sifive/0d163928-2128-42be-a75a-464df65e04e0_sifive-interrupt-cookbook.pdf},
+  note         = {Accessed 2026}
+}
+
+% ── Related RISC-V SoC Projects ─────────────────────────────────────────────
+
+@misc{sifive-fe310,
+  author       = {{SiFive, Inc.}},
+  title        = {Freedom E310 (FE310-G002) Manual},
+  year         = {2019},
+  url          = {https://www.sifive.com/chip-designer},
+  note         = {Accessed 2026}
+}
+
+@misc{opentitan,
+  author       = {{lowRISC CIC and Contributors}},
+  title        = {OpenTitan: Open Source Silicon Root of Trust},
+  year         = {2019},
+  url          = {https://opentitan.org},
+  note         = {Accessed 2026}
+}
+
+@misc{vexriscv,
+  author       = {Papon, Charles},
+  title        = {VexRiscv: A FPGA-friendly RISC-V implementation in SpinalHDL},
+  year         = {2018},
+  url          = {https://github.com/SpinalHDL/VexRiscv},
+  note         = {Accessed 2026}
+}
+
+@misc{picorv32,
+  author       = {Wolf, Clifford},
+  title        = {PicoRV32 -- A Size-Optimized RISC-V CPU},
+  year         = {2015},
+  url          = {https://github.com/YosysHQ/picorv32},
+  note         = {Accessed 2026}
+}
+
+@misc{boom,
+  author       = {Celio, Christopher and Patterson, David A. and Asanovic, Krste},
+  title        = {The Berkeley Out-of-Order Machine (BOOM): An Industry-Competitive, Synthesizable, Parameterized RISC-V Processor},
+  year         = {2015},
+  institution  = {UC Berkeley},
+  url          = {https://github.com/riscv-boom/riscv-boom}
+}
+
+% ── CDC Reference ────────────────────────────────────────────────────────────
+
+@inproceedings{cummings-cdc,
+  author       = {Cummings, Clifford E.},
+  title        = {Simulation and Synthesis Techniques for Asynchronous FIFO Design},
+  booktitle    = {SNUG (Synopsys Users Group) San Jose 2002 User Papers},
+  year         = {2002},
+  url          = {http://www.sunburst-design.com/papers/CummingsSNUG2002SJ_FIFO1.pdf}
+}
+
+% ── Survey Papers ────────────────────────────────────────────────────────────
+
+@online{semico-riscv-growth,
+  author       = {{Semico Research}},
+  title        = {Semico Forecasts Strong Growth for RISC-V},
+  year         = {2019},
+  url          = {https://www.design-reuse.com/news/7573-semico-forecasts-strong-growth-for-risc-v/},
+  note         = {Accessed: 2025-05-26}
+}
+
+@ARTICLE{riscv-survey,
+  author       = {Cui, Enfang and Li, Tianzheng and Wei, Qian},
+  journal      = {IEEE Access},
+  title        = {RISC-V Instruction Set Architecture Extensions: A Survey},
+  year         = {2023},
+  volume       = {11},
+  pages        = {24696--24711},
+  doi          = {10.1109/ACCESS.2023.3246491}
+}
+
+% ── Simulation Tool ──────────────────────────────────────────────────────────
+
+@misc{icarus-verilog,
+  author       = {Williams, Stephen},
+  title        = {Icarus Verilog},
+  year         = {2023},
+  url          = {https://steveicarus.github.io/iverilog/},
+  note         = {Version 12, accessed 2026}
+}
+
+% ── IEEE SystemVerilog Standard ──────────────────────────────────────────────
+
+@standard{sv-ieee,
+  author       = {{IEEE}},
+  title        = {{IEEE Standard for SystemVerilog -- Unified Hardware Design, Specification, and Verification Language}},
+  organization = {IEEE},
+  number       = {1800-2017},
+  year         = {2017},
+  doi          = {10.1109/IEEESTD.2018.8299595}
+}
+
+% ── Existing entries ─────────────────────────────────────────────────────────
+
+@book{ref_aes,
+  author    = {Daemen, Joan and Rijmen, Vincent},
+  title     = {The Design of Rijndael: AES -- The Advanced Encryption Standard},
+  publisher = {Springer Verlag},
+  address   = {Berlin, Heidelberg, New York},
+  year      = {2002},
+  isbn      = {3-540-42580-2}
+}
+
+@book{Dally-and-Towles,
+  author    = {Dally, William James and Towles, Brian Patrick},
+  title     = {Principles and Practices of Interconnection Networks},
+  publisher = {Morgan Kaufmann Publishers Inc.},
+  address   = {San Francisco, CA, USA},
+  year      = {2004},
+  isbn      = {9780080497808}
+}
+
+@INPROCEEDINGS{Homogeneous-Multi-Core-SoC,
+  author    = {Yuan, Qiao and Pang, Wenlin and Shi, Yuhe},
+  booktitle = {2023 IEEE 17th International Conference on Anti-counterfeiting, Security, and Identification (ASID)},
+  title     = {A Design of Homogeneous Multi-Core SoC with General-Purpose Floating-Point Processors},
+  year      = {2023},
+  pages     = {126--130},
+  doi       = {10.1109/ASID60355.2023.10425983}
+}

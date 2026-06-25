@@ -1,0 +1,43 @@
+\chapter{KẾT LUẬN}
+\label{Chapter6}
+
+\section{Tóm Tắt Kết Quả Đạt Được}
+
+Khóa luận đã thiết kế và kiểm chứng thành công một hệ thống SoC RISC-V hoàn chỉnh theo đặc tả RV32I+Zicsr với pipeline 7 tầng. Các mục tiêu đề ra ban đầu đều được thực hiện đầy đủ:
+
+\textbf{1. Lõi CPU pipeline 7 tầng:} CPU RV32I+Zicsr với pipeline IF1--IF2--ID--EX--MEM1--MEM2--WB hoạt động đúng với tất cả 47 lệnh RV32I và sáu lệnh CSR. Forwarding unit xử lý RAW hazard gap-1 đến gap-4 mà không cần stall. Hazard unit xử lý chính xác load-use (1 stall), CSR-use (1--3 stall), branch/jump flush (2 cycle), và bus stall (N cycle).
+
+\textbf{2. Tích hợp bus chuẩn công nghiệp:} Hệ thống kết nối ngoại vi thông qua cả hai giao thức AMBA -- AXI4-Lite (1\,GHz, đồng bộ) và AHB-Lite (500\,MHz, bất đồng bộ qua CDC). Ba slave mỗi bus, mỗi slave triển khai SFR Standard Register Map 9 thanh ghi.
+
+\textbf{3. CDC an toàn:} FIFO bất đồng bộ độ sâu 2 với con trỏ Gray code truyền dữ liệu an toàn giữa miền 1\,GHz và 500\,MHz. IRQ từ AHB domain được đồng bộ qua module 2-FF synchronizer riêng biệt.
+
+\textbf{4. PLIC và Zicsr:} PLIC 6 nguồn tương thích chuẩn SiFive với priority, threshold và claim/complete. Zicsr xử lý đầy đủ ngắt ngoại lệ M-mode với vectored interrupt mode và precise exception semantics.
+
+\textbf{5. Kiểm chứng toàn diện:} Hơn 630 test case tự kiểm tra cộng với 37 chương trình hệ thống, tất cả PASS. Bộ kiểm thử tuân thủ chính thức RV32I đạt 37/38 PASS (1 SKIP do giới hạn phần cứng của bài kiểm thử jal-01).
+
+\textbf{6. SFR Standard Register Map:} Chuẩn hóa giao diện ngoại vi theo mô hình OpenTitan-inspired cho phép bất kỳ ngoại vi tuân thủ chuẩn đều có thể kết nối vào SoC mà không cần sửa RTL lõi.
+
+\section{Hạn Chế}
+
+Dù đạt được các mục tiêu đề ra, thiết kế còn một số hạn chế cần thừa nhận:
+
+\begin{itemize}
+    \item \textbf{Không có branch prediction:} Pipeline phải flush 2 chu kỳ mỗi khi branch taken. Với workload có nhiều branch (như vòng lặp), IPC thực tế thấp hơn lý thuyết. Thêm static prediction (predict not-taken) hoặc dynamic prediction sẽ cải thiện đáng kể.
+    \item \textbf{IMEM/DMEM không có cache:} Mọi lệnh và dữ liệu đều truy cập trực tiếp SRAM 1 chu kỳ. Trong hệ thống thực, bộ nhớ ngoài có latency cao hơn nhiều, đòi hỏi cache để duy trì throughput.
+    \item \textbf{Chưa tổng hợp vật lý:} Thiết kế chỉ được kiểm chứng ở mức RTL mô phỏng. Tần số 1\,GHz là mục tiêu thiết kế; việc đạt được tần số này trên công nghệ ASIC cụ thể phụ thuộc vào kết quả timing analysis sau synthesis và place-and-route.
+    \item \textbf{Bộ lệnh giới hạn ở RV32I:} Không hỗ trợ nhân/chia (M extension), nguyên tử (A extension), hay dấu phẩy động (F/D). Đây là giới hạn có chủ ý để giữ phạm vi phù hợp với khóa luận cử nhân.
+    \item \textbf{jal-01 không kiểm thử được qua framework:} Bài kiểm thử jal-01 trong riscv-arch-test yêu cầu IMEM $>$1.7\,MB -- không khả thi cho SoC nhúng. Tuy nhiên, lệnh JAL đã được kiểm chứng đầy đủ qua 37 chương trình system test.
+\end{itemize}
+
+\section{Hướng Phát Triển}
+
+Dựa trên nền tảng đã xây dựng, có một số hướng phát triển tiếp theo có tiềm năng cao:
+
+\begin{itemize}
+    \item \textbf{Tổng hợp vật lý và timing closure:} Sử dụng Yosys + OpenSTA hoặc công cụ thương mại (Synopsys DC, Cadence Genus) để tổng hợp design, phân tích timing và đảm bảo closure ở 1\,GHz trên công nghệ 130nm hoặc 28nm.
+    \item \textbf{Thêm branch predictor:} Triển khai BTB (Branch Target Buffer) và BHT (Branch History Table) để giảm branch penalty từ 2 xuống 0--1 cycle trong trường hợp predict đúng.
+    \item \textbf{Phần mở rộng M (Multiply/Divide):} Thêm khối nhân/chia tích hợp tại tầng EX hoặc WB để hỗ trợ RV32IM -- cần thiết cho các thuật toán số học phức tạp.
+    \item \textbf{Cache L1 I\$ và D\$:} Thêm instruction cache và data cache để kết nối với bộ nhớ ngoài DRAM mà không hy sinh throughput pipeline.
+    \item \textbf{Hỗ trợ FPGA:} Đưa design lên board phát triển (Arty A7, Nexys A7) để kiểm chứng phần cứng thực, bao gồm tích hợp với IP ngoại vi thực tế như UART, SPI, GPIO trên chip FPGA.
+    \item \textbf{Formal verification:} Áp dụng công cụ verification hình thức (như SymbiYosys) để chứng minh các bất biến pipeline (invariants) như precise exception luôn đúng, không bao giờ có data corruption.
+\end{itemize}

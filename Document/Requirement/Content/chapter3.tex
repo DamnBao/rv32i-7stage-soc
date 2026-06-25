@@ -1,0 +1,184 @@
+\chapter{CƠ SỞ LÝ THUYẾT}
+\label{Chapter3}
+
+\section{Kiến Trúc Tập Lệnh RISC-V}
+
+\subsection{Tổng Quan RISC-V ISA}
+
+RISC-V là một kiến trúc tập lệnh mở (open ISA), được thiết kế theo triết lý RISC (Reduced Instruction Set Computer): số lượng lệnh nhỏ, định dạng cố định, và thực thi trong một chu kỳ trên pipeline lý tưởng \cite{riscv-spec}. Điểm mạnh của RISC-V là tính module: một tập lệnh cơ sở bắt buộc (RV32I hoặc RV64I) kết hợp với các phần mở rộng tùy chọn (M, A, F, D, C, Zicsr, v.v.) cho phép thiết kế tùy chỉnh linh hoạt theo nhu cầu ứng dụng.
+
+Phần mở rộng \textbf{RV32I} (32-bit Integer Base) bao gồm 47 lệnh cơ bản, đủ để chạy phần lớn phần mềm ứng dụng. RV32I định nghĩa:
+
+\begin{itemize}
+    \item 32 thanh ghi nguyên x0--x31, mỗi thanh ghi 32 bit. Thanh ghi x0 luôn bằng 0 (hardwired zero).
+    \item Chiều rộng lệnh 32 bit cố định.
+    \item Không gian địa chỉ 32 bit, byte-addressable, word-aligned instruction fetch.
+\end{itemize}
+
+\subsection{Định Dạng Lệnh RV32I}
+
+RISC-V định nghĩa sáu định dạng mã hóa lệnh, tất cả đều 32 bit. Hình~\ref{fig:riscv-formats} minh họa cấu trúc của từng định dạng.
+
+\begin{figure}[htp]
+\centering
+\fbox{\parbox{0.85\textwidth}{\centering\textit{[Chèn hình: Sáu định dạng mã hóa lệnh RV32I -- R, I, S, B, U, J-type với các trường opcode, funct3, funct7, rs1, rs2, rd, imm]}\vspace{2.5cm}}}
+\caption{Sáu định dạng mã hóa lệnh RV32I}
+\label{fig:riscv-formats}
+\end{figure}
+
+Bảng~\ref{tab:instr-groups} tóm tắt các nhóm lệnh RV32I.
+
+\begin{table}[htbp]
+\caption{Các nhóm lệnh RV32I}
+\label{tab:instr-groups}
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Nhóm} & \textbf{Lệnh tiêu biểu} & \textbf{Chức năng} \\ \hline
+Số học & ADD, SUB, ADDI & Cộng/trừ thanh ghi và immediate \\ \hline
+Logic & AND, OR, XOR, ANDI, ORI, XORI & Phép logic bit \\ \hline
+Dịch bit & SLL, SRL, SRA, SLLI, SRLI, SRAI & Dịch trái/phải logic/số học \\ \hline
+So sánh & SLT, SLTU, SLTI, SLTIU & Ghi kết quả 0/1 vào rd \\ \hline
+Load & LW, LH, LB, LHU, LBU & Đọc từ bộ nhớ \\ \hline
+Store & SW, SH, SB & Ghi vào bộ nhớ \\ \hline
+Nhánh & BEQ, BNE, BLT, BGE, BLTU, BGEU & Rẽ nhánh có điều kiện \\ \hline
+Nhảy & JAL, JALR & Nhảy không điều kiện \\ \hline
+PC-relative & AUIPC & Cộng imm dịch 12 bit vào PC \\ \hline
+Immediate & LUI & Nạp 20-bit immediate vào rd[31:12] \\ \hline
+Hệ thống & ECALL, EBREAK & Gọi hệ điều hành / gỡ lỗi \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\subsection{Phần Mở Rộng Zicsr}
+
+Phần mở rộng Zicsr thêm sáu lệnh đọc/ghi các thanh ghi điều khiển-trạng thái (CSR -- Control and Status Register) và định nghĩa cơ chế xử lý ngắt/ngoại lệ ở M-mode (Machine mode) \cite{riscv-priv-spec}. Khi xảy ra trap (ngắt hoặc ngoại lệ), phần cứng tự động thực hiện chuỗi hành động:
+
+\begin{enumerate}
+    \item Lưu PC hiện tại vào \texttt{mepc}.
+    \item Ghi nguyên nhân vào \texttt{mcause} (bit~31 phân biệt interrupt/exception).
+    \item Lưu trạng thái ngắt \texttt{MIE} vào \texttt{MPIE} trong \texttt{mstatus}.
+    \item Tắt ngắt toàn cục (\texttt{MIE} $\leftarrow$ 0).
+    \item Chuyển PC đến vector trap (\texttt{mtvec + 4×cause} trong vectored mode).
+\end{enumerate}
+
+Lệnh MRET phục hồi trạng thái trước trap: PC $\leftarrow$ \texttt{mepc}, \texttt{MIE} $\leftarrow$ \texttt{MPIE}.
+
+\section{Kiến Trúc Pipeline Processor}
+
+\subsection{Nguyên Lý Pipeline}
+
+Pipeline là kỹ thuật tổ chức CPU theo nhiều tầng (stage), mỗi tầng thực hiện một phần của chu trình thực thi. Các tầng hoạt động song song, xử lý các lệnh khác nhau cùng một lúc (instruction-level parallelism). Throughput lý tưởng đạt 1 lệnh/chu kỳ (1 IPC).
+
+\begin{figure}[htp]
+\centering
+\fbox{\parbox{0.85\textwidth}{\centering\textit{[Chèn hình: Minh họa pipeline 7 tầng -- các lệnh I1, I2, I3 đi qua các tầng IF1, IF2, ID, EX, MEM1, MEM2, WB theo thời gian, thể hiện instruction-level parallelism]}\vspace{3cm}}}
+\caption{Nguyên lý hoạt động pipeline 7 tầng}
+\label{fig:pipeline-timing}
+\end{figure}
+
+\subsection{Vấn Đề Hazard và Giải Pháp}
+
+Trong pipeline, \textbf{hazard} là điều kiện ngăn lệnh tiếp theo thực thi ngay ở chu kỳ tiếp theo. Có ba loại hazard chính:
+
+\textbf{1. Data hazard (RAW -- Read After Write):} Lệnh sau cần đọc dữ liệu mà lệnh trước chưa ghi xong. Giải pháp chính là \textbf{data forwarding} (bypass): dữ liệu được chuyển thẳng từ đầu ra tầng trước về đầu vào tầng EX mà không cần chờ ghi vào register file. Trường hợp đặc biệt là \textbf{load-use hazard}: lệnh LOAD có kết quả chỉ có ở tầng MEM2, nên lệnh ngay sau không thể forward kịp từ EX -- cần stall 1 chu kỳ.
+
+\textbf{2. Structural hazard:} Hai lệnh cùng cần sử dụng cùng một tài nguyên phần cứng. Trong thiết kế pipeline với memory riêng biệt cho instruction và data (Harvard architecture), structural hazard hầu như không xuất hiện.
+
+\textbf{3. Control hazard:} Branch/Jump -- khi CPU chưa biết địa chỉ đích, nó đã nạp lệnh sai vào pipeline. Giải pháp đơn giản là \textbf{flush} (xóa) các lệnh sai đã vào pipeline khi biết địa chỉ đích.
+
+\section{Giao Thức AXI4-Lite}
+
+\subsection{Tổng Quan}
+
+AXI4-Lite (Advanced eXtensible Interface 4, Lite version) là giao thức bus của ARM, thuộc tiêu chuẩn AMBA~4.0 \cite{amba-axi-spec}. AXI4-Lite được thiết kế cho giao tiếp đơn giản với các thanh ghi điều khiển (control/status registers) và là tiêu chuẩn phổ biến nhất trong hệ sinh thái ARM và Xilinx/Intel FPGA.
+
+\subsection{Cấu Trúc Kênh}
+
+AXI4-Lite sử dụng năm kênh giao tiếp độc lập:
+
+\begin{table}[htbp]
+\caption{Năm kênh giao tiếp AXI4-Lite}
+\label{tab:axi-channels}
+\begin{center}
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Kênh} & \textbf{Hướng} & \textbf{Tín hiệu chính} & \textbf{Mô tả} \\ \hline
+AW & Master$\rightarrow$Slave & AWADDR, AWVALID, AWREADY & Write Address \\ \hline
+W & Master$\rightarrow$Slave & WDATA, WSTRB, WVALID, WREADY & Write Data \\ \hline
+B & Slave$\rightarrow$Master & BRESP, BVALID, BREADY & Write Response \\ \hline
+AR & Master$\rightarrow$Slave & ARADDR, ARVALID, ARREADY & Read Address \\ \hline
+R & Slave$\rightarrow$Master & RDATA, RRESP, RVALID, RREADY & Read Data \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\subsection{Giao Thức Handshake}
+
+Mỗi kênh AXI sử dụng cơ chế handshake VALID/READY: giao dịch xảy ra khi cả VALID và READY đều bằng 1 tại cùng cạnh xung nhịp. Hình~\ref{fig:axi-waveform} minh họa timing của một giao dịch ghi và đọc AXI-Lite điển hình.
+
+\begin{figure}[htp]
+\centering
+\fbox{\parbox{0.85\textwidth}{\centering\textit{[Chèn hình: Waveform AXI-Lite -- giao dịch ghi (AWVALID/AWREADY, WVALID/WREADY, BVALID/BREADY) và giao dịch đọc (ARVALID/ARREADY, RVALID/RREADY/RDATA) trên nền xung clk 1GHz]}\vspace{3.5cm}}}
+\caption{Dạng sóng giao dịch AXI4-Lite ghi và đọc}
+\label{fig:axi-waveform}
+\end{figure}
+
+\section{Giao Thức AHB-Lite}
+
+\subsection{Tổng Quan}
+
+AHB-Lite (Advanced High-performance Bus Lite) là phiên bản đơn master của AHB trong tiêu chuẩn AMBA~3.0 \cite{amba-ahb-spec}. Khác với AXI, AHB-Lite sử dụng một bus chia sẻ (shared bus) cho tất cả slave và cơ chế pipelining giữa address phase và data phase.
+
+\subsection{Hai Phase Giao Dịch}
+
+AHB-Lite phân chia một giao dịch thành hai phase kế tiếp nhau:
+
+\begin{itemize}
+    \item \textbf{Address Phase (Chu kỳ N):} Master phát địa chỉ (HADDR), loại giao dịch (HTRANS=NONSEQ), kích thước (HSIZE) và hướng (HWRITE) lên bus.
+    \item \textbf{Data Phase (Chu kỳ N+1):} Master phát dữ liệu ghi (HWDATA); slave phát dữ liệu đọc (HRDATA) và tín hiệu ready (HREADY). Slave có thể chèn wait state bằng cách giữ HREADY=0.
+\end{itemize}
+
+Điểm đặc biệt của AHB-Lite là address phase của giao dịch kế tiếp có thể diễn ra đồng thời với data phase của giao dịch hiện tại, tạo ra pipelining hiệu quả. Hình~\ref{fig:ahb-waveform} minh họa timing AHB-Lite.
+
+\begin{figure}[htp]
+\centering
+\fbox{\parbox{0.85\textwidth}{\centering\textit{[Chèn hình: Waveform AHB-Lite -- giao dịch ghi với hai phase riêng biệt: Address Phase (HADDR, HTRANS, HWRITE, HSEL) và Data Phase (HWDATA, HREADYOUT, HRESP)]}\vspace{3.5cm}}}
+\caption{Dạng sóng giao dịch AHB-Lite}
+\label{fig:ahb-waveform}
+\end{figure}
+
+\section{Clock Domain Crossing}
+
+\subsection{Vấn Đề Metastability}
+
+Khi hai miền xung nhịp (clock domain) có tần số hoặc pha khác nhau cần giao tiếp, tín hiệu từ miền nguồn có thể vi phạm yêu cầu setup/hold time của flip-flop trong miền đích. Khi đó flip-flop có thể rơi vào trạng thái \textbf{metastability} -- đầu ra không xác định, dao động trong khoảng thời gian không biết trước. Nếu metastability truyền sang các logic tầng sau, có thể gây lỗi hệ thống \cite{cummings-cdc}.
+
+\subsection{2-FF Synchronizer}
+
+Giải pháp cơ bản nhất cho CDC một bit là sử dụng \textbf{2-FF synchronizer}: tín hiệu bất đồng bộ đi qua hai flip-flop tuần tự, cả hai dùng xung nhịp của miền đích. Xác suất metastability giảm theo hàm mũ qua mỗi tầng FF bổ sung. Trong thiết kế này, 2-FF synchronizer được dùng cho tín hiệu ngắt từ AHB domain (500\,MHz) sang CPU domain (1\,GHz).
+
+\subsection{Asynchronous FIFO với Gray Code}
+
+Để truyền dữ liệu nhiều bit giữa hai miền xung nhịp, giải pháp an toàn là sử dụng \textbf{asynchronous FIFO} với con trỏ Gray code \cite{cummings-cdc}. Gray code đảm bảo chỉ một bit thay đổi mỗi bước đếm, nên con trỏ có thể được đồng bộ hóa an toàn qua 2-FF synchronizer mà không bị hiện tượng tear (đọc sai do nhiều bit thay đổi cùng lúc).
+
+Hình~\ref{fig:async-fifo} minh họa kiến trúc và nguyên lý hoạt động của asynchronous FIFO với Gray code pointer.
+
+\begin{figure}[htp]
+\centering
+\fbox{\parbox{0.85\textwidth}{\centering\textit{[Chèn hình: Sơ đồ khối Async FIFO -- bộ nhớ FIFO, write pointer (wr\_clk domain, mã Gray), read pointer (rd\_clk domain, mã Gray), hai 2-FF synchronizer đồng bộ con trỏ giữa hai miền, tín hiệu empty/full từ so sánh con trỏ]}\vspace{3.5cm}}}
+\caption{Kiến trúc Asynchronous FIFO với Gray code pointer}
+\label{fig:async-fifo}
+\end{figure}
+
+\section{Bộ Điều Khiển Ngắt Ưu Tiên (PLIC)}
+
+\acrfull{plic} là một tiêu chuẩn kiến trúc ngắt của RISC-V cho phép quản lý tập trung nhiều nguồn ngắt ngoại vi trước khi đưa vào CPU \cite{sifive-plic}. PLIC hỗ trợ:
+
+\begin{itemize}
+    \item Nhiều nguồn ngắt với mức ưu tiên khác nhau (priority per source).
+    \item Ngưỡng ngắt (threshold) cho phép CPU lọc các ngắt có ưu tiên thấp.
+    \item Cơ chế claim/complete: CPU đọc CLAIM register để nhận ID ngắt, sau đó ghi vào COMPLETE khi xử lý xong.
+\end{itemize}
+
+PLIC đóng vai trò arbitrator trung gian: nhiều ngoại vi có thể kích hoạt ngắt đồng thời, nhưng PLIC chỉ chuyển ngắt có ưu tiên cao nhất (cao hơn ngưỡng) đến CPU qua tín hiệu \texttt{meip\_in}. Điều này giúp giảm tải cho CPU và chuẩn hóa cách xử lý ngắt trong hệ thống đa ngoại vi.

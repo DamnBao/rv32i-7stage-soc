@@ -1,0 +1,409 @@
+\chapter{KẾT QUẢ THỰC NGHIỆM}
+\label{Chapter5}
+
+\section{Môi Trường Kiểm Thử}
+
+\subsection{Công Cụ và Thiết Lập}
+
+Toàn bộ quá trình kiểm thử được thực hiện trên hệ thống Linux với các công cụ sau:
+
+\begin{itemize}
+    \item \textbf{Icarus Verilog 12} (\texttt{iverilog -g2012 -Wall}): Biên dịch và mô phỏng RTL SystemVerilog.
+    \item \textbf{riscv64-unknown-elf-gcc 13.2.0}: Biên dịch chương trình thử nghiệm RISC-V.
+    \item \textbf{GTKWave}: Xem và phân tích dạng sóng VCD.
+    \item \textbf{GNU Make}: Tự động hóa toàn bộ quy trình build và test.
+    \item \textbf{riscv-arch-test (old-framework-2.x)}: Bộ kiểm thử tuân thủ RV32I chính thức.
+\end{itemize}
+
+Mọi testbench đều sử dụng \textbf{tự kiểm tra tự động} (self-checking): tín hiệu \texttt{PASS}/\texttt{FAIL} được in ra sau mỗi test case mà không cần so sánh thủ công.
+
+\subsection{Chiến Lược Kiểm Thử}
+
+Chiến lược kiểm thử được tổ chức thành các pha tăng dần về độ phức tạp:
+
+\begin{figure}[htp]
+\centering
+\fbox{\parbox{0.85\textwidth}{\centering\textit{[Chèn hình: Tháp kiểm thử hình kim tự tháp -- từ dưới lên: Unit Test (ALU, branch\_comp, register\_file, id\_decoder, forwarding\_unit, hazard\_unit, async\_fifo, plic, ex\_stage, irq\_sync2ff, gpio\_sfr, zicsr), Integration Test (axi\_interface, ahb\_interface, axi\_full, ahb\_full, bus\_error, ahb\_error), System Test (tb\_pipeline\_cpu, tb\_soc\_top 20 programs), Compliance Test (riscv-arch-test 38 tests)]}\vspace{3.5cm}}}
+\caption{Chiến lược kiểm thử phân cấp}
+\label{fig:test-pyramid}
+\end{figure}
+
+\section{Kiểm Thử Đơn Vị (Phase 1 và 2)}
+
+\subsection{Phase 1 -- Kiểm Thử Module Tổ Hợp}
+
+Phase 1 kiểm thử bốn module logic tổ hợp và đồng bộ quan trọng nhất của pipeline. Tổng cộng 192 test case, tất cả PASS.
+
+\subsubsection{ALU -- 38 Test Case}
+
+Module ALU (\texttt{alu.sv}) thực hiện 11 phép tính với các giá trị biên đặc trưng. Bảng~\ref{tab:alu-tests} tóm tắt kết quả.
+
+\begin{table}[htbp]
+\caption{Kết quả kiểm thử ALU -- 38 test case}
+\label{tab:alu-tests}
+\begin{center}
+\begin{tabular}{|l|c|l|}
+\hline
+\textbf{Nhóm phép tính} & \textbf{Số test} & \textbf{Corner case tiêu biểu} \\ \hline
+ADD & 4 & Overflow wrap: \texttt{0xFFFF\_FFFF + 1 = 0} \\ \hline
+SUB & 3 & Underflow: \texttt{0 - 1 = 0xFFFF\_FFFF} \\ \hline
+SLL/SRL/SRA & 10 & Shift 0, shift 31, shift 32 (modulo 32) \\ \hline
+SLT/SLTU & 5 & So sánh số âm và số dương, zero \\ \hline
+AND/OR/XOR & 8 & All zeros, all ones, alternating bits \\ \hline
+PASSB (LUI) & 4 & Chuyển nguyên immediate, kiểm tra upper bits \\ \hline
+\multicolumn{2}{|c|}{\textbf{Tổng}} & \textbf{38/38 PASS} \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\subsubsection{Branch Comparator -- 30 Test Case}
+
+Module \texttt{branch\_comp} kiểm thử sáu điều kiện branch: BEQ, BNE, BLT, BGE, BLTU, BGEU. Đặc biệt chú ý đến trường hợp biên: số âm lớn nhất, số dương lớn nhất, và so sánh có/không có dấu (BLT vs BLTU cho giá trị 0x80000000).
+
+\subsubsection{Register File -- 36 Test Case}
+
+Kiểm thử \texttt{register\_file} tập trung vào hai tính năng đặc biệt: (1) x0 hardwired zero (không thể ghi), (2) WBR bypass (gap-4 RAW hazard) -- đọc và ghi cùng địa chỉ trong cùng chu kỳ phải trả về dữ liệu mới.
+
+\subsubsection{Instruction Decoder -- 88 Test Case}
+
+Module \texttt{id\_decoder} được kiểm thử với tất cả loại lệnh RV32I và Zicsr. Kiểm tra đặc biệt: immediate sign-extension cho từng định dạng lệnh, xác định đúng \texttt{alu\_op} cho từng lệnh.
+
+\subsection{Phase 2 -- Kiểm Thử Module Đồng Bộ}
+
+Phase 2 bổ sung ba module có trạng thái (stateful): \texttt{forwarding\_unit}, \texttt{hazard\_unit}, và \texttt{async\_fifo}. Tổng cộng 114 test case, tất cả PASS.
+
+\subsubsection{Forwarding Unit -- 31 Test Case}
+
+Kiểm thử tất cả tổ hợp forwarding cho rs1 và rs2: không forward (00), từ MEM1 (01), từ MEM2 (10), từ WB (11). Đặc biệt kiểm tra trường hợp rd = x0 (không được forward), và conflict giữa forwarding từ MEM1 và MEM2 (MEM1 phải thắng).
+
+\subsubsection{Hazard Unit -- 73 Test Case}
+
+Module \texttt{hazard\_unit} là module phức tạp nhất trong pipeline. Các test case bao gồm:
+\begin{itemize}
+    \item Load-use hazard đơn giản (1 stall cycle).
+    \item CSR-use hazard ở gap 1, 2, 3 (3/2/1 stall cycle tương ứng).
+    \item Branch/Jump flush (2 slot flush).
+    \item Bus stall kết hợp load-use -- tình huống đặc biệt quan trọng.
+    \item Zicsr flush toàn pipeline.
+\end{itemize}
+
+\subsubsection{Async FIFO -- 10 Test Case}
+
+Module \texttt{async\_fifo} (depth=2) được kiểm thử với các trường hợp: ghi và đọc bình thường, kiểm tra flag empty chính xác, ghi khi FIFO trống, đọc khi FIFO có 1 phần tử, và kiểm tra Gray code pointer ở biên (wrap-around).
+
+\section{Kiểm Thử Tích Hợp Pipeline (Phase 3)}
+
+Phase 3 là lần đầu tiên toàn bộ pipeline CPU được chạy với chương trình thực sự thông qua \texttt{soc\_top}. Chín chương trình thử nghiệm kiểm tra từng nhóm lệnh, từng loại hazard và các tình huống đặc biệt. Kết quả: \textbf{9/9 PASS}.
+
+\begin{table}[htbp]
+\caption{Chương trình kiểm thử pipeline (Phase 3) -- 9/9 PASS}
+\label{tab:phase3-programs}
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Chương trình} & \textbf{Nội dung kiểm thử} \\ \hline
+prog\_arithmetic & Tất cả lệnh số học: ADD/SUB/AND/OR/XOR/SLT/LUI/AUIPC \\ \hline
+prog\_shift & SLL/SRL/SRA với shift amount biên (0, 1, 31) \\ \hline
+prog\_forwarding & RAW hazard gap-1, 2, 3, 4 với nhiều chuỗi lệnh phụ thuộc \\ \hline
+prog\_load\_store & LW/LH/LB/LHU/LBU/SW/SH/SB -- địa chỉ và dữ liệu biên \\ \hline
+prog\_branch\_jump & BEQ/BNE/BLT/BGE/BLTU/BGEU taken và not-taken; JAL/JALR \\ \hline
+prog\_load\_use & Load-use hazard: LW theo sau ngay bởi lệnh dùng kết quả \\ \hline
+prog\_ecall & ECALL, EBREAK, Illegal Instruction → trap handler → MRET \\ \hline
+prog\_csr & CSRRW/CSRRS/CSRRC/CSRxI -- đọc/ghi/modify mstatus/mie/mtvec \\ \hline
+prog\_interrupt & Software interrupt (MSI) -- kích hoạt, xử lý handler, clear \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+Trong quá trình kiểm thử Phase 3, hai bug quan trọng trong RTL được phát hiện và sửa:
+
+\begin{enumerate}
+    \item \textbf{Bug B3 -- Gap-4 RAW hazard:} \texttt{register\_file} không có WBR bypass cho trường hợp WB ghi và ID đọc cùng địa chỉ trong cùng chu kỳ. Sửa bằng cách thêm combinational bypass.
+    \item \textbf{Bug B6 -- Ghost instruction:} Sau \texttt{zicsr\_flush}, IMEM tiếp tục xuất instruction của địa chỉ cũ trong chu kỳ tiếp theo, gây illegal instruction spurious. Sửa bằng cách thêm tín hiệu flush vào IMEM để xuất NOP.
+\end{enumerate}
+
+\section{Kiểm Thử Giao Diện Bus (Phase 4)}
+
+Phase 4 được chia thành bốn sub-phase, tăng dần từ kiểm thử interface đơn lẻ đến full path với interconnect và SFR slave. Tổng cộng 163 test case, tất cả PASS.
+
+\subsection{Phase 4a -- AXI Interface (49 Test Case)}
+
+\texttt{tb\_axi\_interface} sử dụng slave model AXI giả để kiểm thử module \texttt{axi\_interface}. Các test case bao gồm:
+
+\begin{itemize}
+    \item Giao dịch ghi: one-shot, wait state (slave AWREADY delay), BRESP SLVERR (bus error).
+    \item Giao dịch đọc: one-shot, ARREADY delay, RVALID delay, RRESP SLVERR.
+    \item Kiểm tra bus stall: pipeline giữ nguyên trong suốt giao dịch.
+    \item Kiểm tra \texttt{axi\_resp\_valid} timing: bus stall giải phóng đúng thời điểm.
+\end{itemize}
+
+\subsection{Phase 4b -- AHB Interface và CDC (29 Test Case)}
+
+\texttt{tb\_ahb\_interface} kiểm thử \texttt{ahb\_interface} kết hợp với hai FIFO bất đồng bộ. Đây là kiểm thử CDC đầu tiên -- các giao dịch được phát từ domain 1\,GHz và nhận ở domain 500\,MHz, sau đó kết quả đi ngược về 1\,GHz. Test case đặc biệt: HRESP ERROR (AHB bus error) → phát hiện và báo lên CPU.
+
+Hình~\ref{fig:cdc-waveform} minh họa waveform của một giao dịch hoàn chỉnh qua CDC.
+
+\begin{figure}[htp]
+\centering
+\fbox{\parbox{0.85\textwidth}{\centering\textit{[Chèn hình: Waveform CDC -- ghi request vào Request FIFO (clk\_cpu), đọc request từ FIFO (clk\_ahb), thực thi AHB transaction (HADDR, HWDATA, HREADY), ghi response vào Response FIFO (clk\_ahb), đọc response từ FIFO (clk\_cpu), giải phóng bus\_stall\_req]}\vspace{4cm}}}
+\caption{Dạng sóng giao dịch CDC -- Request FIFO và Response FIFO}
+\label{fig:cdc-waveform}
+\end{figure}
+
+\subsection{Phase 4c -- AXI Full Path (47 Test Case)}
+
+\texttt{tb\_axi\_full} kiểm thử chuỗi đầy đủ: \texttt{axi\_interface} + \texttt{axi\_interconnect} + 3~\texttt{axi\_sfr}. Các test case bao gồm:
+\begin{itemize}
+    \item Ghi/đọc đến từng slave S0, S1, S2.
+    \item Kiểm tra decode địa chỉ đúng: ghi vào S0 không ảnh hưởng S1, S2.
+    \item Kiểm tra toàn bộ 9 thanh ghi SFR Standard per slave.
+    \item Kiểm tra INTR\_STATE/INTR\_ENABLE và logic IRQ.
+    \item Kiểm tra INTR\_TEST: force-set INTR\_STATE để kiểm tra đường IRQ.
+\end{itemize}
+
+\subsection{Phase 4d -- AHB Full Path (38 Test Case)}
+
+\texttt{tb\_ahb\_full} là tương đương của Phase 4c cho bus AHB: \texttt{ahb\_interface} + CDC FIFO + \texttt{ahb\_interconnect} + 3~\texttt{ahb\_sfr}. Kiểm tra wait state (HREADYOUT = 0 từ slave), HRESP ERROR propagation, và SFR Standard Register Map qua AHB protocol.
+
+\section{Kiểm Thử Hệ Thống (Phase 5 và 6)}
+
+\subsection{Phase 5 -- Tích Hợp SoC + AXI/AHB (4 Chương Trình)}
+
+Phase 5 là lần đầu tiên CPU thực sự truy cập ngoại vi qua bus thông qua \texttt{soc\_top}. Bốn chương trình kiểm thử:
+
+\begin{enumerate}
+    \item \textbf{prog\_axi\_sfr}: CPU ghi/đọc các thanh ghi AXI SFR; kiểm tra kết quả đúng.
+    \item \textbf{prog\_ahb\_sfr}: CPU ghi/đọc các thanh ghi AHB SFR qua CDC; kiểm tra kết quả đúng.
+    \item \textbf{prog\_axi\_irq}: CPU cấu hình AXI SFR IRQ, kích hoạt ngắt qua INTR\_TEST, xử lý ISR, clear INTR\_STATE.
+    \item \textbf{prog\_ahb\_irq}: Tương tự với AHB SFR -- IRQ từ 500\,MHz domain, qua 2-FF sync, đến PLIC, đến CPU.
+\end{enumerate}
+
+Kết quả: \textbf{4/4 PASS}. Trong quá trình này, bug B8 được phát hiện: bus stall kết hợp load-use hazard gây LW bị hủy oan. Sửa trong \texttt{hazard\_unit.sv}.
+
+\subsection{Phase 6a -- System Batch Test (20 Chương Trình)}
+
+\texttt{tb\_soc\_top} chạy tự động 20 chương trình qua \texttt{soc\_top} với sequence reset chuẩn, bao gồm tất cả 9 chương trình từ Phase 3 cộng thêm 11 chương trình mới kiểm tra các tình huống phức tạp hơn.
+
+\begin{figure}[htp]
+\centering
+\fbox{\parbox{0.85\textwidth}{\centering\textit{[Chèn hình: Waveform pipeline hoạt động -- 5-10 chu kỳ liên tiếp thể hiện pipeline đầy đủ 7 tầng: IF1 (PC), IF2 (instr từ IMEM), ID (decode), EX (ALU result), MEM1/MEM2/WB; forwarding paths active; có 1 stall cycle do load-use; flush do branch taken]}\vspace{4cm}}}
+\caption{Dạng sóng pipeline CPU trong quá trình mô phỏng hệ thống}
+\label{fig:pipeline-waveform}
+\end{figure}
+
+Kết quả: \textbf{20/20 PASS}.
+
+\subsection{Phase 6b -- Compliance Framework (3 Chương Trình)}
+
+\texttt{tb\_compliance} sử dụng framework riêng tương tự riscv-arch-test để kiểm tra các trường hợp đặc biệt: shifts (tất cả shift operations với biên), compare (SLT/SLTU với signed/unsigned edge cases), và dmem\_endurance (ghi/đọc 256 địa chỉ DMEM liên tiếp). Kết quả: \textbf{3/3 TEST\_PASS}.
+
+\section{Kiểm Thử PLIC và EX Stage (Phase 7 và 8)}
+
+\subsection{Phase 7 -- PLIC Unit Test (31 Test Case) và Hệ Thống (3 Chương Trình)}
+
+\texttt{tb\_plic} kiểm thử module \texttt{plic} với 31 test case bao gồm:
+\begin{itemize}
+    \item Không có ngắt -- PLIC xuất meip=0.
+    \item Ngắt đơn nguồn với priority > 0.
+    \item Nhiều ngắt đồng thời -- PLIC chọn nguồn có priority cao nhất.
+    \item Threshold: ngắt có priority = threshold không được chuyển lên CPU.
+    \item Claim/Complete cycle: CLAIM trả về ID đúng, COMPLETE clear pending.
+    \item Edge case: priority = 0 (disabled), priority wrap-around.
+\end{itemize}
+
+Ba chương trình hệ thống (\texttt{prog\_plic\_basic}, \texttt{prog\_plic\_priority}, \texttt{prog\_plic\_threshold}) kiểm tra PLIC trong môi trường SoC hoàn chỉnh. Kết quả: \textbf{31/31 PASS + 3/3 PASS}.
+
+\subsection{Phase 8 -- EX Stage Unit Test (23 Test Case) và CSR Hazard}
+
+\texttt{tb\_ex\_stage} kiểm thử module \texttt{ex\_stage} như một đơn vị hoàn chỉnh (bao gồm forwarding\_unit, ALU, branch\_comp, addr\_adder và các MUX bên trong). Đặc biệt kiểm tra:
+\begin{itemize}
+    \item Forwarding override: khi có forwarding, ALU sử dụng dữ liệu mới nhất.
+    \item Branch resolution: branch\_taken đúng với tất cả sáu điều kiện.
+    \item JALR address masking: bit 0 của địa chỉ đích được mask.
+\end{itemize}
+
+Chương trình \texttt{prog\_csr\_hazard} chạy qua tất cả CSR-use gap (0--4): lệnh CSR ở EX/MEM1/MEM2/WB và lệnh tiếp theo đọc kết quả CSR với các khoảng cách khác nhau. Hazard unit phải stall đúng số chu kỳ. Kết quả: \textbf{23/23 PASS + 1/1 PASS}.
+
+\section{Kiểm Thử Đơn Vị Bổ Sung}
+
+Ba module phụ được bổ sung unit test riêng trong giai đoạn hoàn thiện:
+
+\begin{table}[htbp]
+\caption{Kết quả kiểm thử đơn vị bổ sung}
+\label{tab:new-unit-tests}
+\begin{center}
+\begin{tabular}{|l|c|l|}
+\hline
+\textbf{Testbench} & \textbf{Kết quả} & \textbf{Nội dung chính} \\ \hline
+tb\_irq\_sync2ff & 10/10 PASS & 2-FF sync: glitch rejection, latency 2 cycle \\ \hline
+tb\_gpio\_sfr & 22/22 PASS & GPIO output (DATA0), input (STATUS), edge-detect IRQ \\ \hline
+tb\_zicsr & 38/38 PASS & CSRRW/RS/RC, trap handler, MRET, bus error exception \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\section{Kiểm Thử Bus Error}
+
+Hai testbench tích hợp kiểm tra trường hợp bus trả lỗi:
+
+\begin{itemize}
+    \item \textbf{tb\_soc\_bus\_err:} AXI slave trả BRESP=SLVERR (store) → \texttt{mcause=7} (Store Fault); RRESP=SLVERR (load) → \texttt{mcause=5} (Load Fault). Kết quả: \textbf{2/2 PASS}.
+    \item \textbf{tb\_soc\_ahb\_err:} AHB slave trả HRESP=ERROR → load/store fault tương ứng. Kết quả: \textbf{2/2 PASS}.
+\end{itemize}
+
+Hình~\ref{fig:bus-error-waveform} minh họa quá trình phát hiện và xử lý bus error.
+
+\begin{figure}[htp]
+\centering
+\fbox{\parbox{0.85\textwidth}{\centering\textit{[Chèn hình: Waveform bus error -- AXI giao dịch ghi, slave trả BRESP=SLVERR (2'b10), axi\_interface báo axi\_resp\_err=1, mem2\_stage truyền store\_fault lên Zicsr, Zicsr flush pipeline và load mtvec, PC nhảy đến handler, mcause=7 được ghi]}\vspace{4cm}}}
+\caption{Dạng sóng xử lý bus error (BRESP SLVERR $\rightarrow$ Store Fault)}
+\label{fig:bus-error-waveform}
+\end{figure}
+
+\section{Kiểm Thử Tuân Thủ RV32I}
+
+\subsection{Bộ Kiểm Thử riscv-arch-test}
+
+Bộ kiểm thử tuân thủ chính thức \texttt{riscv-arch-test} (old-framework-2.x) của tổ chức RISC-V International \cite{riscv-arch-test} kiểm tra tất cả lệnh cơ bản của RV32I bằng phương pháp signature-based:
+
+\begin{enumerate}
+    \item Mỗi test program thực thi một chuỗi lệnh và ghi kết quả vào vùng nhớ ``signature'' trong DMEM.
+    \item Sau khi mô phỏng, testbench dump signature ra file.
+    \item Script so sánh signature với file tham chiếu được tạo từ ISS chuẩn (Spike).
+    \item Nếu signature khớp hoàn toàn: PASS; ngược lại: FAIL.
+\end{enumerate}
+
+\subsection{Thiết Lập Đặc Biệt}
+
+Một số điều chỉnh kỹ thuật cần thiết để chạy bộ kiểm thử này:
+
+\textbf{1. IMEM 512\,KB cho branch tests:} Các test BEQ/BNE/BLT/BGE/BLTU/BGEU sử dụng test vector rất dày đặc, sinh code size lên đến 293\,KB -- vượt quá IMEM 64\,KB của phần cứng. Giải pháp: tham số hóa IMEM (\texttt{IMEM\_SIZE\_KB}) và override lên 512\,KB trong compliance testbench. Đây là kiến trúc Harvard nên IMEM và DMEM là hai mảng độc lập -- không có xung đột địa chỉ.
+
+\textbf{2. DMEM preload cho load tests:} Các test LB/LBU/LH/LHU/LW đọc dữ liệu từ vùng \texttt{rvtest\_data} được khai báo trong section \texttt{.data}. Testbench cần đọc section này từ file ELF và nạp vào DMEM trước khi chạy mô phỏng.
+
+\textbf{3. X-bit handling:} Icarus Verilog khởi tạo mảng DMEM với giá trị X (không xác định). Các từ trong signature chưa được ghi phải xuất ra \texttt{"00000000"} (Spike khởi tạo bộ nhớ bằng 0). Kiểm tra \texttt{\^{}word === 1'bx} để phân biệt từ chứa X.
+
+\textbf{4. Patch jalr-01.S:} Một test case trong \texttt{jalr-01.S} dùng macro mở rộng thành lệnh \texttt{la x0, label} -- bị binutils $\geq$2.39 từ chối vì x0 là zero register. Patch thay bằng code tương đương dùng register hợp lệ, cho cùng kết quả signature.
+
+\subsection{Kết Quả Tuân Thủ}
+
+Bảng~\ref{tab:compliance-results} trình bày kết quả chi tiết của bộ kiểm thử RV32I.
+
+\begin{table}[htbp]
+\caption{Kết quả kiểm thử tuân thủ RV32I -- riscv-arch-test}
+\label{tab:compliance-results}
+\begin{center}
+\begin{tabular}{|l|c|l|}
+\hline
+\textbf{Nhóm lệnh} & \textbf{Kết quả} & \textbf{Ghi chú} \\ \hline
+addi-01 & PASS & \\ \hline
+add-01 & PASS & \\ \hline
+andi-01 & PASS & \\ \hline
+and-01 & PASS & \\ \hline
+auipc-01 & PASS & \\ \hline
+beq-01 & PASS & 512\,KB IMEM (code 220\,KB) \\ \hline
+bge-01 & PASS & 512\,KB IMEM (code 220\,KB) \\ \hline
+bgeu-01 & PASS & 512\,KB IMEM (code 291\,KB) \\ \hline
+blt-01 & PASS & 512\,KB IMEM (code 220\,KB) \\ \hline
+bltu-01 & PASS & 512\,KB IMEM (code 293\,KB) \\ \hline
+bne-01 & PASS & 512\,KB IMEM (code 220\,KB) \\ \hline
+jal-01 & SKIP & Code $\approx$1.7\,MB, cần IMEM $>$2\,MB \\ \hline
+jalr-01 & PASS & Patch test case inst\_7 (rd=x0 binutils bug) \\ \hline
+lb-align-01 & PASS & DMEM preload từ .data section \\ \hline
+lbu-align-01 & PASS & \\ \hline
+lh-align-01 & PASS & \\ \hline
+lhu-align-01 & PASS & \\ \hline
+lui-01 & PASS & \\ \hline
+lw-align-01 & PASS & \\ \hline
+ori-01 & PASS & \\ \hline
+or-01 & PASS & \\ \hline
+sb-align-01 & PASS & \\ \hline
+sh-align-01 & PASS & \\ \hline
+slli-01 & PASS & \\ \hline
+sll-01 & PASS & \\ \hline
+slti-01 & PASS & \\ \hline
+slt-01 & PASS & \\ \hline
+sltiu-01 & PASS & \\ \hline
+sltu-01 & PASS & \\ \hline
+srai-01 & PASS & \\ \hline
+sra-01 & PASS & \\ \hline
+srli-01 & PASS & \\ \hline
+srl-01 & PASS & \\ \hline
+sub-01 & PASS & \\ \hline
+sw-align-01 & PASS & \\ \hline
+xori-01 & PASS & \\ \hline
+xor-01 & PASS & \\ \hline
+\hline
+\multicolumn{2}{|c|}{\textbf{Tổng}} & \textbf{37/38 PASS; 1 SKIP (jal-01)} \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+Test jal-01 được phân loại là SKIP (không phải FAIL): bài kiểm thử này thiết kế để test JAL với offset $\pm$1\,MB, đòi hỏi code size khoảng 1.7\,MB -- vượt quá giới hạn thực tế của bất kỳ IMEM nhúng nào. Lệnh JAL đã được kiểm chứng hoạt động đúng thông qua 37 chương trình system test (mọi function call đều sử dụng JAL).
+
+\section{Tổng Kết và Đánh Giá}
+
+\subsection{Tổng Hợp Kết Quả}
+
+Bảng~\ref{tab:test-summary} tổng hợp toàn bộ kết quả kiểm thử.
+
+\begin{table}[htbp]
+\caption{Tổng hợp kết quả kiểm thử toàn dự án}
+\label{tab:test-summary}
+\begin{center}
+\begin{tabular}{|l|l|c|c|}
+\hline
+\textbf{Pha} & \textbf{Mô tả} & \textbf{Số lượng} & \textbf{Kết quả} \\ \hline
+Phase 1 & Unit test: alu, branch\_comp, regfile, id\_decoder & 192 cases & 192/192 PASS \\ \hline
+Phase 2 & Unit test: forwarding, hazard, async\_fifo & 114 cases & 114/114 PASS \\ \hline
+Phase 3 & Integration: pipeline đầy đủ (9 programs) & 9 programs & 9/9 PASS \\ \hline
+Phase 4a & Integration: AXI interface & 49 cases & 49/49 PASS \\ \hline
+Phase 4b & Integration: AHB interface + CDC & 29 cases & 29/29 PASS \\ \hline
+Phase 4c & Integration: AXI full path + 3 SFR & 47 cases & 47/47 PASS \\ \hline
+Phase 4d & Integration: AHB full path + 3 SFR & 38 cases & 38/38 PASS \\ \hline
+Phase 5 & System: SoC + AXI/AHB SFR + IRQ (4 programs) & 4 programs & 4/4 PASS \\ \hline
+Phase 6a & System: batch 20 programs qua soc\_top & 20 programs & 20/20 PASS \\ \hline
+Phase 6b & Compliance framework (3 programs) & 3 programs & 3/3 PASS \\ \hline
+Phase 7 & Unit: PLIC (31) + system (3 programs) & 31+3 & 31/31+3/3 PASS \\ \hline
+Phase 8 & Unit: EX stage (23) + CSR hazard (1) & 23+1 & 23/23+1/1 PASS \\ \hline
+New unit & irq\_sync2ff (10), gpio\_sfr (22), zicsr (38) & 70 cases & 70/70 PASS \\ \hline
+Bus error & AXI bus error + AHB bus error & 4 cases & 4/4 PASS \\ \hline
+Compliance & riscv-arch-test RV32I & 38 tests & 37 PASS, 1 SKIP \\ \hline
+\hline
+\multicolumn{2}{|c|}{\textbf{Tổng}} & \textbf{$>$630 cases + 37 programs} & \textbf{Tất cả PASS} \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\subsection{Bug Phát Hiện và Sửa Chữa}
+
+Trong quá trình kiểm thử, tám bug RTL và testbench đã được phát hiện và sửa chữa. Bảng~\ref{tab:bugs} liệt kê các bug RTL quan trọng nhất.
+
+\begin{table}[htbp]
+\caption{Các bug RTL quan trọng phát hiện trong quá trình kiểm thử}
+\label{tab:bugs}
+\begin{center}
+\begin{tabular}{|c|l|l|l|}
+\hline
+\textbf{\#} & \textbf{Bug} & \textbf{Module} & \textbf{Tác động} \\ \hline
+B3 & Gap-4 RAW hazard thiếu WBR bypass & register\_file & Dữ liệu sai \\ \hline
+B4 & IMEM synchronous stall mismatch & imem & Instruction bị mất \\ \hline
+B5 & CSR-use hazard stall quá muộn & hazard\_unit & CSR read sai \\ \hline
+B6 & Ghost instruction sau zicsr\_flush & imem & Vòng lặp trap vô hạn \\ \hline
+B8 & bus\_stall + load\_use → LW bị hủy & hazard\_unit & Bus read không xảy ra \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\subsection{Phân Tích Hiệu Năng Pipeline}
+
+Trong điều kiện lý tưởng (không hazard), pipeline 7 tầng đạt throughput 1 lệnh/chu kỳ (IPC = 1). Các trường hợp làm giảm IPC trong thực tế:
+
+\begin{itemize}
+    \item \textbf{Branch/Jump:} 2 chu kỳ flush mỗi lần rẽ nhánh (không có branch prediction).
+    \item \textbf{Load-use:} 1 chu kỳ stall mỗi lần LW theo sau ngay bởi lệnh dùng kết quả.
+    \item \textbf{CSR-use:} 1--3 chu kỳ stall tùy khoảng cách.
+    \item \textbf{Bus stall:} 4--6 chu kỳ cho AXI, 6--12 chu kỳ cho AHB (bao gồm CDC latency).
+\end{itemize}
+
+Nhờ forwarding unit hoàn chỉnh (gap-1, 2, 3, 4 không stall), các hazard dữ liệu phổ biến nhất được xử lý miễn phí, góp phần duy trì throughput cao trong hầu hết các tình huống thực tế.

@@ -1,0 +1,85 @@
+
+programs/prog_plic_priority.elf:     file format elf32-littleriscv
+
+
+Disassembly of section .text:
+
+00000000 <_start>:
+   0:	00000097          	auipc	x1,0x0
+   4:	0c408093          	addi	x1,x1,196 # c4 <plic_handler>
+   8:	30509073          	csrw	mtvec,x1
+   c:	0c000337          	lui	x6,0xc000
+  10:	00100393          	li	x7,1
+  14:	00732223          	sw	x7,4(x6) # c000004 <__bss_end+0xbff0004>
+  18:	00200393          	li	x7,2
+  1c:	00732423          	sw	x7,8(x6)
+  20:	0c002437          	lui	x8,0xc002
+  24:	00600493          	li	x9,6
+  28:	00942023          	sw	x9,0(x8) # c002000 <__bss_end+0xbff2000>
+  2c:	0c200537          	lui	x10,0xc200
+  30:	00052023          	sw	x0,0(x10) # c200000 <__bss_end+0xc1f0000>
+  34:	00100113          	li	x2,1
+  38:	00b11113          	slli	x2,x2,0xb
+  3c:	30412073          	csrs	mie,x2
+  40:	20000237          	lui	x4,0x20000
+  44:	200012b7          	lui	x5,0x20001
+  48:	00100193          	li	x3,1
+  4c:	00322423          	sw	x3,8(x4) # 20000008 <__bss_end+0x1fff0008>
+  50:	0032a423          	sw	x3,8(x5) # 20001008 <__bss_end+0x1fff1008>
+  54:	00322823          	sw	x3,16(x4) # 10 <_start+0x10>
+  58:	0032a823          	sw	x3,16(x5)
+  5c:	00800593          	li	x11,8
+  60:	3005a073          	csrs	mstatus,x11
+  64:	00000013          	nop
+  68:	00000013          	nop
+  6c:	00000013          	nop
+  70:	00000013          	nop
+  74:	00000013          	nop
+  78:	00000013          	nop
+  7c:	00000013          	nop
+  80:	00000013          	nop
+  84:	00000013          	nop
+  88:	00000013          	nop
+  8c:	0300006f          	j	bc <fail>
+
+00000090 <after_handler>:
+  90:	00010637          	lui	x12,0x10
+  94:	00062683          	lw	x13,0(x12) # 10000 <__bss_end>
+  98:	00462703          	lw	x14,4(x12)
+  9c:	00862783          	lw	x15,8(x12)
+  a0:	00200093          	li	x1,2
+  a4:	00169c63          	bne	x13,x1,bc <fail>
+  a8:	00100093          	li	x1,1
+  ac:	00171863          	bne	x14,x1,bc <fail>
+  b0:	00079663          	bnez	x15,bc <fail>
+  b4:	00100f93          	li	x31,1
+  b8:	00100073          	ebreak
+
+000000bc <fail>:
+  bc:	00000f93          	li	x31,0
+  c0:	00100073          	ebreak
+
+000000c4 <plic_handler>:
+  c4:	34202a73          	csrr	x20,mcause
+  c8:	80000ab7          	lui	x21,0x80000
+  cc:	00ba8a93          	addi	x21,x21,11 # 8000000b <__bss_end+0x7fff000b>
+  d0:	ff5a16e3          	bne	x20,x21,bc <fail>
+  d4:	0c200a37          	lui	x20,0xc200
+  d8:	00010c37          	lui	x24,0x10
+  dc:	004a2a83          	lw	x21,4(x20) # c200004 <__bss_end+0xc1f0004>
+  e0:	015c2023          	sw	x21,0(x24) # 10000 <__bss_end>
+  e4:	20001cb7          	lui	x25,0x20001
+  e8:	00100d13          	li	x26,1
+  ec:	01aca623          	sw	x26,12(x25) # 2000100c <__bss_end+0x1fff100c>
+  f0:	015a2223          	sw	x21,4(x20)
+  f4:	004a2b03          	lw	x22,4(x20)
+  f8:	016c2223          	sw	x22,4(x24)
+  fc:	20000cb7          	lui	x25,0x20000
+ 100:	01aca623          	sw	x26,12(x25) # 2000000c <__bss_end+0x1fff000c>
+ 104:	016a2223          	sw	x22,4(x20)
+ 108:	004a2b83          	lw	x23,4(x20)
+ 10c:	017c2423          	sw	x23,8(x24)
+ 110:	00000d97          	auipc	x27,0x0
+ 114:	f80d8d93          	addi	x27,x27,-128 # 90 <after_handler>
+ 118:	341d9073          	csrw	mepc,x27
+ 11c:	30200073          	mret

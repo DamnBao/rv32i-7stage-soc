@@ -1,0 +1,70 @@
+\chapter{GIỚI THIỆU}
+\label{Chapter1}
+
+\section{Bối Cảnh và Động Lực Nghiên Cứu}
+
+Trong bối cảnh ngành công nghiệp vi điện tử đang phát triển nhanh chóng, xu hướng thiết kế phần cứng mở (open-source hardware) ngày càng được quan tâm rộng rãi. Kiến trúc tập lệnh RISC-V (Reduced Instruction Set Computer -- Version 5), ra đời tại Đại học California, Berkeley vào năm 2010, đã trở thành một trong những nền tảng quan trọng nhất trong xu hướng này \cite{riscv-spec}. Khác với các kiến trúc thương mại như ARM hay x86, RISC-V hoàn toàn mở, không thu phí bản quyền và được quản lý bởi tổ chức phi lợi nhuận RISC-V International. Điều này tạo điều kiện thuận lợi để các cơ sở học thuật và doanh nghiệp có thể tự do nghiên cứu, triển khai và tùy chỉnh kiến trúc theo nhu cầu cụ thể.
+
+Theo báo cáo thị trường của Semico Research, số lõi vi xử lý RISC-V được tích hợp vào sản phẩm thương mại dự kiến đạt 62 tỷ đơn vị vào năm 2025 \cite{semico-riscv-growth}. Sự phát triển vượt bậc này được thúc đẩy bởi nhu cầu ngày càng cao về các hệ thống nhúng hiệu suất cao, tiêu thụ điện năng thấp, và có thể tùy chỉnh linh hoạt -- từ các thiết bị IoT nhỏ gọn đến các hệ thống xử lý dữ liệu phức tạp trong trung tâm dữ liệu. Trong bối cảnh đó, việc nghiên cứu và thiết kế một hệ thống trên chip (\acrfull{soc}) hoàn chỉnh dựa trên RISC-V có giá trị học thuật và thực tiễn cao.
+
+Thiết kế một SoC không chỉ đòi hỏi việc xây dựng lõi vi xử lý mà còn bao gồm tích hợp các giao thức bus công nghiệp chuẩn để kết nối với ngoại vi, xử lý ngắt và ngoại lệ, đồng bộ hóa giữa các miền xung nhịp khác nhau, và kiểm chứng toàn diện để đảm bảo tính đúng đắn của thiết kế. Đây là những kỹ năng thiết yếu trong quy trình thiết kế vi mạch tích hợp (\acrshort{asic}/FPGA) hiện đại.
+
+\section{Mục Tiêu và Phạm Vi}
+
+Khóa luận này đặt ra mục tiêu thiết kế và kiểm chứng một hệ thống SoC hoàn chỉnh dựa trên kiến trúc RISC-V, bao gồm:
+
+\begin{enumerate}
+    \item \textbf{Lõi CPU:} Xây dựng vi xử lý RV32I với phần mở rộng Zicsr theo đặc tả RISC-V, tổ chức theo kiến trúc pipeline 7 tầng với tần số mục tiêu 1\,GHz.
+    \item \textbf{Tích hợp bus chuẩn công nghiệp:} Kết nối CPU với ngoại vi thông qua hai giao thức bus -- AXI4-Lite (AMBA~4.0) và AHB-Lite (AMBA~3.0) -- đại diện cho hai tiêu chuẩn phổ biến nhất trong thiết kế SoC hiện đại \cite{amba-axi-spec, amba-ahb-spec}.
+    \item \textbf{Xử lý đa miền xung nhịp:} Triển khai cơ chế Clock Domain Crossing (\acrshort{cdc}) sử dụng FIFO bất đồng bộ với con trỏ Gray code để truyền dữ liệu an toàn giữa miền 1\,GHz và 500\,MHz.
+    \item \textbf{Hệ thống ngắt và ngoại lệ:} Triển khai \acrfull{plic} tương thích chuẩn SiFive và khối Zicsr xử lý ngắt/ngoại lệ M-mode theo đặc tả RISC-V Privileged Architecture \cite{riscv-priv-spec}.
+    \item \textbf{Kiểm chứng toàn diện:} Xây dựng môi trường kiểm thử nhiều lớp và đạt chuẩn tuân thủ bộ kiểm thử chính thức RV32I của tổ chức RISC-V International \cite{riscv-arch-test}.
+\end{enumerate}
+
+Phạm vi thiết kế giới hạn ở mức RTL (Register Transfer Level) sử dụng ngôn ngữ SystemVerilog có thể tổng hợp. Toàn bộ mô phỏng được thực hiện bằng công cụ Icarus Verilog~12 \cite{icarus-verilog}.
+
+\section{Phương Pháp Thực Hiện}
+
+Quy trình thiết kế và kiểm chứng trong khóa luận này theo mô hình phát triển từ trên xuống (top-down) kết hợp kiểm chứng từ dưới lên (bottom-up verification):
+
+\begin{itemize}
+    \item \textbf{Pha 1 -- Đặc tả:} Xác định kiến trúc hệ thống, bản đồ bộ nhớ, giao thức bus và các yêu cầu chức năng chi tiết.
+    \item \textbf{Pha 2 -- Thiết kế RTL:} Viết các module SystemVerilog theo từng khối chức năng, tuân thủ các quy tắc coding cho synthesizable design và yêu cầu của công cụ mô phỏng.
+    \item \textbf{Pha 3 -- Kiểm chứng phân cấp:} Bắt đầu từ unit test từng module, tiếp theo là integration test các subsystem, và system test toàn bộ SoC với nhiều chương trình thử nghiệm khác nhau.
+    \item \textbf{Pha 4 -- Kiểm thử tuân thủ:} Sử dụng bộ kiểm thử chính thức riscv-arch-test để xác nhận tính tuân thủ đặc tả RV32I.
+\end{itemize}
+
+\section{Các Công Cụ Sử Dụng}
+
+Bảng~\ref{tab:tools} liệt kê các công cụ phần mềm chính được sử dụng trong quá trình thực hiện khóa luận.
+
+\begin{table}[htbp]
+\caption{Công cụ phần mềm sử dụng trong dự án}
+\label{tab:tools}
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Công cụ} & \textbf{Phiên bản} & \textbf{Mục đích} \\ \hline
+Icarus Verilog & 12 & Mô phỏng RTL SystemVerilog \\ \hline
+riscv64-unknown-elf-gcc & 13.2.0 & Biên dịch chương trình RISC-V \\ \hline
+GTKWave & 3.3.x & Xem dạng sóng (waveform) VCD \\ \hline
+riscv-arch-test & 2.x (old-framework) & Bộ kiểm thử tuân thủ RV32I \\ \hline
+GNU Make & 4.x & Tự động hóa quy trình build/test \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\section{Cấu Trúc Khóa Luận}
+
+Nội dung khóa luận được tổ chức thành sáu chương, trình bày tuần tự từ bối cảnh nghiên cứu, tổng quan lý thuyết, thiết kế, triển khai thực nghiệm đến phân tích, đánh giá kết quả và kết luận. Cụ thể:
+
+\begin{itemize}
+    \item \textbf{Chương 1 -- Giới thiệu:} Trình bày bối cảnh nghiên cứu, động lực thực hiện đề tài, mục tiêu, phạm vi, công cụ sử dụng và tóm lược cấu trúc toàn khóa luận.
+    \item \textbf{Chương 2 -- Tổng quan nghiên cứu:} Điểm qua các dự án RISC-V SoC tiêu biểu trong và ngoài nước, phân tích điểm tương đồng và khác biệt so với thiết kế đề xuất.
+    \item \textbf{Chương 3 -- Cơ sở lý thuyết:} Trình bày nền tảng lý thuyết về kiến trúc tập lệnh RISC-V, kỹ thuật pipeline, các giao thức bus AXI-Lite và AHB-Lite, cơ chế CDC và xử lý ngắt.
+    \item \textbf{Chương 4 -- Thiết kế và triển khai hệ thống:} Mô tả chi tiết kiến trúc và cách triển khai từng thành phần của SoC, bao gồm pipeline CPU, bus interface, CDC, PLIC và Zicsr.
+    \item \textbf{Chương 5 -- Kết quả thực nghiệm:} Trình bày môi trường kiểm thử, phân tích kết quả từng pha kiểm thử, phân tích dạng sóng minh họa và đánh giá tổng thể hiệu quả thiết kế.
+    \item \textbf{Chương 6 -- Kết luận:} Tóm tắt kết quả đạt được, nêu hạn chế và đề xuất hướng phát triển tiếp theo.
+\end{itemize}
+
+Bên cạnh đó, khóa luận còn đính kèm phần \textbf{Tài liệu tham khảo} ở cuối nhằm cung cấp thông tin chi tiết cho việc tra cứu.

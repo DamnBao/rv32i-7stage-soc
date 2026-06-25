@@ -277,3 +277,28 @@ Chi tiết xem `SIM/TEST_LOG.md`.
 | CSR-use | hazard_unit: stall IF1..ID khi CSR@EX/MEM1/MEM2 | 3/2/1 |
 | Branch/Jump | flush IF1/IF2 và IF2/ID | 2 slots flushed |
 | Bus stall | stall toàn pipeline | N (đến khi xong) |
+
+---
+
+## Trạng Thái Báo Cáo Khóa Luận
+
+**Thư mục:** `Document/Requirement/`
+
+| File | Trạng thái |
+|------|-----------|
+| `Content/chapter1.tex` | Hoàn thành — Giới thiệu (bối cảnh, mục tiêu, phương pháp, công cụ) |
+| `Content/chapter2.tex` | Hoàn thành — Tổng quan nghiên cứu (FE310, OpenTitan, VexRiscv, PicoRV32, bảng so sánh) |
+| `Content/chapter3.tex` | Hoàn thành — Cơ sở lý thuyết (RV32I, pipeline, AXI, AHB, CDC, PLIC) |
+| `Content/chapter4.tex` | Hoàn thành — Thiết kế & triển khai (7-stage pipeline, bus FSM, CDC FIFO, PLIC, Zicsr, SFR) |
+| `Content/chapter5.tex` | Hoàn thành — Kết quả thực nghiệm (tất cả phase; bảng compliance 38 tests; ~17 trang) |
+| `Content/chapter6.tex` | Hoàn thành — Kết luận (tóm tắt, hạn chế, hướng phát triển) |
+| `Appendix/tomtat.tex` | Hoàn thành — Tóm tắt tiếng Việt + Abstract tiếng Anh |
+| `References/references.bib` | Hoàn thành — 16 tài liệu tham khảo (riscv-spec, AXI, AHB, PLIC, CDC, v.v.) |
+| `myacronyms.sty` | Hoàn thành — 24 acronym (SoC, PLIC, CDC, AXI, AHB, ISA, CPU, ALU, v.v.) |
+| `main.tex` | Hoàn thành — Cập nhật tên đề tài và bộ môn |
+| `thesis_draft.docx` | Hoàn thành — Bản nháp DOCX (pandoc via markdown) |
+| `thesis_draft.md` | Hoàn thành — Bản nháp Markdown trung gian |
+
+**Tên đề tài:** THIẾT KẾ VÀ KIỂM CHỨNG VI XỬ LÝ RISC-V TÍCH HỢP TRÊN CHIP (SoC) VỚI GIAO DIỆN AXI-Lite VÀ AHB-Lite
+
+**Còn thiếu (user bổ sung sau):** 12 placeholder hình trong các chapter .tex (block diagram, waveform, FSM diagram)
