@@ -1,8 +1,15 @@
+// MEM1/MEM2 Pipeline Register — carries MEM1 results to MEM2.
+//
+// flush: only fires after a bus transaction completes (zicsr holds off trap until
+//        bus_stall_req drops, ensuring precise exceptions on AXI/AHB accesses).
+// stall: fires for the full duration of a bus_stall_req.
+// flush wins if both assert simultaneously.
+
 module mem1_mem2_reg (
     input  logic        clk,
     input  logic        rst_n,
-    input  logic        stall,   // = bus_stall_req (toàn pipeline đóng băng khi bus transaction)
-    input  logic        flush,   // Từ Zicsr (chỉ flush sau khi bus transaction kết thúc)
+    input  logic        stall,   // Freeze (bus_stall_req — holds pipeline while AXI/AHB pending)
+    input  logic        flush,   // Clear to NOP (zicsr trap/MRET, deferred until bus completes)
 
     //----------------- INPUTS TỪ MEM1 STAGE -----------------
     input  logic [31:0] pc_in,
@@ -12,7 +19,7 @@ module mem1_mem2_reg (
     input  logic [31:0] imm_in,
     input  logic [4:0]  rd_addr_in,
     input  logic [11:0] csr_addr_in,
-    input  logic [1:0]  mem_src_in,      // 2'b00=DMEM, 2'b01=AXI, 2'b10=AHB
+    input  logic [1:0]  mem_src_in,      // 2'b00=DMEM, 2'b01=AXI, 2'b10=AHB, 2'b11=PLIC
     input  logic        mem_ext_in,
     input  logic [1:0]  mem_size_in,
     input  logic        reg_write_in,

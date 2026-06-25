@@ -1,8 +1,14 @@
+// EX/MEM1 Pipeline Register — carries EX stage results to MEM1.
+//
+// flush: clears control signals to NOP — only fires on zicsr trap/MRET.
+// stall: holds register values — fires on bus_stall_req (AXI/AHB transaction).
+// flush wins if both assert simultaneously.
+
 module ex_mem1_reg (
     input  logic        clk,
     input  logic        rst_n,
-    input  logic        stall,   // Từ Hazard Unit (bus_stall_req)
-    input  logic        flush,   // Từ Zicsr (exception/interrupt)
+    input  logic        stall,   // Freeze (bus_stall_req from mem1_stage)
+    input  logic        flush,   // Clear to NOP (zicsr trap/MRET)
 
     //----------------- INPUTS TỪ TẦNG EX -----------------
     // Dữ liệu

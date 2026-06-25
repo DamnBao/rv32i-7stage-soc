@@ -1,8 +1,14 @@
+// MEM2/WB Pipeline Register — carries MEM2 results to the WB stage.
+//
+// flush: clears control signals to NOP — fires on zicsr trap/MRET.
+// stall: holds register values — fires on bus_stall_req.
+// flush wins if both assert simultaneously.
+
 module mem2_wb_reg (
     input  logic        clk,
     input  logic        rst_n,
-    input  logic        stall,   // = bus_stall_req
-    input  logic        flush,   // Từ Zicsr
+    input  logic        stall,   // Freeze (bus_stall_req from mem1_stage)
+    input  logic        flush,   // Clear to NOP (zicsr trap/MRET)
 
     //----------------- INPUTS TỪ MEM2 STAGE -----------------
     input  logic [31:0] pc_in,

@@ -2,13 +2,23 @@
 
 module tb_hazard_unit;
 
+    // Inputs
     logic       bus_stall_req;
     logic       ex_mem_read;
     logic [4:0] ex_rd_addr;
+    logic [1:0] ex_wb_sel;       // CSR-use: 2'b11 if CSR instruction at EX
+    logic       ex_reg_write;    // CSR-use: rd is written
+    logic [1:0] mem1_wb_sel;
+    logic [4:0] mem1_rd_addr;
+    logic       mem1_reg_write;
+    logic [1:0] mem2_wb_sel;
+    logic [4:0] mem2_rd_addr;
+    logic       mem2_reg_write;
     logic [4:0] id_rs1_addr, id_rs2_addr;
     logic       branch_taken, jump;
     logic       zicsr_flush;
 
+    // Outputs
     logic       stall_if1_if2, stall_if2_id, stall_id_ex;
     logic       stall_ex_mem1, stall_mem1_mem2, stall_mem2_wb;
     logic       stall_pc, flush_pc;
@@ -29,16 +39,23 @@ module tb_hazard_unit;
         end
     endtask
 
-    // Reset tất cả inputs về idle
     task automatic idle();
-        bus_stall_req = 0;
-        ex_mem_read   = 0;
-        ex_rd_addr    = 5'd0;
-        id_rs1_addr   = 5'd1;
-        id_rs2_addr   = 5'd2;
-        branch_taken  = 0;
-        jump          = 0;
-        zicsr_flush   = 0;
+        bus_stall_req  = 0;
+        ex_mem_read    = 0;
+        ex_rd_addr     = 5'd0;
+        ex_wb_sel      = 2'b00;
+        ex_reg_write   = 0;
+        mem1_wb_sel    = 2'b00;
+        mem1_rd_addr   = 5'd0;
+        mem1_reg_write = 0;
+        mem2_wb_sel    = 2'b00;
+        mem2_rd_addr   = 5'd0;
+        mem2_reg_write = 0;
+        id_rs1_addr    = 5'd1;
+        id_rs2_addr    = 5'd2;
+        branch_taken   = 0;
+        jump           = 0;
+        zicsr_flush    = 0;
         #1;
     endtask
 
@@ -191,6 +208,67 @@ module tb_hazard_unit;
         #1;
         chk1("flush_ex_mem1=1 (zicsr wins)", flush_ex_mem1, 1'b1);
         chk1("flush_mem2_wb=1 (zicsr wins)", flush_mem2_wb, 1'b1);
+
+        // ── CSR-use hazard: CSR at EX, ID reads same rd ──
+        // CSR result available at WB only → stall ID for 3 cycles when CSR at EX
+        $display("--- CSR-use: CSR at EX, rs1 match ---");
+        idle();
+        ex_wb_sel    = 2'b11;  // CSR instruction
+        ex_reg_write = 1;
+        ex_rd_addr   = 5'd6;
+        id_rs1_addr  = 5'd6;  // match
+        id_rs2_addr  = 5'd9;
+        #1;
+        chk1("stall_pc=1 (CSR-use EX)",      stall_pc,    1'b1);
+        chk1("stall_if1_if2=1 (CSR-use EX)", stall_if1_if2, 1'b1);
+        chk1("stall_if2_id=1 (CSR-use EX)",  stall_if2_id,  1'b1);
+        chk1("stall_id_ex=0 (not stall EX)", stall_id_ex,   1'b0);
+        chk1("flush_id_ex=1 (bubble)",       flush_id_ex,   1'b1);
+
+        // ── CSR-use at MEM1 ──
+        $display("--- CSR-use: CSR at MEM1, rs2 match ---");
+        idle();
+        mem1_wb_sel    = 2'b11;
+        mem1_reg_write = 1;
+        mem1_rd_addr   = 5'd7;
+        id_rs2_addr    = 5'd7;  // match rs2
+        #1;
+        chk1("stall_pc=1 (CSR-use MEM1)",    stall_pc,    1'b1);
+        chk1("flush_id_ex=1 (bubble MEM1)",  flush_id_ex, 1'b1);
+
+        // ── CSR-use at MEM2 ──
+        $display("--- CSR-use: CSR at MEM2, rs1 match ---");
+        idle();
+        mem2_wb_sel    = 2'b11;
+        mem2_reg_write = 1;
+        mem2_rd_addr   = 5'd8;
+        id_rs1_addr    = 5'd8;
+        #1;
+        chk1("stall_pc=1 (CSR-use MEM2)",    stall_pc,    1'b1);
+        chk1("flush_id_ex=1 (bubble MEM2)",  flush_id_ex, 1'b1);
+
+        // ── CSR-use with rd=x0 → no stall ──
+        $display("--- CSR-use rd=x0 → no stall ---");
+        idle();
+        mem1_wb_sel    = 2'b11;
+        mem1_reg_write = 1;
+        mem1_rd_addr   = 5'd0;  // x0: never written, never hazard
+        id_rs1_addr    = 5'd0;
+        #1;
+        chk1("stall_pc=0 (CSR rd=x0)",       stall_pc,    1'b0);
+        chk1("flush_id_ex=0 (CSR rd=x0)",    flush_id_ex, 1'b0);
+
+        // ── CSR-use during bus stall: flush_id_ex suppressed ──
+        $display("--- Bus stall suppresses CSR-use bubble ---");
+        idle();
+        bus_stall_req  = 1;
+        ex_wb_sel      = 2'b11;
+        ex_reg_write   = 1;
+        ex_rd_addr     = 5'd6;
+        id_rs1_addr    = 5'd6;
+        #1;
+        chk1("stall_pc=1 (bus wins)",         stall_pc,    1'b1);
+        chk1("flush_id_ex=0 (suppressed)",    flush_id_ex, 1'b0);  // bus_stall suppresses bubble
 
         $display("==============================");
         $display("RESULT: PASS=%0d  FAIL=%0d", pass_cnt, fail_cnt);

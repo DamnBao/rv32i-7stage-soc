@@ -1,32 +1,39 @@
+// Register File — 32×32-bit synchronous-write, combinational-read, 2 read ports.
+//
+// Gap-4 RAW bypass (write-before-read):
+//   In a 7-stage pipeline, WB commits on the same cycle that ID reads the register
+//   file. Without bypass, the instruction at ID would read a stale value because the
+//   synchronous write happens at the next posedge. The combinational bypass on the
+//   read ports resolves this without a stall.
+//
+// x0 hardwired to zero: write enable is gated so x0 is never updated.
+
 module register_file (
     input  logic        clk,
     input  logic        rst_n,
 
-    // Port Đọc 1 (phục vụ rs1 tại tầng ID)
+    // Read port 1 (rs1 at ID stage)
     input  logic [4:0]  rs1_addr,
     output logic [31:0] rs1_data,
 
-    // Port Đọc 2 (phục vụ rs2 tại tầng ID)
+    // Read port 2 (rs2 at ID stage)
     input  logic [4:0]  rs2_addr,
     output logic [31:0] rs2_data,
 
-    // Port Ghi (phục vụ rd từ tầng WB)
-    input  logic        we,        // Write Enable (từ tín hiệu điều khiển của lệnh)
+    // Write port (rd from WB stage)
+    input  logic        we,
     input  logic [4:0]  rd_addr,
     input  logic [31:0] rd_data
 );
 
-    // Mảng 32 thanh ghi 32-bit
     logic [31:0] registers [0:31];
     integer i;
 
-    // Gap-4 RAW bypass: WB và ID trùng chu kỳ, mảng chưa cập nhật nên
-    // forward rd_data trực tiếp khi WB đang ghi đúng thanh ghi đang đọc.
     logic we_valid;
-    assign we_valid = we && (rd_addr != 5'd0);
+    assign we_valid = we && (rd_addr != 5'd0);  // x0 is never written
 
     //=========================================================
-    // Thao tác Ghi (Synchronous Write)
+    // Synchronous Write
     //=========================================================
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
@@ -38,13 +45,12 @@ module register_file (
     end
 
     //=========================================================
-    // Thao tác Đọc (Combinational Read, write-before-read bypass)
+    // Combinational Read — gap-4 RAW bypass included
     //=========================================================
-
-    assign rs1_data = (rs1_addr == 5'd0)             ? 32'd0   :
+    assign rs1_data = (rs1_addr == 5'd0)               ? 32'd0   :
                       (we_valid && rd_addr == rs1_addr) ? rd_data :
                       registers[rs1_addr];
-    assign rs2_data = (rs2_addr == 5'd0)             ? 32'd0   :
+    assign rs2_data = (rs2_addr == 5'd0)               ? 32'd0   :
                       (we_valid && rd_addr == rs2_addr) ? rd_data :
                       registers[rs2_addr];
 

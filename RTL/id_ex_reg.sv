@@ -1,10 +1,16 @@
+// ID/EX Pipeline Register — carries all decode outputs from ID to EX.
+//
+// flush: clears all control signals to zero (NOP bubble) — used by load-use stall
+//        (1-cycle bubble) and zicsr trap flush.
+// stall: holds register values (bus stall, load-use stall before bubble).
+// flush wins if both assert simultaneously.
+
 module id_ex_reg (
     input  logic        clk,
     input  logic        rst_n,
-    
-    // Tín hiệu điều khiển pipeline từ Hazard Unit
-    input  logic        stall,
-    input  logic        flush,
+
+    input  logic        stall,   // Freeze (bus_stall_req)
+    input  logic        flush,   // Clear to NOP bubble (load-use, CSR-use, or trap)
     
     //----------------- INPUTS TỪ TẦNG ID -----------------
     input  logic [31:0] pc_in,

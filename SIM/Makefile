@@ -8,17 +8,18 @@ OBJDUMP := riscv64-unknown-elf-objdump
 CFLAGS  := -march=rv32i_zicsr -mabi=ilp32 -nostdlib -nostartfiles -T link_default.ld
 
 # ───────── RTL source lists ─────────
-RTL_INFRA = $(RTL)/reset_sync.sv $(RTL)/async_fifo.sv
+RTL_INFRA = $(RTL)/reset_sync.sv $(RTL)/async_fifo.sv $(RTL)/irq_sync2ff.sv
 RTL_MEM   = $(RTL)/imem.sv $(RTL)/dmem.sv
 
 RTL_CPU   = $(RTL)/if1_stage.sv $(RTL)/if1_if2_reg.sv \
             $(RTL)/if2_stage.sv $(RTL)/if2_id_reg.sv \
             $(RTL)/id_decoder.sv $(RTL)/register_file.sv $(RTL)/id_ex_reg.sv \
             $(RTL)/alu.sv $(RTL)/branch_comp.sv $(RTL)/addr_adder.sv \
+            $(RTL)/forwarding_unit.sv $(RTL)/ex_stage.sv \
             $(RTL)/ex_mem1_reg.sv $(RTL)/mem1_stage.sv \
             $(RTL)/mem1_mem2_reg.sv $(RTL)/mem2_stage.sv \
             $(RTL)/mem2_wb_reg.sv $(RTL)/wb_stage.sv \
-            $(RTL)/hazard_unit.sv $(RTL)/forwarding_unit.sv $(RTL)/zicsr.sv
+            $(RTL)/hazard_unit.sv $(RTL)/zicsr.sv
 
 RTL_AXI   = $(RTL)/axi_interface.sv $(RTL)/axi_interconnect.sv $(RTL)/axi_sfr.sv $(RTL)/gpio_sfr.sv
 RTL_AHB   = $(RTL)/ahb_interface.sv $(RTL)/ahb_interconnect.sv $(RTL)/ahb_sfr.sv

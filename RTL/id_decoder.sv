@@ -1,36 +1,53 @@
+// ID Decoder — combinational decode of a 32-bit RV32I+Zicsr instruction.
+//
+// All bit-field extractions are done via assign outside always_* to satisfy
+// Icarus Verilog's restriction on constant part-selects inside always blocks.
+//
+// alu_op encoding: must stay in sync with alu.sv localparams.
+// wb_sel encoding: 2'b00=ALU result, 01=memory rdata, 10=PC+4, 11=CSR rdata.
+// csr_op encoding: 2'b01=CSRRW, 10=CSRRS, 11=CSRRC.
+
 module id_decoder (
     input  logic [31:0] instr,
-    
-    // Extracted Fields
+
+    // Register indices
     output logic [4:0]  rs1_addr,
     output logic [4:0]  rs2_addr,
     output logic [4:0]  rd_addr,
-    output logic [11:0] csr_addr,
+    output logic [11:0] csr_addr,    // CSR address for Zicsr instructions
     output logic [2:0]  funct3,
-    output logic [31:0] imm,
-    
-    // Control Signals
+    output logic [31:0] imm,         // Sign-extended immediate (type selected by opcode)
+
+    // ALU control
     output logic [3:0]  alu_op,
-    output logic        alu_src_a,     // 0: rs1, 1: pc
-    output logic        alu_src_b,     // 0: rs2, 1: imm
-    output logic        branch,        // 1 nếu là lệnh rẽ nhánh
-    output logic        jump,          // 1 nếu là JAL hoặc JALR
-    output logic        jump_reg,      // 1 nếu là JALR
+    output logic        alu_src_a,   // 0=rs1, 1=PC
+    output logic        alu_src_b,   // 0=rs2, 1=imm
+
+    // Branch / jump
+    output logic        branch,      // 1 if B-type
+    output logic        jump,        // 1 if JAL or JALR
+    output logic        jump_reg,    // 1 if JALR (register-relative)
+
+    // Memory access
     output logic        mem_read,
     output logic        mem_write,
-    output logic [1:0]  mem_size,      // 00: byte, 01: half, 10: word
-    output logic        mem_ext,       // 0: zero-extend, 1: sign-extend
+    output logic [1:0]  mem_size,    // 00=byte, 01=half, 10=word
+    output logic        mem_ext,     // 0=zero-extend, 1=sign-extend
+
+    // Write-back
     output logic        reg_write,
-    output logic [1:0]  wb_sel,        // 00: ALU, 01: MEM, 10: PC+4, 11: CSR
-    
-    // Zicsr & Exception Signals
+    output logic [1:0]  wb_sel,      // 00=ALU, 01=MEM, 10=PC+4, 11=CSR
+
+    // CSR
     output logic        csr_we,
-    output logic [1:0]  csr_op,        // 01: RW, 10: RS, 11: RC
-    output logic        csr_imm_sel,   // 0: sử dụng rs1, 1: sử dụng zimm
+    output logic [1:0]  csr_op,      // 01=RW, 10=RS, 11=RC
+    output logic        csr_imm_sel, // 0=use rs1, 1=use zimm (CSRRWI/CSRRSI/CSRRCI)
+
+    // Exceptions
     output logic        ecall,
     output logic        ebreak,
     output logic        mret,
-    output logic        illegal_instr  // Báo lỗi giải mã
+    output logic        illegal_instr
 );
 
     // Định nghĩa các phép toán ALU

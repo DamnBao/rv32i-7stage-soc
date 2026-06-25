@@ -1,10 +1,15 @@
+// IF2/ID Pipeline Register — carries PC and instruction from IF2 to ID.
+//
+// flush: clears to NOP (ADDI x0,x0,0) and zeroes PC — inserts a bubble.
+// stall: holds current register values (freeze entire fetch pipeline).
+// flush wins if both assert simultaneously.
+
 module if2_id_reg (
     input  logic        clk,
     input  logic        rst_n,
 
-    // Tín hiệu điều khiển từ Hazard Unit
-    input  logic        stall,
-    input  logic        flush,
+    input  logic        stall,   // Freeze (from hazard_unit)
+    input  logic        flush,   // Clear to NOP bubble (branch/jump/trap)
 
     // Data in (Từ tầng IF2)
     input  logic [31:0] pc_in,
