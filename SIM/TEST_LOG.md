@@ -162,12 +162,16 @@ prog_load_fault    → PASS
 | 3 | `integration/tb_pipeline_cpu.sv` | `soc_top.sv` (full pipeline) | 9 programs | PASS |
 | 4a | `integration/tb_axi_interface.sv` | `axi_interface.sv` + `axi_slave_model.sv` | 49 | PASS |
 | 4b | `integration/tb_ahb_interface.sv` | `ahb_interface.sv` + CDC FIFOs + `ahb_slave_model.sv` | 29 | PASS |
-| 4c | `integration/tb_axi_full.sv` | `axi_interface.sv` + `axi_interconnect.sv` + 3×`axi_sfr.sv` | 40 | PASS |
-| 4d | `integration/tb_ahb_full.sv` | `ahb_interface.sv` + CDC + `ahb_interconnect.sv` + 3×`ahb_sfr.sv` | 35 | PASS |
+| 4c | `integration/tb_axi_full.sv` | `axi_interface.sv` + `axi_interconnect.sv` + 3×`axi_sfr.sv` | 47 | PASS |
+| 4d | `integration/tb_ahb_full.sv` | `ahb_interface.sv` + CDC + `ahb_interconnect.sv` + 3×`ahb_sfr.sv` | 38 | PASS |
 | 5 | `integration/tb_pipeline_cpu.sv` | `soc_top.sv` — AXI/AHB SFR + IRQ từ CPU | 4 programs | PASS |
-| 6a | `system/tb_soc_top.sv` | `soc_top.sv` — batch runner 16 programs (Phase3+5+6) | 16 programs | PASS |
+| 6a | `system/tb_soc_top.sv` | `soc_top.sv` — batch runner **18 programs** (Phase3+5+6+7) | 18 programs | PASS |
 | 6b | `system/tb_compliance.sv` | `soc_top.sv` — compliance framework (shifts, compare, dmem_endurance) | 3 programs | PASS |
-| **Total** | | | **446 + 32 progs** | **All PASS** |
+| 7 | `unit/tb_plic.sv` | `plic.sv` — 6-source priority arbiter | 31 | PASS |
+| 7 | `integration/tb_pipeline_cpu.sv` | `soc_top.sv` — prog_plic_basic, prog_plic_priority | 2 programs | PASS |
+| 8 | `unit/tb_ex_stage.sv` | `ex_stage.sv` + ALU/branch_comp/addr_adder/forwarding_unit | 23 | PASS |
+| integ | `integration/tb_soc_bus_err.sv` | `soc_top.sv` — AXI BRESP error → store_access_fault | 1 program | PASS |
+| **Total** | | | **519 cases + 34 progs** | **All PASS** |
 
 ---
 
@@ -1008,3 +1012,102 @@ ALL PASS
 - `SIM/system/tb_compliance.sv` — compliance framework (TEST_PASS/TEST_FAIL output)
 - `SIM/scripts/run_one_test.sh` — ELF→hex→simulate runner
 - `SIM/Makefile` — `system`, `p6_compliance`, `compliance_compile`, `compliance`, `p6_all` targets
+
+---
+
+## Nhật Ký Session 2026-06-25 — Phase 7: PLIC + Unit EX Stage + Bus Error
+
+### Phase 7: PLIC Unit + Priority Integration
+
+**Ngày hoàn thành:** 2026-06-25
+
+#### tb_plic — 31 tests PASS
+
+**Testbench:** `unit/tb_plic.sv`  
+**DUT:** `RTL/plic.sv`  
+**Lệnh:** `make unit_plic`
+
+Kiểm tra toàn bộ PLIC logic: priority arbitration, threshold filter, claim/complete flow, enable masking, 6 nguồn IRQ, rising-edge trigger.
+
+#### prog_plic_basic — PASS
+
+Chương trình đầu tiên kích hoạt PLIC từ CPU: set priority/enable/threshold qua MMIO, trigger AXI IRQ via INTR_TEST, đọc CLAIM, ghi COMPLETE. Verified claim = 1, no second IRQ.
+
+#### prog_plic_priority — PASS (sau khi fix stale VVP)
+
+**Kiểm tra:** Priority arbitration — Source 2 (pri=2) phải thắng Source 1 (pri=1) khi cả hai pending. Handler phải claim 2 trước, rồi 1, rồi 0.
+
+**Bug phát hiện và fix:**
+
+`integration/tb_pipeline_cpu.vvp` được compile từ 2026-06-24 13:40 nhưng các file RTL (mem1_stage.sv có PLIC decode, plic.sv, soc_top.sv v.v.) được cập nhật sau đó vào 2026-06-25. Icarus Verilog VVP stale → design cũ không có PLIC support → plic_sel=0 cho mọi địa chỉ PLIC → store_access_fault thay vì PLIC write → test fail.
+
+**Triệu chứng VCD:** fault_sel=1 constant (không bao giờ 0), mem1_store_fault=1 ngay ở chu kỳ đầu tiên SW → PLIC. meip KHÔNG BAO GIỜ assert. take_exception fire với mcause=7 (Store Access Fault), không phải 0x8000000B (MEI).
+
+**Fix:** `make integration/tb_pipeline_cpu.vvp` force recompile → PASS.
+
+**Bài học:** Khi `make` không được chạy mà thay vào đó `vvp <file.vvp>` được gọi trực tiếp, stale VVP không tự rebuild. Luôn dùng `make <target>` để đảm bảo dependency tracking.
+
+---
+
+### Unit EX Stage — 23 tests PASS
+
+**Testbench:** `unit/tb_ex_stage.sv`  
+**DUT:** `ex_stage.sv` + `forwarding_unit.sv` + `alu.sv` + `branch_comp.sv` + `addr_adder.sv`  
+**Lệnh:** `make unit_ex`
+
+Kiểm tra toàn bộ EX stage tích hợp: forwarding path A/B, LUI passthrough, branch taken/not-taken, JAL/JALR target, store address, immediate operand.
+
+---
+
+### Integration: Bus Error — 1/1 PASS
+
+**Testbench:** `integration/tb_soc_bus_err.sv`  
+**DUT:** `soc_top.sv` + custom AXI slave với BRESP=SLVERR  
+**Lệnh:** `make integ_bus_err`
+
+**Kiểm tra:** CPU thực thi SW → AXI slave → BRESP=2'b10 (SLVERR) → `bus_err=1` trong mem1_stage → `store_access_fault=1` → Zicsr bắt exception (mcause=7) → handler verify mcause → x31=1.
+
+---
+
+### System Batch: 18/18 PASS
+
+**Lệnh:** `make system`
+
+`system/tb_soc_top.sv` đã được cập nhật N_PROGS=18 để bao gồm cả `prog_plic_basic` và `prog_plic_priority`.
+
+```
+=== System Test: 18 programs ===
+PASS  [programs/prog_arithmetic.hex]
+PASS  [programs/prog_forwarding.hex]
+PASS  [programs/prog_load_store.hex]
+PASS  [programs/prog_branch_jump.hex]
+PASS  [programs/prog_csr.hex]
+PASS  [programs/prog_ecall.hex]
+PASS  [programs/prog_interrupt_msi.hex]
+PASS  [programs/prog_interrupt_mei.hex]
+PASS  [programs/prog_load_fault.hex]
+PASS  [programs/prog_axi_sfr.hex]
+PASS  [programs/prog_ahb_sfr.hex]
+PASS  [programs/prog_axi_irq.hex]
+PASS  [programs/prog_ahb_irq.hex]
+PASS  [programs/prog_rv32i_shifts.hex]
+PASS  [programs/prog_rv32i_compare.hex]
+PASS  [programs/prog_dmem_endurance.hex]
+PASS  [programs/prog_plic_basic.hex]
+PASS  [programs/prog_plic_priority.hex]
+=== SYSTEM TEST: 18/18 PASS ===
+```
+
+---
+
+### Files Thêm Mới / Cập Nhật Trong Session Này
+
+| File | Thay đổi |
+|------|---------|
+| `unit/tb_ex_stage.sv` | Viết mới: EX stage integration test (23/23 PASS) |
+| `integration/tb_soc_bus_err.sv` | Viết mới: AXI BRESP error → store_access_fault test |
+| `programs/prog_bus_err.s` | Viết mới: program cho integ_bus_err |
+| `programs/prog_plic_priority.s` | Viết mới: PLIC priority arbitration (2 sources, verify claim order) |
+| `programs/prog_plic_basic.s` | Viết mới: PLIC basic claim/complete |
+| `system/tb_soc_top.sv` | Cập nhật: N_PROGS=18, thêm plic_basic + plic_priority |
+| `SIM/Makefile` | Thêm: `unit_ex`, `integ_bus_err`, `p7_plic_priority` targets; P7_PROGS list; unit_all includes unit_ex |

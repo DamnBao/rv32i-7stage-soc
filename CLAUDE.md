@@ -230,9 +230,11 @@ Mọi peripheral muốn kết nối với `soc_top` phải implement register ma
 | Phase 4c | tb_axi_full (axi_interface + axi_interconnect + 3×axi_sfr — Standard Map) | 47/47 PASS |
 | Phase 4d | tb_ahb_full (ahb_interface + CDC + ahb_interconnect + 3×ahb_sfr — Standard Map) | 38/38 PASS |
 | Phase 5 | tb_pipeline_cpu (4 programs: AXI/AHB SFR write/read + AXI/AHB IRQ via INTR_TEST) | 4/4 PASS |
-| Phase 6a | tb_soc_top (batch runner: tất cả 17 programs Phase3+5+6+7 qua soc_top với reset) | 17/17 PASS |
+| Phase 6a | tb_soc_top (batch runner: tất cả **18 programs** Phase3+5+6+7 qua soc_top với reset) | **18/18 PASS** |
 | Phase 6b | tb_compliance (compliance framework: shifts, compare, dmem_endurance) | 3/3 TEST_PASS |
-| Phase 7 | unit: tb_plic (31 test cases); system: prog_plic_basic (claim/complete) | 31/31 + 1/1 PASS |
+| Phase 7 | unit: tb_plic (31 test cases); system: prog_plic_basic + prog_plic_priority | 31/31 + 2/2 PASS |
+| Phase 8 | unit: tb_ex_stage (EX stage integration: forwarding+ALU+branch+addr) | 23/23 PASS |
+| integ_bus_err | tb_soc_bus_err (AXI BRESP SLVERR → store_access_fault → exception handler) | 1/1 PASS |
 
 **Lệnh chạy:**
 ```bash
@@ -242,11 +244,13 @@ make integ_ahb                 # Phase 4b: AHB interface
 make integ_axi_full            # Phase 4c: AXI full path
 make integ_ahb_full            # Phase 4d: AHB full path
 make p5_all                    # Phase 5: 4 programs AXI/AHB SFR + IRQ
-make system                    # Phase 6a+7: batch runner 17 programs
+make system                    # Phase 6a+7+8: batch runner 18 programs
 make p6_compliance             # Phase 6b: compliance programs
 make p6_all                    # Phase 6: cả 6a + 6b
 make unit_plic                 # Phase 7: PLIC unit test (31 cases)
-make unit_all                  # Tất cả unit tests (Phase 1+2+7)
+make unit_ex                   # Phase 8: EX stage unit test (23 cases)
+make unit_all                  # Tất cả unit tests (Phase 1+2+7+8)
+make integ_bus_err             # Bus error integration test
 make p3_wave_csr               # dump VCD để debug Phase 3
 ```
 Chi tiết xem `SIM/TEST_LOG.md`.

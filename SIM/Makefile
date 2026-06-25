@@ -28,7 +28,7 @@ RTL_PLIC  = $(RTL)/plic.sv
 RTL_ALL   = $(RTL_INFRA) $(RTL_MEM) $(RTL_CPU) $(RTL_PLIC) $(RTL_AXI) $(RTL_AHB) $(RTL)/soc_top.sv
 
 # ───────── Unit Tests ─────────
-.PHONY: unit_alu unit_branch unit_decoder unit_rf unit_fwd unit_haz unit_fifo unit_plic unit_all
+.PHONY: unit_alu unit_branch unit_decoder unit_rf unit_fwd unit_haz unit_fifo unit_plic unit_ex unit_all
 
 unit_alu:
 	@echo "=== tb_alu ==="
@@ -70,7 +70,14 @@ unit_plic:
 	$(IV) -o unit/tb_plic.vvp unit/tb_plic.sv $(RTL)/plic.sv
 	$(VVP) unit/tb_plic.vvp
 
-unit_all: unit_alu unit_branch unit_decoder unit_rf unit_fwd unit_haz unit_fifo unit_plic
+unit_ex:
+	@echo "=== tb_ex_stage ==="
+	$(IV) -o unit/tb_ex_stage.vvp unit/tb_ex_stage.sv \
+	    $(RTL)/ex_stage.sv $(RTL)/forwarding_unit.sv \
+	    $(RTL)/alu.sv $(RTL)/branch_comp.sv $(RTL)/addr_adder.sv
+	$(VVP) unit/tb_ex_stage.vvp
+
+unit_all: unit_alu unit_branch unit_decoder unit_rf unit_fwd unit_haz unit_fifo unit_plic unit_ex
 
 # ───────── Integration Tests ─────────
 .PHONY: integ_cpu integ_axi integ_ahb integ_all
@@ -180,7 +187,12 @@ integ_ahb_full:
 	    $(RTL)/reset_sync.sv $(RTL)/async_fifo.sv
 	$(VVP) integration/tb_ahb_full.vvp
 
-integ_all: integ_cpu integ_axi integ_ahb integ_axi_full integ_ahb_full
+integ_bus_err:
+	@echo "=== tb_soc_bus_err (AXI BRESP error → store_access_fault) ==="
+	$(IV) -o integration/tb_soc_bus_err.vvp integration/tb_soc_bus_err.sv $(RTL_ALL)
+	$(VVP) integration/tb_soc_bus_err.vvp +HEX=programs/prog_bus_err.hex
+
+integ_all: integ_cpu integ_axi integ_ahb integ_axi_full integ_ahb_full integ_bus_err
 
 # ───────── System Tests (Phase 6) ─────────
 .PHONY: system compliance_compile compliance p6_compliance p6_all
@@ -188,7 +200,7 @@ integ_all: integ_cpu integ_axi integ_ahb integ_axi_full integ_ahb_full
 P6_PROGS = programs/prog_rv32i_shifts.hex programs/prog_rv32i_compare.hex \
            programs/prog_dmem_endurance.hex
 
-P7_PROGS = programs/prog_plic_basic.hex
+P7_PROGS = programs/prog_plic_basic.hex programs/prog_plic_priority.hex
 
 SYSTEM_PROGS = programs/prog_arithmetic.hex programs/prog_forwarding.hex \
                programs/prog_load_store.hex programs/prog_branch_jump.hex \
@@ -199,13 +211,13 @@ SYSTEM_PROGS = programs/prog_arithmetic.hex programs/prog_forwarding.hex \
                programs/prog_axi_irq.hex programs/prog_ahb_irq.hex \
                $(P6_PROGS) $(P7_PROGS)
 
-# Phase 6a / 7: system batch test (all 17 programs)
+# Phase 6a / 7: system batch test (all 18 programs)
 system/tb_soc_top.vvp: system/tb_soc_top.sv $(RTL_ALL)
 	@echo "=== Compiling tb_soc_top ==="
 	$(IV) -o $@ system/tb_soc_top.sv $(RTL_ALL)
 
 system: system/tb_soc_top.vvp $(SYSTEM_PROGS)
-	@echo "=== System Batch Test (17 programs) ==="
+	@echo "=== System Batch Test (18 programs) ==="
 	$(VVP) system/tb_soc_top.vvp
 
 # Phase 6b: compliance testbench
