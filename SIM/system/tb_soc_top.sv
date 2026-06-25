@@ -3,11 +3,12 @@
 // System-level batch testbench: runs all programs in sequence with full SoC reset
 // between each run, then reports aggregate PASS/FAIL summary.
 //
-// Covers all 16 programs:
+// Covers all 17 programs:
 //   Phase 3 (9): arithmetic, forwarding, load_store, branch_jump, csr,
 //                ecall, interrupt_msi, interrupt_mei, load_fault
 //   Phase 5 (4): axi_sfr, ahb_sfr, axi_irq, ahb_irq
 //   Phase 6 (3): rv32i_shifts, rv32i_compare, dmem_endurance
+//   Phase 7 (1): plic_basic (PLIC claim/complete flow)
 //
 // Usage: vvp system/tb_soc_top.vvp
 
@@ -169,7 +170,7 @@ module tb_soc_top;
     //=========================================================
     // Program list (hardcoded)
     //=========================================================
-    localparam int N_PROGS = 16;
+    localparam int N_PROGS = 17;
 
     string programs [0:N_PROGS-1];
     int    pass_cnt, fail_cnt;
@@ -196,6 +197,8 @@ module tb_soc_top;
         programs[13] = "programs/prog_rv32i_shifts.hex";
         programs[14] = "programs/prog_rv32i_compare.hex";
         programs[15] = "programs/prog_dmem_endurance.hex";
+        // Phase 7
+        programs[16] = "programs/prog_plic_basic.hex";
 
         pass_cnt = 0;
         fail_cnt = 0;
@@ -241,7 +244,7 @@ module tb_soc_top;
 
         // ── Summary ──
         $display("");
-        $display("=== SYSTEM TEST: %0d/%0d PASS ===", pass_cnt, N_PROGS);
+        $display("=== SYSTEM TEST: %0d/%0d PASS ===", pass_cnt, pass_cnt + fail_cnt);
         if (fail_cnt == 0)
             $display("ALL PASS");
         else

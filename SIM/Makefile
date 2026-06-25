@@ -27,7 +27,7 @@ RTL_PLIC  = $(RTL)/plic.sv
 RTL_ALL   = $(RTL_INFRA) $(RTL_MEM) $(RTL_CPU) $(RTL_PLIC) $(RTL_AXI) $(RTL_AHB) $(RTL)/soc_top.sv
 
 # ───────── Unit Tests ─────────
-.PHONY: unit_alu unit_branch unit_decoder unit_rf unit_fwd unit_haz unit_fifo unit_all
+.PHONY: unit_alu unit_branch unit_decoder unit_rf unit_fwd unit_haz unit_fifo unit_plic unit_all
 
 unit_alu:
 	@echo "=== tb_alu ==="
@@ -64,7 +64,12 @@ unit_fifo:
 	$(IV) -o unit/tb_async_fifo.vvp unit/tb_async_fifo.sv $(RTL)/async_fifo.sv
 	$(VVP) unit/tb_async_fifo.vvp
 
-unit_all: unit_alu unit_branch unit_decoder unit_rf unit_fwd unit_haz unit_fifo
+unit_plic:
+	@echo "=== tb_plic ==="
+	$(IV) -o unit/tb_plic.vvp unit/tb_plic.sv $(RTL)/plic.sv
+	$(VVP) unit/tb_plic.vvp
+
+unit_all: unit_alu unit_branch unit_decoder unit_rf unit_fwd unit_haz unit_fifo unit_plic
 
 # ───────── Integration Tests ─────────
 .PHONY: integ_cpu integ_axi integ_ahb integ_all
@@ -182,6 +187,8 @@ integ_all: integ_cpu integ_axi integ_ahb integ_axi_full integ_ahb_full
 P6_PROGS = programs/prog_rv32i_shifts.hex programs/prog_rv32i_compare.hex \
            programs/prog_dmem_endurance.hex
 
+P7_PROGS = programs/prog_plic_basic.hex
+
 SYSTEM_PROGS = programs/prog_arithmetic.hex programs/prog_forwarding.hex \
                programs/prog_load_store.hex programs/prog_branch_jump.hex \
                programs/prog_csr.hex programs/prog_ecall.hex \
@@ -189,15 +196,15 @@ SYSTEM_PROGS = programs/prog_arithmetic.hex programs/prog_forwarding.hex \
                programs/prog_load_fault.hex \
                programs/prog_axi_sfr.hex programs/prog_ahb_sfr.hex \
                programs/prog_axi_irq.hex programs/prog_ahb_irq.hex \
-               $(P6_PROGS)
+               $(P6_PROGS) $(P7_PROGS)
 
-# Phase 6a: system batch test (all 16 programs)
+# Phase 6a / 7: system batch test (all 17 programs)
 system/tb_soc_top.vvp: system/tb_soc_top.sv $(RTL_ALL)
 	@echo "=== Compiling tb_soc_top ==="
 	$(IV) -o $@ system/tb_soc_top.sv $(RTL_ALL)
 
 system: system/tb_soc_top.vvp $(SYSTEM_PROGS)
-	@echo "=== Phase 6a: System Batch Test (16 programs) ==="
+	@echo "=== System Batch Test (17 programs) ==="
 	$(VVP) system/tb_soc_top.vvp
 
 # Phase 6b: compliance testbench
