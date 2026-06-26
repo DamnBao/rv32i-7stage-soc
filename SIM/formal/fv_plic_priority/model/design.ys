@@ -1,0 +1,9 @@
+# running in fv_plic_priority/src/
+read -formal -DFORMAL plic.sv
+read -formal fv_plic_priority.sv
+prep -top fv_plic_priority
+
+hierarchy -smtcheck
+rename -witness
+write_jny -no-connections ../model/design.json
+write_rtlil ../model/design.il

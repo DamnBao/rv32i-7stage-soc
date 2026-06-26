@@ -1,0 +1,15 @@
+[options]
+mode prove
+depth 12
+
+[engines]
+smtbmc z3
+
+[script]
+read -formal -DFORMAL async_fifo.sv
+read -formal fv_fifo_gray.sv
+prep -top fv_fifo_gray
+
+[files]
+../../RTL/async_fifo.sv
+fv_fifo_gray.sv

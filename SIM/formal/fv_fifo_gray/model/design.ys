@@ -1,0 +1,9 @@
+# running in fv_fifo_gray/src/
+read -formal -DFORMAL async_fifo.sv
+read -formal fv_fifo_gray.sv
+prep -top fv_fifo_gray
+
+hierarchy -smtcheck
+rename -witness
+write_jny -no-connections ../model/design.json
+write_rtlil ../model/design.il

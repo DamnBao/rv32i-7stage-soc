@@ -1,0 +1,15 @@
+[options]
+mode prove
+depth 20
+
+[engines]
+smtbmc z3
+
+[script]
+read -formal -DFORMAL uart_axi.sv
+read -formal fv_uart_proto.sv
+prep -top fv_uart_proto
+
+[files]
+../../RTL/uart_axi.sv
+fv_uart_proto.sv

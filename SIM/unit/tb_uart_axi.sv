@@ -201,6 +201,8 @@ module tb_uart_axi;
         check32("TX byte received = 0xA5", 32'h0000_00A5, {24'd0, tx_byte});
         check1("start bit = 0", 1'b0, tx_bits[0][0]);
         check1("stop bit  = 1", 1'b1, tx_bits[9][0]);
+        // Ensure U5's TX_STOP baud period fully completes before U6 writes DATA1
+        repeat(5) @(posedge clk);
 
         // ------ U6: STATUS[0] = tx_busy during transmission ------
         $display("--- U6: tx_busy STATUS[0] ---");
@@ -208,7 +210,8 @@ module tb_uart_axi;
         fork
             begin
                 axi_write(OFF_DATA1, 32'h0000_0055);
-                // TX is now running; read STATUS right away
+                // Wait 1 cycle for TX FSM to leave IDLE before sampling STATUS
+                @(posedge clk);
                 axi_read(OFF_STATUS, status_rd);
             end
             begin

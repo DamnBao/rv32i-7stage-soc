@@ -1,0 +1,1493 @@
+{
+  "$schema": "https://raw.githubusercontent.com/YosysHQ/yosys/master/misc/jny.schema.json",
+  "generator": "Yosys 0.33 (git sha1 2584903a060)",
+  "version": "0.0.1",
+  "invocation": "write_jny -no-connections ../model/design.json ",
+  "features": ["attributes", "properties"],
+  "modules": [
+      {
+        "name": "axi_interface",
+        "cell_sorts": [
+          {
+            "type": "$pmux",
+            "ports": [
+                {
+                  "name": "A",
+                  "direction": "io",
+                  "range": [0, 0]
+                },
+                {
+                  "name": "B",
+                  "direction": "io",
+                  "range": [2, 0]
+                },
+                {
+                  "name": "S",
+                  "direction": "io",
+                  "range": [2, 0]
+                },
+                {
+                  "name": "Y",
+                  "direction": "",
+                  "range": [0, 0]
+                }
+            ],
+            "cells": [
+                {
+                  "name": "$procmux$111",
+                  "attributes": {
+                    "full_case": "00000000000000000000000000000001",
+                    "src": "axi_interface.sv:0.0-0.0|axi_interface.sv:143.13-175.20"
+                  },
+                  "parameters": {
+                    "S_WIDTH": "00000000000000000000000000000010",
+                    "WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$procmux$120",
+                  "attributes": {
+                    "full_case": "00000000000000000000000000000001",
+                    "src": "axi_interface.sv:0.0-0.0|axi_interface.sv:143.13-175.20"
+                  },
+                  "parameters": {
+                    "S_WIDTH": "00000000000000000000000000000010",
+                    "WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$procmux$128",
+                  "attributes": {
+                    "full_case": "00000000000000000000000000000001",
+                    "src": "axi_interface.sv:0.0-0.0|axi_interface.sv:143.13-175.20"
+                  },
+                  "parameters": {
+                    "S_WIDTH": "00000000000000000000000000000101",
+                    "WIDTH": "00000000000000000000000000000011"
+                  }
+                },
+                {
+                  "name": "$procmux$146",
+                  "attributes": {
+                    "full_case": "00000000000000000000000000000001",
+                    "src": "axi_interface.sv:0.0-0.0|axi_interface.sv:104.9-117.16"
+                  },
+                  "parameters": {
+                    "S_WIDTH": "00000000000000000000000000000010",
+                    "WIDTH": "00000000000000000000000000000100"
+                  }
+                },
+                {
+                  "name": "$procmux$150",
+                  "attributes": {
+                    "full_case": "00000000000000000000000000000001",
+                    "src": "axi_interface.sv:0.0-0.0|axi_interface.sv:104.9-117.16"
+                  },
+                  "parameters": {
+                    "S_WIDTH": "00000000000000000000000000000010",
+                    "WIDTH": "00000000000000000000000000100000"
+                  }
+                }
+            ]
+          },
+          {
+            "type": "$adff",
+            "ports": [
+                {
+                  "name": "ARST",
+                  "direction": "io",
+                  "range": [0, 0]
+                },
+                {
+                  "name": "CLK",
+                  "direction": "io",
+                  "range": [0, 0]
+                },
+                {
+                  "name": "D",
+                  "direction": "io",
+                  "range": [3, 0]
+                },
+                {
+                  "name": "Q",
+                  "direction": "",
+                  "range": [3, 0]
+                }
+            ],
+            "cells": [
+                {
+                  "name": "$procdff$177",
+                  "attributes": {
+                    "always_ff": "00000000000000000000000000000001",
+                    "src": "axi_interface.sv:133.5-177.8"
+                  },
+                  "parameters": {
+                    "ARST_POLARITY": "0",
+                    "ARST_VALUE": "000",
+                    "CLK_POLARITY": "1",
+                    "WIDTH": "00000000000000000000000000000011"
+                  }
+                },
+                {
+                  "name": "$procdff$178",
+                  "attributes": {
+                    "always_ff": "00000000000000000000000000000001",
+                    "src": "axi_interface.sv:133.5-177.8"
+                  },
+                  "parameters": {
+                    "ARST_POLARITY": "0",
+                    "ARST_VALUE": "0",
+                    "CLK_POLARITY": "1",
+                    "WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$procdff$179",
+                  "attributes": {
+                    "always_ff": "00000000000000000000000000000001",
+                    "src": "axi_interface.sv:133.5-177.8"
+                  },
+                  "parameters": {
+                    "ARST_POLARITY": "0",
+                    "ARST_VALUE": "0",
+                    "CLK_POLARITY": "1",
+                    "WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$procdff$180",
+                  "attributes": {
+                    "always_ff": "00000000000000000000000000000001",
+                    "src": "axi_interface.sv:133.5-177.8"
+                  },
+                  "parameters": {
+                    "ARST_POLARITY": "0",
+                    "ARST_VALUE": "00000000000000000000000000000000",
+                    "CLK_POLARITY": "1",
+                    "WIDTH": "00000000000000000000000000100000"
+                  }
+                },
+                {
+                  "name": "$procdff$181",
+                  "attributes": {
+                    "always_ff": "00000000000000000000000000000001",
+                    "src": "axi_interface.sv:133.5-177.8"
+                  },
+                  "parameters": {
+                    "ARST_POLARITY": "0",
+                    "ARST_VALUE": "00000000000000000000000000000000",
+                    "CLK_POLARITY": "1",
+                    "WIDTH": "00000000000000000000000000100000"
+                  }
+                },
+                {
+                  "name": "$procdff$182",
+                  "attributes": {
+                    "always_ff": "00000000000000000000000000000001",
+                    "src": "axi_interface.sv:133.5-177.8"
+                  },
+                  "parameters": {
+                    "ARST_POLARITY": "0",
+                    "ARST_VALUE": "10",
+                    "CLK_POLARITY": "1",
+                    "WIDTH": "00000000000000000000000000000010"
+                  }
+                }
+            ]
+          },
+          {
+            "type": "$mux",
+            "ports": [
+                {
+                  "name": "A",
+                  "direction": "io",
+                  "range": [32, 0]
+                },
+                {
+                  "name": "B",
+                  "direction": "io",
+                  "range": [32, 0]
+                },
+                {
+                  "name": "S",
+                  "direction": "io",
+                  "range": [0, 0]
+                },
+                {
+                  "name": "Y",
+                  "direction": "",
+                  "range": [32, 0]
+                }
+            ],
+            "cells": [
+                {
+                  "name": "$procmux$103",
+                  "attributes": {
+                    "src": "axi_interface.sv:145.25-145.38|axi_interface.sv:145.21-153.24"
+                  },
+                  "parameters": {
+                    "WIDTH": "00000000000000000000000000100000"
+                  }
+                },
+                {
+                  "name": "$procmux$105",
+                  "attributes": {
+                    "full_case": "00000000000000000000000000000001",
+                    "src": "axi_interface.sv:0.0-0.0|axi_interface.sv:143.13-175.20"
+                  },
+                  "parameters": {
+                    "WIDTH": "00000000000000000000000000100000"
+                  }
+                },
+                {
+                  "name": "$procmux$109",
+                  "attributes": {
+                    "src": "axi_interface.sv:166.25-166.36|axi_interface.sv:166.21-166.55"
+                  },
+                  "parameters": {
+                    "WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$procmux$113",
+                  "attributes": {
+                    "src": "axi_interface.sv:145.25-145.38|axi_interface.sv:145.21-153.24"
+                  },
+                  "parameters": {
+                    "WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$procmux$118",
+                  "attributes": {
+                    "src": "axi_interface.sv:165.25-165.37|axi_interface.sv:165.21-165.55"
+                  },
+                  "parameters": {
+                    "WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$procmux$122",
+                  "attributes": {
+                    "src": "axi_interface.sv:145.25-145.38|axi_interface.sv:145.21-153.24"
+                  },
+                  "parameters": {
+                    "WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$procmux$126",
+                  "attributes": {
+                    "src": "axi_interface.sv:171.25-171.31|axi_interface.sv:171.21-171.47"
+                  },
+                  "parameters": {
+                    "WIDTH": "00000000000000000000000000000011"
+                  }
+                },
+                {
+                  "name": "$procmux$130",
+                  "attributes": {
+                    "src": "axi_interface.sv:167.25-167.34|axi_interface.sv:167.21-167.58"
+                  },
+                  "parameters": {
+                    "WIDTH": "00000000000000000000000000000011"
+                  }
+                },
+                {
+                  "name": "$procmux$133",
+                  "attributes": {
+                    "src": "axi_interface.sv:161.25-161.31|axi_interface.sv:161.21-161.47"
+                  },
+                  "parameters": {
+                    "WIDTH": "00000000000000000000000000000011"
+                  }
+                },
+                {
+                  "name": "$procmux$136",
+                  "attributes": {
+                    "src": "axi_interface.sv:157.25-157.32|axi_interface.sv:157.21-157.51"
+                  },
+                  "parameters": {
+                    "WIDTH": "00000000000000000000000000000011"
+                  }
+                },
+                {
+                  "name": "$procmux$140",
+                  "attributes": {
+                    "full_case": "00000000000000000000000000000001",
+                    "src": "axi_interface.sv:151.29-151.39|axi_interface.sv:151.25-152.58"
+                  },
+                  "parameters": {
+                    "WIDTH": "00000000000000000000000000000010"
+                  }
+                },
+                {
+                  "name": "$procmux$142",
+                  "attributes": {
+                    "src": "axi_interface.sv:145.25-145.38|axi_interface.sv:145.21-153.24"
+                  },
+                  "parameters": {
+                    "WIDTH": "00000000000000000000000000000011"
+                  }
+                },
+                {
+                  "name": "$procmux$85",
+                  "attributes": {
+                    "src": "axi_interface.sv:145.25-145.38|axi_interface.sv:145.21-153.24"
+                  },
+                  "parameters": {
+                    "WIDTH": "00000000000000000000000000000010"
+                  }
+                },
+                {
+                  "name": "$procmux$87",
+                  "attributes": {
+                    "full_case": "00000000000000000000000000000001",
+                    "src": "axi_interface.sv:0.0-0.0|axi_interface.sv:143.13-175.20"
+                  },
+                  "parameters": {
+                    "WIDTH": "00000000000000000000000000000010"
+                  }
+                },
+                {
+                  "name": "$procmux$94",
+                  "attributes": {
+                    "src": "axi_interface.sv:145.25-145.38|axi_interface.sv:145.21-153.24"
+                  },
+                  "parameters": {
+                    "WIDTH": "00000000000000000000000000100000"
+                  }
+                },
+                {
+                  "name": "$procmux$96",
+                  "attributes": {
+                    "full_case": "00000000000000000000000000000001",
+                    "src": "axi_interface.sv:0.0-0.0|axi_interface.sv:143.13-175.20"
+                  },
+                  "parameters": {
+                    "WIDTH": "00000000000000000000000000100000"
+                  }
+                },
+                {
+                  "name": "$ternary$axi_interface.sv:111$48",
+                  "attributes": {
+                    "src": "axi_interface.sv:111.33-111.61"
+                  },
+                  "parameters": {
+                    "WIDTH": "00000000000000000000000000000100"
+                  }
+                }
+            ]
+          },
+          {
+            "type": "$reduce_bool",
+            "ports": [
+                {
+                  "name": "A",
+                  "direction": "io",
+                  "range": [2, 0]
+                },
+                {
+                  "name": "Y",
+                  "direction": "",
+                  "range": [0, 0]
+                }
+            ],
+            "cells": [
+                {
+                  "name": "$ne$axi_interface.sv:207$66",
+                  "attributes": {
+                    "src": "axi_interface.sv:207.25-207.39"
+                  },
+                  "parameters": {
+                    "A_SIGNED": "00000000000000000000000000000000",
+                    "A_WIDTH": "00000000000000000000000000000010",
+                    "Y_WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$ne$axi_interface.sv:208$67",
+                  "attributes": {
+                    "src": "axi_interface.sv:208.25-208.39"
+                  },
+                  "parameters": {
+                    "A_SIGNED": "00000000000000000000000000000000",
+                    "A_WIDTH": "00000000000000000000000000000010",
+                    "Y_WIDTH": "00000000000000000000000000000001"
+                  }
+                }
+            ]
+          },
+          {
+            "type": "$logic_or",
+            "ports": [
+                {
+                  "name": "A",
+                  "direction": "io",
+                  "range": [0, 0]
+                },
+                {
+                  "name": "B",
+                  "direction": "io",
+                  "range": [0, 0]
+                },
+                {
+                  "name": "Y",
+                  "direction": "",
+                  "range": [0, 0]
+                }
+            ],
+            "cells": [
+                {
+                  "name": "$logic_or$axi_interface.sv:128$52",
+                  "attributes": {
+                    "src": "axi_interface.sv:128.25-128.48"
+                  },
+                  "parameters": {
+                    "A_SIGNED": "00000000000000000000000000000000",
+                    "A_WIDTH": "00000000000000000000000000000001",
+                    "B_SIGNED": "00000000000000000000000000000000",
+                    "B_WIDTH": "00000000000000000000000000000001",
+                    "Y_WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$logic_or$axi_interface.sv:128$53",
+                  "attributes": {
+                    "src": "axi_interface.sv:128.54-128.75"
+                  },
+                  "parameters": {
+                    "A_SIGNED": "00000000000000000000000000000000",
+                    "A_WIDTH": "00000000000000000000000000000001",
+                    "B_SIGNED": "00000000000000000000000000000000",
+                    "B_WIDTH": "00000000000000000000000000000001",
+                    "Y_WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$logic_or$axi_interface.sv:210$72",
+                  "attributes": {
+                    "src": "axi_interface.sv:210.29-211.59"
+                  },
+                  "parameters": {
+                    "A_SIGNED": "00000000000000000000000000000000",
+                    "A_WIDTH": "00000000000000000000000000000001",
+                    "B_SIGNED": "00000000000000000000000000000000",
+                    "B_WIDTH": "00000000000000000000000000000001",
+                    "Y_WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$logic_or$axi_interface.sv:213$79",
+                  "attributes": {
+                    "src": "axi_interface.sv:213.29-214.72"
+                  },
+                  "parameters": {
+                    "A_SIGNED": "00000000000000000000000000000000",
+                    "A_WIDTH": "00000000000000000000000000000001",
+                    "B_SIGNED": "00000000000000000000000000000000",
+                    "B_WIDTH": "00000000000000000000000000000001",
+                    "Y_WIDTH": "00000000000000000000000000000001"
+                  }
+                }
+            ]
+          },
+          {
+            "type": "$logic_not",
+            "ports": [
+                {
+                  "name": "A",
+                  "direction": "io",
+                  "range": [0, 0]
+                },
+                {
+                  "name": "Y",
+                  "direction": "",
+                  "range": [0, 0]
+                }
+            ],
+            "cells": [
+                {
+                  "name": "$logic_not$axi_interface.sv:191$60",
+                  "attributes": {
+                    "src": "axi_interface.sv:191.45-191.53"
+                  },
+                  "parameters": {
+                    "A_SIGNED": "00000000000000000000000000000000",
+                    "A_WIDTH": "00000000000000000000000000000001",
+                    "Y_WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$logic_not$axi_interface.sv:196$63",
+                  "attributes": {
+                    "src": "axi_interface.sv:196.44-196.51"
+                  },
+                  "parameters": {
+                    "A_SIGNED": "00000000000000000000000000000000",
+                    "A_WIDTH": "00000000000000000000000000000001",
+                    "Y_WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$procmux$106_CMP0",
+                  "attributes": {
+                    "full_case": "00000000000000000000000000000001",
+                    "src": "axi_interface.sv:0.0-0.0|axi_interface.sv:143.13-175.20"
+                  },
+                  "parameters": {
+                    "A_SIGNED": "00000000000000000000000000000000",
+                    "A_WIDTH": "00000000000000000000000000000011",
+                    "Y_WIDTH": "00000000000000000000000000000001"
+                  }
+                }
+            ]
+          },
+          {
+            "type": "$shl",
+            "ports": [
+                {
+                  "name": "A",
+                  "direction": "io",
+                  "range": [0, 0]
+                },
+                {
+                  "name": "B",
+                  "direction": "io",
+                  "range": [2, 0]
+                },
+                {
+                  "name": "Y",
+                  "direction": "",
+                  "range": [4, 0]
+                }
+            ],
+            "cells": [
+                {
+                  "name": "$shl$axi_interface.sv:115$49",
+                  "attributes": {
+                    "src": "axi_interface.sv:115.33-115.53"
+                  },
+                  "parameters": {
+                    "A_SIGNED": "00000000000000000000000000000000",
+                    "A_WIDTH": "00000000000000000000000000000001",
+                    "B_SIGNED": "00000000000000000000000000000000",
+                    "B_WIDTH": "00000000000000000000000000000010",
+                    "Y_WIDTH": "00000000000000000000000000000100"
+                  }
+                }
+            ]
+          },
+          {
+            "type": "$logic_and",
+            "ports": [
+                {
+                  "name": "A",
+                  "direction": "io",
+                  "range": [0, 0]
+                },
+                {
+                  "name": "B",
+                  "direction": "io",
+                  "range": [0, 0]
+                },
+                {
+                  "name": "Y",
+                  "direction": "",
+                  "range": [0, 0]
+                }
+            ],
+            "cells": [
+                {
+                  "name": "$logic_and$axi_interface.sv:124$50",
+                  "attributes": {
+                    "src": "axi_interface.sv:124.27-124.45"
+                  },
+                  "parameters": {
+                    "A_SIGNED": "00000000000000000000000000000000",
+                    "A_WIDTH": "00000000000000000000000000000001",
+                    "B_SIGNED": "00000000000000000000000000000000",
+                    "B_WIDTH": "00000000000000000000000000000001",
+                    "Y_WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$logic_and$axi_interface.sv:125$51",
+                  "attributes": {
+                    "src": "axi_interface.sv:125.27-125.44"
+                  },
+                  "parameters": {
+                    "A_SIGNED": "00000000000000000000000000000000",
+                    "A_WIDTH": "00000000000000000000000000000001",
+                    "B_SIGNED": "00000000000000000000000000000000",
+                    "B_WIDTH": "00000000000000000000000000000001",
+                    "Y_WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$logic_and$axi_interface.sv:128$54",
+                  "attributes": {
+                    "src": "axi_interface.sv:128.24-128.76"
+                  },
+                  "parameters": {
+                    "A_SIGNED": "00000000000000000000000000000000",
+                    "A_WIDTH": "00000000000000000000000000000001",
+                    "B_SIGNED": "00000000000000000000000000000000",
+                    "B_WIDTH": "00000000000000000000000000000001",
+                    "Y_WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$logic_and$axi_interface.sv:191$61",
+                  "attributes": {
+                    "src": "axi_interface.sv:191.22-191.53"
+                  },
+                  "parameters": {
+                    "A_SIGNED": "00000000000000000000000000000000",
+                    "A_WIDTH": "00000000000000000000000000000001",
+                    "B_SIGNED": "00000000000000000000000000000000",
+                    "B_WIDTH": "00000000000000000000000000000001",
+                    "Y_WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$logic_and$axi_interface.sv:196$64",
+                  "attributes": {
+                    "src": "axi_interface.sv:196.21-196.51"
+                  },
+                  "parameters": {
+                    "A_SIGNED": "00000000000000000000000000000000",
+                    "A_WIDTH": "00000000000000000000000000000001",
+                    "B_SIGNED": "00000000000000000000000000000000",
+                    "B_WIDTH": "00000000000000000000000000000001",
+                    "Y_WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$logic_and$axi_interface.sv:210$69",
+                  "attributes": {
+                    "src": "axi_interface.sv:210.30-210.58"
+                  },
+                  "parameters": {
+                    "A_SIGNED": "00000000000000000000000000000000",
+                    "A_WIDTH": "00000000000000000000000000000001",
+                    "B_SIGNED": "00000000000000000000000000000000",
+                    "B_WIDTH": "00000000000000000000000000000001",
+                    "Y_WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$logic_and$axi_interface.sv:211$71",
+                  "attributes": {
+                    "src": "axi_interface.sv:211.30-211.58"
+                  },
+                  "parameters": {
+                    "A_SIGNED": "00000000000000000000000000000000",
+                    "A_WIDTH": "00000000000000000000000000000001",
+                    "B_SIGNED": "00000000000000000000000000000000",
+                    "B_WIDTH": "00000000000000000000000000000001",
+                    "Y_WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$logic_and$axi_interface.sv:213$75",
+                  "attributes": {
+                    "src": "axi_interface.sv:213.30-213.71"
+                  },
+                  "parameters": {
+                    "A_SIGNED": "00000000000000000000000000000000",
+                    "A_WIDTH": "00000000000000000000000000000001",
+                    "B_SIGNED": "00000000000000000000000000000000",
+                    "B_WIDTH": "00000000000000000000000000000001",
+                    "Y_WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$logic_and$axi_interface.sv:214$78",
+                  "attributes": {
+                    "src": "axi_interface.sv:214.30-214.71"
+                  },
+                  "parameters": {
+                    "A_SIGNED": "00000000000000000000000000000000",
+                    "A_WIDTH": "00000000000000000000000000000001",
+                    "B_SIGNED": "00000000000000000000000000000000",
+                    "B_WIDTH": "00000000000000000000000000000001",
+                    "Y_WIDTH": "00000000000000000000000000000001"
+                  }
+                }
+            ]
+          },
+          {
+            "type": "$eq",
+            "ports": [
+                {
+                  "name": "A",
+                  "direction": "io",
+                  "range": [3, 0]
+                },
+                {
+                  "name": "B",
+                  "direction": "io",
+                  "range": [0, 0]
+                },
+                {
+                  "name": "Y",
+                  "direction": "",
+                  "range": [0, 0]
+                }
+            ],
+            "cells": [
+                {
+                  "name": "$eq$axi_interface.sv:183$57",
+                  "attributes": {
+                    "src": "axi_interface.sv:183.23-183.39"
+                  },
+                  "parameters": {
+                    "A_SIGNED": "00000000000000000000000000000000",
+                    "A_WIDTH": "00000000000000000000000000000011",
+                    "B_SIGNED": "00000000000000000000000000000000",
+                    "B_WIDTH": "00000000000000000000000000000001",
+                    "Y_WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$eq$axi_interface.sv:188$58",
+                  "attributes": {
+                    "src": "axi_interface.sv:188.22-188.38"
+                  },
+                  "parameters": {
+                    "A_SIGNED": "00000000000000000000000000000000",
+                    "A_WIDTH": "00000000000000000000000000000011",
+                    "B_SIGNED": "00000000000000000000000000000000",
+                    "B_WIDTH": "00000000000000000000000000000010",
+                    "Y_WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$eq$axi_interface.sv:191$59",
+                  "attributes": {
+                    "src": "axi_interface.sv:191.23-191.40"
+                  },
+                  "parameters": {
+                    "A_SIGNED": "00000000000000000000000000000000",
+                    "A_WIDTH": "00000000000000000000000000000011",
+                    "B_SIGNED": "00000000000000000000000000000000",
+                    "B_WIDTH": "00000000000000000000000000000010",
+                    "Y_WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$eq$axi_interface.sv:201$65",
+                  "attributes": {
+                    "src": "axi_interface.sv:201.22-201.38"
+                  },
+                  "parameters": {
+                    "A_SIGNED": "00000000000000000000000000000000",
+                    "A_WIDTH": "00000000000000000000000000000011",
+                    "B_SIGNED": "00000000000000000000000000000000",
+                    "B_WIDTH": "00000000000000000000000000000011",
+                    "Y_WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$procmux$147_CMP0",
+                  "attributes": {
+                    "full_case": "00000000000000000000000000000001",
+                    "src": "axi_interface.sv:0.0-0.0|axi_interface.sv:104.9-117.16"
+                  },
+                  "parameters": {
+                    "A_SIGNED": "00000000000000000000000000000000",
+                    "A_WIDTH": "00000000000000000000000000000010",
+                    "B_SIGNED": "00000000000000000000000000000000",
+                    "B_WIDTH": "00000000000000000000000000000001",
+                    "Y_WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$procmux$148_CMP0",
+                  "attributes": {
+                    "full_case": "00000000000000000000000000000001",
+                    "src": "axi_interface.sv:0.0-0.0|axi_interface.sv:104.9-117.16"
+                  },
+                  "parameters": {
+                    "A_SIGNED": "00000000000000000000000000000000",
+                    "A_WIDTH": "00000000000000000000000000000010",
+                    "B_SIGNED": "00000000000000000000000000000000",
+                    "B_WIDTH": "00000000000000000000000000000010",
+                    "Y_WIDTH": "00000000000000000000000000000001"
+                  }
+                }
+            ]
+          }
+        ],
+        "attributes": {
+            "hdlname": "\\axi_interface",
+            "src": "axi_interface.sv:21.1-216.10"
+        }
+      },
+      {
+        "name": "fv_axi_handshake",
+        "cell_sorts": [
+          {
+            "type": "axi_interface",
+            "ports": [
+                {
+                  "name": "ARADDR",
+                  "direction": "",
+                  "range": [32, 0]
+                },
+                {
+                  "name": "ARPROT",
+                  "direction": "",
+                  "range": [3, 0]
+                },
+                {
+                  "name": "ARREADY",
+                  "direction": "io",
+                  "range": [0, 0]
+                },
+                {
+                  "name": "ARVALID",
+                  "direction": "",
+                  "range": [0, 0]
+                },
+                {
+                  "name": "AWADDR",
+                  "direction": "",
+                  "range": [32, 0]
+                },
+                {
+                  "name": "AWPROT",
+                  "direction": "",
+                  "range": [3, 0]
+                },
+                {
+                  "name": "AWREADY",
+                  "direction": "io",
+                  "range": [0, 0]
+                },
+                {
+                  "name": "AWVALID",
+                  "direction": "",
+                  "range": [0, 0]
+                },
+                {
+                  "name": "BREADY",
+                  "direction": "",
+                  "range": [0, 0]
+                },
+                {
+                  "name": "BRESP",
+                  "direction": "io",
+                  "range": [2, 0]
+                },
+                {
+                  "name": "BVALID",
+                  "direction": "io",
+                  "range": [0, 0]
+                },
+                {
+                  "name": "RDATA",
+                  "direction": "io",
+                  "range": [32, 0]
+                },
+                {
+                  "name": "RREADY",
+                  "direction": "",
+                  "range": [0, 0]
+                },
+                {
+                  "name": "RRESP",
+                  "direction": "io",
+                  "range": [2, 0]
+                },
+                {
+                  "name": "RVALID",
+                  "direction": "io",
+                  "range": [0, 0]
+                },
+                {
+                  "name": "WDATA",
+                  "direction": "",
+                  "range": [32, 0]
+                },
+                {
+                  "name": "WREADY",
+                  "direction": "io",
+                  "range": [0, 0]
+                },
+                {
+                  "name": "WSTRB",
+                  "direction": "",
+                  "range": [4, 0]
+                },
+                {
+                  "name": "WVALID",
+                  "direction": "",
+                  "range": [0, 0]
+                },
+                {
+                  "name": "axi_req_addr",
+                  "direction": "io",
+                  "range": [32, 0]
+                },
+                {
+                  "name": "axi_req_size",
+                  "direction": "io",
+                  "range": [2, 0]
+                },
+                {
+                  "name": "axi_req_valid",
+                  "direction": "io",
+                  "range": [0, 0]
+                },
+                {
+                  "name": "axi_req_wdata",
+                  "direction": "io",
+                  "range": [32, 0]
+                },
+                {
+                  "name": "axi_req_we",
+                  "direction": "io",
+                  "range": [0, 0]
+                },
+                {
+                  "name": "axi_resp_err",
+                  "direction": "",
+                  "range": [0, 0]
+                },
+                {
+                  "name": "axi_resp_rdata",
+                  "direction": "",
+                  "range": [32, 0]
+                },
+                {
+                  "name": "axi_resp_valid",
+                  "direction": "",
+                  "range": [0, 0]
+                },
+                {
+                  "name": "clk",
+                  "direction": "io",
+                  "range": [0, 0]
+                },
+                {
+                  "name": "rst_n",
+                  "direction": "io",
+                  "range": [0, 0]
+                }
+            ],
+            "cells": [
+                {
+                  "name": "dut",
+                  "attributes": {
+                    "module_not_derived": "00000000000000000000000000000001",
+                    "src": "fv_axi_handshake.sv:43.19-59.6"
+                  },
+                  "parameters": {
+
+                  }
+                }
+            ]
+          },
+          {
+            "type": "$mux",
+            "ports": [
+                {
+                  "name": "A",
+                  "direction": "io",
+                  "range": [0, 0]
+                },
+                {
+                  "name": "B",
+                  "direction": "io",
+                  "range": [0, 0]
+                },
+                {
+                  "name": "S",
+                  "direction": "io",
+                  "range": [0, 0]
+                },
+                {
+                  "name": "Y",
+                  "direction": "",
+                  "range": [0, 0]
+                }
+            ],
+            "cells": [
+                {
+                  "name": "$procmux$153",
+                  "attributes": {
+                    "src": "fv_axi_handshake.sv:85.17-85.48|fv_axi_handshake.sv:85.13-86.32"
+                  },
+                  "parameters": {
+                    "WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$procmux$155",
+                  "attributes": {
+                    "src": "fv_axi_handshake.sv:84.13-84.18|fv_axi_handshake.sv:84.9-87.12"
+                  },
+                  "parameters": {
+                    "WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$procmux$157",
+                  "attributes": {
+                    "src": "fv_axi_handshake.sv:85.17-85.48|fv_axi_handshake.sv:85.13-86.32"
+                  },
+                  "parameters": {
+                    "WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$procmux$159",
+                  "attributes": {
+                    "src": "fv_axi_handshake.sv:84.13-84.18|fv_axi_handshake.sv:84.9-87.12"
+                  },
+                  "parameters": {
+                    "WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$procmux$161",
+                  "attributes": {
+                    "src": "fv_axi_handshake.sv:77.17-77.50|fv_axi_handshake.sv:77.13-78.33"
+                  },
+                  "parameters": {
+                    "WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$procmux$163",
+                  "attributes": {
+                    "src": "fv_axi_handshake.sv:76.13-76.18|fv_axi_handshake.sv:76.9-79.12"
+                  },
+                  "parameters": {
+                    "WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$procmux$165",
+                  "attributes": {
+                    "src": "fv_axi_handshake.sv:77.17-77.50|fv_axi_handshake.sv:77.13-78.33"
+                  },
+                  "parameters": {
+                    "WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$procmux$167",
+                  "attributes": {
+                    "src": "fv_axi_handshake.sv:76.13-76.18|fv_axi_handshake.sv:76.9-79.12"
+                  },
+                  "parameters": {
+                    "WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$procmux$169",
+                  "attributes": {
+                    "src": "fv_axi_handshake.sv:69.17-69.50|fv_axi_handshake.sv:69.13-70.33"
+                  },
+                  "parameters": {
+                    "WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$procmux$171",
+                  "attributes": {
+                    "src": "fv_axi_handshake.sv:68.13-68.18|fv_axi_handshake.sv:68.9-71.12"
+                  },
+                  "parameters": {
+                    "WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$procmux$173",
+                  "attributes": {
+                    "src": "fv_axi_handshake.sv:69.17-69.50|fv_axi_handshake.sv:69.13-70.33"
+                  },
+                  "parameters": {
+                    "WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$procmux$175",
+                  "attributes": {
+                    "src": "fv_axi_handshake.sv:68.13-68.18|fv_axi_handshake.sv:68.9-71.12"
+                  },
+                  "parameters": {
+                    "WIDTH": "00000000000000000000000000000001"
+                  }
+                }
+            ]
+          },
+          {
+            "type": "$logic_not",
+            "ports": [
+                {
+                  "name": "A",
+                  "direction": "io",
+                  "range": [0, 0]
+                },
+                {
+                  "name": "Y",
+                  "direction": "",
+                  "range": [0, 0]
+                }
+            ],
+            "cells": [
+                {
+                  "name": "$logic_not$fv_axi_handshake.sv:62$40",
+                  "attributes": {
+                    "src": "fv_axi_handshake.sv:62.20-62.26"
+                  },
+                  "parameters": {
+                    "A_SIGNED": "00000000000000000000000000000000",
+                    "A_WIDTH": "00000000000000000000000000000001",
+                    "Y_WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$logic_not$fv_axi_handshake.sv:69$17",
+                  "attributes": {
+                    "src": "fv_axi_handshake.sv:69.35-69.50"
+                  },
+                  "parameters": {
+                    "A_SIGNED": "00000000000000000000000000000000",
+                    "A_WIDTH": "00000000000000000000000000000001",
+                    "Y_WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$logic_not$fv_axi_handshake.sv:77$24",
+                  "attributes": {
+                    "src": "fv_axi_handshake.sv:77.35-77.50"
+                  },
+                  "parameters": {
+                    "A_SIGNED": "00000000000000000000000000000000",
+                    "A_WIDTH": "00000000000000000000000000000001",
+                    "Y_WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$logic_not$fv_axi_handshake.sv:85$31",
+                  "attributes": {
+                    "src": "fv_axi_handshake.sv:85.34-85.48"
+                  },
+                  "parameters": {
+                    "A_SIGNED": "00000000000000000000000000000000",
+                    "A_WIDTH": "00000000000000000000000000000001",
+                    "Y_WIDTH": "00000000000000000000000000000001"
+                  }
+                }
+            ]
+          },
+          {
+            "type": "$logic_and",
+            "ports": [
+                {
+                  "name": "A",
+                  "direction": "io",
+                  "range": [0, 0]
+                },
+                {
+                  "name": "B",
+                  "direction": "io",
+                  "range": [0, 0]
+                },
+                {
+                  "name": "Y",
+                  "direction": "",
+                  "range": [0, 0]
+                }
+            ],
+            "cells": [
+                {
+                  "name": "$logic_and$fv_axi_handshake.sv:69$18",
+                  "attributes": {
+                    "src": "fv_axi_handshake.sv:69.17-69.50"
+                  },
+                  "parameters": {
+                    "A_SIGNED": "00000000000000000000000000000000",
+                    "A_WIDTH": "00000000000000000000000000000001",
+                    "B_SIGNED": "00000000000000000000000000000000",
+                    "B_WIDTH": "00000000000000000000000000000001",
+                    "Y_WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$logic_and$fv_axi_handshake.sv:77$25",
+                  "attributes": {
+                    "src": "fv_axi_handshake.sv:77.17-77.50"
+                  },
+                  "parameters": {
+                    "A_SIGNED": "00000000000000000000000000000000",
+                    "A_WIDTH": "00000000000000000000000000000001",
+                    "B_SIGNED": "00000000000000000000000000000000",
+                    "B_WIDTH": "00000000000000000000000000000001",
+                    "Y_WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$logic_and$fv_axi_handshake.sv:85$32",
+                  "attributes": {
+                    "src": "fv_axi_handshake.sv:85.17-85.48"
+                  },
+                  "parameters": {
+                    "A_SIGNED": "00000000000000000000000000000000",
+                    "A_WIDTH": "00000000000000000000000000000001",
+                    "B_SIGNED": "00000000000000000000000000000000",
+                    "B_WIDTH": "00000000000000000000000000000001",
+                    "Y_WIDTH": "00000000000000000000000000000001"
+                  }
+                }
+            ]
+          },
+          {
+            "type": "$dff",
+            "ports": [
+                {
+                  "name": "CLK",
+                  "direction": "io",
+                  "range": [0, 0]
+                },
+                {
+                  "name": "D",
+                  "direction": "io",
+                  "range": [0, 0]
+                },
+                {
+                  "name": "Q",
+                  "direction": "",
+                  "range": [0, 0]
+                }
+            ],
+            "cells": [
+                {
+                  "name": "$procdff$183",
+                  "attributes": {
+                    "src": "fv_axi_handshake.sv:83.5-88.8"
+                  },
+                  "parameters": {
+                    "CLK_POLARITY": "1",
+                    "WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$procdff$184",
+                  "attributes": {
+                    "src": "fv_axi_handshake.sv:83.5-88.8"
+                  },
+                  "parameters": {
+                    "CLK_POLARITY": "1",
+                    "WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$procdff$185",
+                  "attributes": {
+                    "src": "fv_axi_handshake.sv:83.5-88.8"
+                  },
+                  "parameters": {
+                    "CLK_POLARITY": "1",
+                    "WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$procdff$186",
+                  "attributes": {
+                    "src": "fv_axi_handshake.sv:83.5-88.8"
+                  },
+                  "parameters": {
+                    "CLK_POLARITY": "1",
+                    "WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$procdff$187",
+                  "attributes": {
+                    "src": "fv_axi_handshake.sv:75.5-80.8"
+                  },
+                  "parameters": {
+                    "CLK_POLARITY": "1",
+                    "WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$procdff$188",
+                  "attributes": {
+                    "src": "fv_axi_handshake.sv:75.5-80.8"
+                  },
+                  "parameters": {
+                    "CLK_POLARITY": "1",
+                    "WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$procdff$189",
+                  "attributes": {
+                    "src": "fv_axi_handshake.sv:75.5-80.8"
+                  },
+                  "parameters": {
+                    "CLK_POLARITY": "1",
+                    "WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$procdff$190",
+                  "attributes": {
+                    "src": "fv_axi_handshake.sv:75.5-80.8"
+                  },
+                  "parameters": {
+                    "CLK_POLARITY": "1",
+                    "WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$procdff$191",
+                  "attributes": {
+                    "src": "fv_axi_handshake.sv:67.5-72.8"
+                  },
+                  "parameters": {
+                    "CLK_POLARITY": "1",
+                    "WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$procdff$192",
+                  "attributes": {
+                    "src": "fv_axi_handshake.sv:67.5-72.8"
+                  },
+                  "parameters": {
+                    "CLK_POLARITY": "1",
+                    "WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$procdff$193",
+                  "attributes": {
+                    "src": "fv_axi_handshake.sv:67.5-72.8"
+                  },
+                  "parameters": {
+                    "CLK_POLARITY": "1",
+                    "WIDTH": "00000000000000000000000000000001"
+                  }
+                },
+                {
+                  "name": "$procdff$194",
+                  "attributes": {
+                    "src": "fv_axi_handshake.sv:67.5-72.8"
+                  },
+                  "parameters": {
+                    "CLK_POLARITY": "1",
+                    "WIDTH": "00000000000000000000000000000001"
+                  }
+                }
+            ]
+          },
+          {
+            "type": "$initstate",
+            "ports": [
+                {
+                  "name": "Y",
+                  "direction": "",
+                  "range": [0, 0]
+                }
+            ],
+            "cells": [
+                {
+                  "name": "$initstate$8",
+                  "attributes": {
+                    "module_not_derived": "00000000000000000000000000000001",
+                    "src": "fv_axi_handshake.sv:0.0-0.0"
+                  },
+                  "parameters": {
+
+                  }
+                }
+            ]
+          },
+          {
+            "type": "$assume",
+            "ports": [
+                {
+                  "name": "A",
+                  "direction": "io",
+                  "range": [0, 0]
+                },
+                {
+                  "name": "EN",
+                  "direction": "io",
+                  "range": [0, 0]
+                }
+            ],
+            "cells": [
+                {
+                  "name": "$assume$fv_axi_handshake.sv:62$33",
+                  "attributes": {
+                    "src": "fv_axi_handshake.sv:62.12-62.27"
+                  },
+                  "parameters": {
+
+                  }
+                }
+            ]
+          },
+          {
+            "type": "$assert",
+            "ports": [
+                {
+                  "name": "A",
+                  "direction": "io",
+                  "range": [0, 0]
+                },
+                {
+                  "name": "EN",
+                  "direction": "io",
+                  "range": [0, 0]
+                }
+            ],
+            "cells": [
+                {
+                  "name": "$assert$fv_axi_handshake.sv:69$34",
+                  "attributes": {
+                    "src": "fv_axi_handshake.sv:69.51-70.32"
+                  },
+                  "parameters": {
+
+                  }
+                },
+                {
+                  "name": "$assert$fv_axi_handshake.sv:77$35",
+                  "attributes": {
+                    "src": "fv_axi_handshake.sv:77.51-78.32"
+                  },
+                  "parameters": {
+
+                  }
+                },
+                {
+                  "name": "$assert$fv_axi_handshake.sv:85$36",
+                  "attributes": {
+                    "src": "fv_axi_handshake.sv:85.49-86.31"
+                  },
+                  "parameters": {
+
+                  }
+                }
+            ]
+          }
+        ],
+        "attributes": {
+            "keep": "00000000000000000000000000000001",
+            "hdlname": "\\fv_axi_handshake",
+            "top": "00000000000000000000000000000001",
+            "src": "fv_axi_handshake.sv:16.1-90.10"
+        }
+      }
+  ]
+}

@@ -1,0 +1,726 @@
+
+ /----------------------------------------------------------------------------\
+ |                                                                            |
+ |  yosys -- Yosys Open SYnthesis Suite                                       |
+ |                                                                            |
+ |  Copyright (C) 2012 - 2020  Claire Xenia Wolf <claire@yosyshq.com>         |
+ |                                                                            |
+ |  Permission to use, copy, modify, and/or distribute this software for any  |
+ |  purpose with or without fee is hereby granted, provided that the above    |
+ |  copyright notice and this permission notice appear in all copies.         |
+ |                                                                            |
+ |  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES  |
+ |  WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF          |
+ |  MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR   |
+ |  ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES    |
+ |  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN     |
+ |  ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF   |
+ |  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.            |
+ |                                                                            |
+ \----------------------------------------------------------------------------/
+
+ Yosys 0.33 (git sha1 2584903a060)
+
+
+-- Executing script file `../model/design.ys' --
+
+1. Executing Verilog-2005 frontend: plic.sv
+Parsing formal SystemVerilog input from `plic.sv' to AST representation.
+Storing AST representation for module `$abstract\plic'.
+Successfully finished Verilog frontend.
+
+2. Executing Verilog-2005 frontend: fv_plic_priority.sv
+Parsing formal SystemVerilog input from `fv_plic_priority.sv' to AST representation.
+Storing AST representation for module `$abstract\fv_plic_priority'.
+Successfully finished Verilog frontend.
+
+3. Executing PREP pass.
+
+3.1. Executing HIERARCHY pass (managing design hierarchy).
+
+3.2. Executing AST frontend in derive mode using pre-parsed AST for module `\fv_plic_priority'.
+Generating RTLIL representation for module `\fv_plic_priority'.
+
+3.2.1. Analyzing design hierarchy..
+Top module:  \fv_plic_priority
+
+3.2.2. Executing AST frontend in derive mode using pre-parsed AST for module `\plic'.
+Generating RTLIL representation for module `\plic'.
+Warning: Replacing memory \reg_priority with list of registers. See plic.sv:161
+
+3.2.3. Analyzing design hierarchy..
+Top module:  \fv_plic_priority
+Used module:     \plic
+
+3.2.4. Analyzing design hierarchy..
+Top module:  \fv_plic_priority
+Used module:     \plic
+Removing unused module `$abstract\fv_plic_priority'.
+Removing unused module `$abstract\plic'.
+Removed 2 unused modules.
+Module plic directly or indirectly contains formal properties -> setting "keep" attribute.
+Module fv_plic_priority directly or indirectly contains formal properties -> setting "keep" attribute.
+
+3.3. Executing PROC pass (convert processes to netlists).
+
+3.3.1. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Cleaned up 0 empty switches.
+
+3.3.2. Executing PROC_RMDEAD pass (remove dead branches from decision trees).
+Marked 1 switch rules as full_case in process $proc$plic.sv:223$65 in module plic.
+Marked 2 switch rules as full_case in process $proc$plic.sv:159$60 in module plic.
+Marked 6 switch rules as full_case in process $proc$plic.sv:0$46 in module plic.
+Marked 2 switch rules as full_case in process $proc$plic.sv:0$43 in module plic.
+Removed a total of 0 dead cases.
+
+3.3.3. Executing PROC_PRUNE pass (remove redundant assignments in processes).
+Removed 2 redundant assignments.
+Promoted 20 assignments to connections.
+
+3.3.4. Executing PROC_INIT pass (extract init attributes).
+Found init rule in `\plic.$proc$plic.sv:0$149'.
+  Set init value: $formal$plic.sv:247$22_EN = 1'0
+Found init rule in `\plic.$proc$plic.sv:0$147'.
+  Set init value: $formal$plic.sv:246$21_EN = 1'0
+Found init rule in `\plic.$proc$plic.sv:0$145'.
+  Set init value: $formal$plic.sv:245$20_EN = 1'0
+Found init rule in `\plic.$proc$plic.sv:0$143'.
+  Set init value: $formal$plic.sv:244$19_EN = 1'0
+Found init rule in `\plic.$proc$plic.sv:0$141'.
+  Set init value: $formal$plic.sv:243$18_EN = 1'0
+Found init rule in `\plic.$proc$plic.sv:0$139'.
+  Set init value: $formal$plic.sv:242$17_EN = 1'0
+Found init rule in `\plic.$proc$plic.sv:0$137'.
+  Set init value: $formal$plic.sv:241$16_EN = 1'0
+Found init rule in `\plic.$proc$plic.sv:0$135'.
+  Set init value: $formal$plic.sv:237$15_EN = 1'0
+Found init rule in `\plic.$proc$plic.sv:0$133'.
+  Set init value: $formal$plic.sv:236$14_EN = 1'0
+Found init rule in `\plic.$proc$plic.sv:0$131'.
+  Set init value: $formal$plic.sv:235$13_EN = 1'0
+Found init rule in `\plic.$proc$plic.sv:0$129'.
+  Set init value: $formal$plic.sv:234$12_EN = 1'0
+Found init rule in `\plic.$proc$plic.sv:0$127'.
+  Set init value: $formal$plic.sv:233$11_EN = 1'0
+Found init rule in `\plic.$proc$plic.sv:0$125'.
+  Set init value: $formal$plic.sv:232$10_EN = 1'0
+Found init rule in `\plic.$proc$plic.sv:0$123'.
+  Set init value: $formal$plic.sv:231$9_EN = 1'0
+Found init rule in `\plic.$proc$plic.sv:0$121'.
+  Set init value: $formal$plic.sv:224$8_EN = 1'0
+
+3.3.5. Executing PROC_ARST pass (detect async resets in processes).
+Found async reset \rst_n in `\plic.$proc$plic.sv:159$60'.
+
+3.3.6. Executing PROC_ROM pass (convert switches to ROMs).
+Converted 0 switches.
+<suppressed ~21 debug messages>
+
+3.3.7. Executing PROC_MUX pass (convert decision trees to multiplexers).
+Creating decoders for process `\plic.$proc$plic.sv:0$149'.
+Creating decoders for process `\plic.$proc$plic.sv:0$147'.
+Creating decoders for process `\plic.$proc$plic.sv:0$145'.
+Creating decoders for process `\plic.$proc$plic.sv:0$143'.
+Creating decoders for process `\plic.$proc$plic.sv:0$141'.
+Creating decoders for process `\plic.$proc$plic.sv:0$139'.
+Creating decoders for process `\plic.$proc$plic.sv:0$137'.
+Creating decoders for process `\plic.$proc$plic.sv:0$135'.
+Creating decoders for process `\plic.$proc$plic.sv:0$133'.
+Creating decoders for process `\plic.$proc$plic.sv:0$131'.
+Creating decoders for process `\plic.$proc$plic.sv:0$129'.
+Creating decoders for process `\plic.$proc$plic.sv:0$127'.
+Creating decoders for process `\plic.$proc$plic.sv:0$125'.
+Creating decoders for process `\plic.$proc$plic.sv:0$123'.
+Creating decoders for process `\plic.$proc$plic.sv:0$121'.
+Creating decoders for process `\plic.$proc$plic.sv:223$65'.
+     1/30: $0$formal$plic.sv:224$8_EN[0:0]$67
+     2/30: $0$formal$plic.sv:224$8_CHECK[0:0]$66
+     3/30: $0$formal$plic.sv:231$9_EN[0:0]$69
+     4/30: $0$formal$plic.sv:231$9_CHECK[0:0]$68
+     5/30: $0$formal$plic.sv:232$10_EN[0:0]$71
+     6/30: $0$formal$plic.sv:232$10_CHECK[0:0]$70
+     7/30: $0$formal$plic.sv:233$11_EN[0:0]$73
+     8/30: $0$formal$plic.sv:233$11_CHECK[0:0]$72
+     9/30: $0$formal$plic.sv:234$12_EN[0:0]$75
+    10/30: $0$formal$plic.sv:234$12_CHECK[0:0]$74
+    11/30: $0$formal$plic.sv:235$13_EN[0:0]$77
+    12/30: $0$formal$plic.sv:235$13_CHECK[0:0]$76
+    13/30: $0$formal$plic.sv:236$14_EN[0:0]$79
+    14/30: $0$formal$plic.sv:236$14_CHECK[0:0]$78
+    15/30: $0$formal$plic.sv:237$15_EN[0:0]$81
+    16/30: $0$formal$plic.sv:237$15_CHECK[0:0]$80
+    17/30: $0$formal$plic.sv:241$16_EN[0:0]$83
+    18/30: $0$formal$plic.sv:241$16_CHECK[0:0]$82
+    19/30: $0$formal$plic.sv:242$17_EN[0:0]$85
+    20/30: $0$formal$plic.sv:242$17_CHECK[0:0]$84
+    21/30: $0$formal$plic.sv:243$18_EN[0:0]$87
+    22/30: $0$formal$plic.sv:243$18_CHECK[0:0]$86
+    23/30: $0$formal$plic.sv:244$19_EN[0:0]$89
+    24/30: $0$formal$plic.sv:244$19_CHECK[0:0]$88
+    25/30: $0$formal$plic.sv:245$20_EN[0:0]$91
+    26/30: $0$formal$plic.sv:245$20_CHECK[0:0]$90
+    27/30: $0$formal$plic.sv:246$21_EN[0:0]$93
+    28/30: $0$formal$plic.sv:246$21_CHECK[0:0]$92
+    29/30: $0$formal$plic.sv:247$22_EN[0:0]$95
+    30/30: $0$formal$plic.sv:247$22_CHECK[0:0]$94
+Creating decoders for process `\plic.$proc$plic.sv:159$60'.
+     1/11: $0\reg_pending[5:0]
+     2/11: $0\irq_src_prev[5:0]
+     3/11: $0\reg_priority[6][2:0]
+     4/11: $0\reg_priority[5][2:0]
+     5/11: $0\reg_priority[4][2:0]
+     6/11: $0\reg_priority[3][2:0]
+     7/11: $0\reg_priority[2][2:0]
+     8/11: $0\reg_priority[1][2:0]
+     9/11: $0\reg_threshold[2:0]
+    10/11: $0\reg_enable[5:0]
+    11/11: $0\rdata[31:0]
+Creating decoders for process `\plic.$proc$plic.sv:0$46'.
+     1/12: $6\win_pri[2:0]
+     2/12: $6\winner_id[2:0]
+     3/12: $5\win_pri[2:0]
+     4/12: $5\winner_id[2:0]
+     5/12: $4\win_pri[2:0]
+     6/12: $4\winner_id[2:0]
+     7/12: $3\win_pri[2:0]
+     8/12: $3\winner_id[2:0]
+     9/12: $2\win_pri[2:0]
+    10/12: $2\winner_id[2:0]
+    11/12: $1\win_pri[2:0]
+    12/12: $1\winner_id[2:0]
+Creating decoders for process `\plic.$proc$plic.sv:0$43'.
+     1/2: $2\complete_clr[5:0]
+     2/2: $1\complete_clr[5:0]
+Creating decoders for process `\fv_plic_priority.$proc$fv_plic_priority.sv:0$4'.
+
+3.3.8. Executing PROC_DLATCH pass (convert process syncs to latches).
+No latch inferred for signal `\plic.\winner_id' from process `\plic.$proc$plic.sv:0$46'.
+No latch inferred for signal `\plic.\win_pri' from process `\plic.$proc$plic.sv:0$46'.
+No latch inferred for signal `\plic.\complete_clr' from process `\plic.$proc$plic.sv:0$43'.
+No latch inferred for signal `\fv_plic_priority.$formal$fv_plic_priority.sv:44$1_CHECK' from process `\fv_plic_priority.$proc$fv_plic_priority.sv:0$4'.
+No latch inferred for signal `\fv_plic_priority.$formal$fv_plic_priority.sv:44$1_EN' from process `\fv_plic_priority.$proc$fv_plic_priority.sv:0$4'.
+
+3.3.9. Executing PROC_DFF pass (convert process syncs to FFs).
+Creating register for signal `\plic.$formal$plic.sv:224$8_CHECK' using process `\plic.$proc$plic.sv:223$65'.
+  created $dff cell `$procdff$493' with positive edge clock.
+Creating register for signal `\plic.$formal$plic.sv:224$8_EN' using process `\plic.$proc$plic.sv:223$65'.
+  created $dff cell `$procdff$494' with positive edge clock.
+Creating register for signal `\plic.$formal$plic.sv:231$9_CHECK' using process `\plic.$proc$plic.sv:223$65'.
+  created $dff cell `$procdff$495' with positive edge clock.
+Creating register for signal `\plic.$formal$plic.sv:231$9_EN' using process `\plic.$proc$plic.sv:223$65'.
+  created $dff cell `$procdff$496' with positive edge clock.
+Creating register for signal `\plic.$formal$plic.sv:232$10_CHECK' using process `\plic.$proc$plic.sv:223$65'.
+  created $dff cell `$procdff$497' with positive edge clock.
+Creating register for signal `\plic.$formal$plic.sv:232$10_EN' using process `\plic.$proc$plic.sv:223$65'.
+  created $dff cell `$procdff$498' with positive edge clock.
+Creating register for signal `\plic.$formal$plic.sv:233$11_CHECK' using process `\plic.$proc$plic.sv:223$65'.
+  created $dff cell `$procdff$499' with positive edge clock.
+Creating register for signal `\plic.$formal$plic.sv:233$11_EN' using process `\plic.$proc$plic.sv:223$65'.
+  created $dff cell `$procdff$500' with positive edge clock.
+Creating register for signal `\plic.$formal$plic.sv:234$12_CHECK' using process `\plic.$proc$plic.sv:223$65'.
+  created $dff cell `$procdff$501' with positive edge clock.
+Creating register for signal `\plic.$formal$plic.sv:234$12_EN' using process `\plic.$proc$plic.sv:223$65'.
+  created $dff cell `$procdff$502' with positive edge clock.
+Creating register for signal `\plic.$formal$plic.sv:235$13_CHECK' using process `\plic.$proc$plic.sv:223$65'.
+  created $dff cell `$procdff$503' with positive edge clock.
+Creating register for signal `\plic.$formal$plic.sv:235$13_EN' using process `\plic.$proc$plic.sv:223$65'.
+  created $dff cell `$procdff$504' with positive edge clock.
+Creating register for signal `\plic.$formal$plic.sv:236$14_CHECK' using process `\plic.$proc$plic.sv:223$65'.
+  created $dff cell `$procdff$505' with positive edge clock.
+Creating register for signal `\plic.$formal$plic.sv:236$14_EN' using process `\plic.$proc$plic.sv:223$65'.
+  created $dff cell `$procdff$506' with positive edge clock.
+Creating register for signal `\plic.$formal$plic.sv:237$15_CHECK' using process `\plic.$proc$plic.sv:223$65'.
+  created $dff cell `$procdff$507' with positive edge clock.
+Creating register for signal `\plic.$formal$plic.sv:237$15_EN' using process `\plic.$proc$plic.sv:223$65'.
+  created $dff cell `$procdff$508' with positive edge clock.
+Creating register for signal `\plic.$formal$plic.sv:241$16_CHECK' using process `\plic.$proc$plic.sv:223$65'.
+  created $dff cell `$procdff$509' with positive edge clock.
+Creating register for signal `\plic.$formal$plic.sv:241$16_EN' using process `\plic.$proc$plic.sv:223$65'.
+  created $dff cell `$procdff$510' with positive edge clock.
+Creating register for signal `\plic.$formal$plic.sv:242$17_CHECK' using process `\plic.$proc$plic.sv:223$65'.
+  created $dff cell `$procdff$511' with positive edge clock.
+Creating register for signal `\plic.$formal$plic.sv:242$17_EN' using process `\plic.$proc$plic.sv:223$65'.
+  created $dff cell `$procdff$512' with positive edge clock.
+Creating register for signal `\plic.$formal$plic.sv:243$18_CHECK' using process `\plic.$proc$plic.sv:223$65'.
+  created $dff cell `$procdff$513' with positive edge clock.
+Creating register for signal `\plic.$formal$plic.sv:243$18_EN' using process `\plic.$proc$plic.sv:223$65'.
+  created $dff cell `$procdff$514' with positive edge clock.
+Creating register for signal `\plic.$formal$plic.sv:244$19_CHECK' using process `\plic.$proc$plic.sv:223$65'.
+  created $dff cell `$procdff$515' with positive edge clock.
+Creating register for signal `\plic.$formal$plic.sv:244$19_EN' using process `\plic.$proc$plic.sv:223$65'.
+  created $dff cell `$procdff$516' with positive edge clock.
+Creating register for signal `\plic.$formal$plic.sv:245$20_CHECK' using process `\plic.$proc$plic.sv:223$65'.
+  created $dff cell `$procdff$517' with positive edge clock.
+Creating register for signal `\plic.$formal$plic.sv:245$20_EN' using process `\plic.$proc$plic.sv:223$65'.
+  created $dff cell `$procdff$518' with positive edge clock.
+Creating register for signal `\plic.$formal$plic.sv:246$21_CHECK' using process `\plic.$proc$plic.sv:223$65'.
+  created $dff cell `$procdff$519' with positive edge clock.
+Creating register for signal `\plic.$formal$plic.sv:246$21_EN' using process `\plic.$proc$plic.sv:223$65'.
+  created $dff cell `$procdff$520' with positive edge clock.
+Creating register for signal `\plic.$formal$plic.sv:247$22_CHECK' using process `\plic.$proc$plic.sv:223$65'.
+  created $dff cell `$procdff$521' with positive edge clock.
+Creating register for signal `\plic.$formal$plic.sv:247$22_EN' using process `\plic.$proc$plic.sv:223$65'.
+  created $dff cell `$procdff$522' with positive edge clock.
+Creating register for signal `\plic.\rdata' using process `\plic.$proc$plic.sv:159$60'.
+  created $adff cell `$procdff$523' with positive edge clock and negative level reset.
+Creating register for signal `\plic.\reg_pending' using process `\plic.$proc$plic.sv:159$60'.
+  created $adff cell `$procdff$524' with positive edge clock and negative level reset.
+Creating register for signal `\plic.\reg_enable' using process `\plic.$proc$plic.sv:159$60'.
+  created $adff cell `$procdff$525' with positive edge clock and negative level reset.
+Creating register for signal `\plic.\reg_threshold' using process `\plic.$proc$plic.sv:159$60'.
+  created $adff cell `$procdff$526' with positive edge clock and negative level reset.
+Creating register for signal `\plic.\irq_src_prev' using process `\plic.$proc$plic.sv:159$60'.
+  created $adff cell `$procdff$527' with positive edge clock and negative level reset.
+Creating register for signal `\plic.\reg_priority[1]' using process `\plic.$proc$plic.sv:159$60'.
+  created $adff cell `$procdff$528' with positive edge clock and negative level reset.
+Creating register for signal `\plic.\reg_priority[2]' using process `\plic.$proc$plic.sv:159$60'.
+  created $adff cell `$procdff$529' with positive edge clock and negative level reset.
+Creating register for signal `\plic.\reg_priority[3]' using process `\plic.$proc$plic.sv:159$60'.
+  created $adff cell `$procdff$530' with positive edge clock and negative level reset.
+Creating register for signal `\plic.\reg_priority[4]' using process `\plic.$proc$plic.sv:159$60'.
+  created $adff cell `$procdff$531' with positive edge clock and negative level reset.
+Creating register for signal `\plic.\reg_priority[5]' using process `\plic.$proc$plic.sv:159$60'.
+  created $adff cell `$procdff$532' with positive edge clock and negative level reset.
+Creating register for signal `\plic.\reg_priority[6]' using process `\plic.$proc$plic.sv:159$60'.
+  created $adff cell `$procdff$533' with positive edge clock and negative level reset.
+
+3.3.10. Executing PROC_MEMWR pass (convert process memory writes to cells).
+
+3.3.11. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Removing empty process `plic.$proc$plic.sv:0$149'.
+Removing empty process `plic.$proc$plic.sv:0$147'.
+Removing empty process `plic.$proc$plic.sv:0$145'.
+Removing empty process `plic.$proc$plic.sv:0$143'.
+Removing empty process `plic.$proc$plic.sv:0$141'.
+Removing empty process `plic.$proc$plic.sv:0$139'.
+Removing empty process `plic.$proc$plic.sv:0$137'.
+Removing empty process `plic.$proc$plic.sv:0$135'.
+Removing empty process `plic.$proc$plic.sv:0$133'.
+Removing empty process `plic.$proc$plic.sv:0$131'.
+Removing empty process `plic.$proc$plic.sv:0$129'.
+Removing empty process `plic.$proc$plic.sv:0$127'.
+Removing empty process `plic.$proc$plic.sv:0$125'.
+Removing empty process `plic.$proc$plic.sv:0$123'.
+Removing empty process `plic.$proc$plic.sv:0$121'.
+Found and cleaned up 9 empty switches in `\plic.$proc$plic.sv:223$65'.
+Removing empty process `plic.$proc$plic.sv:223$65'.
+Found and cleaned up 4 empty switches in `\plic.$proc$plic.sv:159$60'.
+Removing empty process `plic.$proc$plic.sv:159$60'.
+Found and cleaned up 6 empty switches in `\plic.$proc$plic.sv:0$46'.
+Removing empty process `plic.$proc$plic.sv:0$46'.
+Found and cleaned up 2 empty switches in `\plic.$proc$plic.sv:0$43'.
+Removing empty process `plic.$proc$plic.sv:0$43'.
+Removing empty process `fv_plic_priority.$proc$fv_plic_priority.sv:0$4'.
+Cleaned up 21 empty switches.
+
+3.3.12. Executing OPT_EXPR pass (perform const folding).
+Optimizing module plic.
+<suppressed ~3 debug messages>
+Optimizing module fv_plic_priority.
+
+3.4. Executing OPT_EXPR pass (perform const folding).
+Optimizing module plic.
+Optimizing module fv_plic_priority.
+
+3.5. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \plic..
+Finding unused cells or wires in module \fv_plic_priority..
+Removed 1 unused cells and 181 unused wires.
+<suppressed ~4 debug messages>
+
+3.6. Executing CHECK pass (checking for obvious problems).
+Checking module fv_plic_priority...
+Warning: Wire fv_plic_priority.\we is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [31] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [30] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [29] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [28] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [27] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [26] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [25] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [24] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [23] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [22] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [21] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [20] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [19] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [18] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [17] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [16] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [15] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [14] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [13] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [12] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [11] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [10] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [9] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [8] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [7] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [6] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [5] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [4] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [3] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [2] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [1] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [0] is used but has no driver.
+Warning: Wire fv_plic_priority.\re is used but has no driver.
+Warning: Wire fv_plic_priority.\irq_src [5] is used but has no driver.
+Warning: Wire fv_plic_priority.\irq_src [4] is used but has no driver.
+Warning: Wire fv_plic_priority.\irq_src [3] is used but has no driver.
+Warning: Wire fv_plic_priority.\irq_src [2] is used but has no driver.
+Warning: Wire fv_plic_priority.\irq_src [1] is used but has no driver.
+Warning: Wire fv_plic_priority.\irq_src [0] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [23] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [22] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [21] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [20] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [19] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [18] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [17] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [16] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [15] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [14] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [13] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [12] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [11] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [10] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [9] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [8] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [7] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [6] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [5] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [4] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [3] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [2] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [1] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [0] is used but has no driver.
+Checking module plic...
+Found and reported 64 problems.
+
+3.7. Executing OPT pass (performing simple optimizations).
+
+3.7.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module fv_plic_priority.
+Optimizing module plic.
+
+3.7.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\fv_plic_priority'.
+Finding identical cells in module `\plic'.
+<suppressed ~87 debug messages>
+Removed a total of 29 cells.
+
+3.7.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \fv_plic_priority..
+  Creating internal representation of mux trees.
+  No muxes found in this module.
+Running muxtree optimizer on module \plic..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+    dead port 2/2 on $mux $procmux$488.
+Removed 1 multiplexer ports.
+<suppressed ~47 debug messages>
+
+3.7.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \fv_plic_priority.
+  Optimizing cells in module \plic.
+    New ctrl vector for $pmux cell $procmux$270: $auto$opt_reduce.cc:134:opt_pmux$535
+    New ctrl vector for $pmux cell $procmux$282: $auto$opt_reduce.cc:134:opt_pmux$537
+  Optimizing cells in module \plic.
+Performed a total of 2 changes.
+
+3.7.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\fv_plic_priority'.
+Finding identical cells in module `\plic'.
+<suppressed ~9 debug messages>
+Removed a total of 3 cells.
+
+3.7.6. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \fv_plic_priority..
+Finding unused cells or wires in module \plic..
+Removed 0 unused cells and 33 unused wires.
+<suppressed ~1 debug messages>
+
+3.7.7. Executing OPT_EXPR pass (perform const folding).
+Optimizing module fv_plic_priority.
+Optimizing module plic.
+<suppressed ~1 debug messages>
+
+3.7.8. Rerunning OPT passes. (Maybe there is more to do..)
+
+3.7.9. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \fv_plic_priority..
+  Creating internal representation of mux trees.
+  No muxes found in this module.
+Running muxtree optimizer on module \plic..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~46 debug messages>
+
+3.7.10. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \fv_plic_priority.
+  Optimizing cells in module \plic.
+Performed a total of 0 changes.
+
+3.7.11. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\fv_plic_priority'.
+Finding identical cells in module `\plic'.
+Removed a total of 0 cells.
+
+3.7.12. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \fv_plic_priority..
+Finding unused cells or wires in module \plic..
+Removed 0 unused cells and 1 unused wires.
+<suppressed ~1 debug messages>
+
+3.7.13. Executing OPT_EXPR pass (perform const folding).
+Optimizing module fv_plic_priority.
+Optimizing module plic.
+
+3.7.14. Rerunning OPT passes. (Maybe there is more to do..)
+
+3.7.15. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \fv_plic_priority..
+  Creating internal representation of mux trees.
+  No muxes found in this module.
+Running muxtree optimizer on module \plic..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~46 debug messages>
+
+3.7.16. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \fv_plic_priority.
+  Optimizing cells in module \plic.
+Performed a total of 0 changes.
+
+3.7.17. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\fv_plic_priority'.
+Finding identical cells in module `\plic'.
+Removed a total of 0 cells.
+
+3.7.18. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \fv_plic_priority..
+Finding unused cells or wires in module \plic..
+
+3.7.19. Executing OPT_EXPR pass (perform const folding).
+Optimizing module fv_plic_priority.
+Optimizing module plic.
+
+3.7.20. Finished OPT passes. (There is nothing left to do.)
+
+3.8. Executing WREDUCE pass (reducing word size of cells).
+Removed top 2 bits (of 24) from port B of cell plic.$eq$plic.sv:123$44 ($eq).
+Removed top 2 bits (of 3) from port B of cell plic.$gt$plic.sv:146$47 ($gt).
+Removed top 2 bits (of 3) from port B of cell plic.$procmux$162_CMP0 ($eq).
+Removed top 1 bits (of 3) from port B of cell plic.$procmux$185_CMP0 ($eq).
+Removed top 1 bits (of 3) from port B of cell plic.$procmux$206_CMP0 ($eq).
+Removed top 19 bits (of 24) from port B of cell plic.$procmux$372_CMP0 ($eq).
+Removed top 19 bits (of 24) from port B of cell plic.$procmux$379_CMP0 ($eq).
+Removed top 19 bits (of 24) from port B of cell plic.$procmux$387_CMP0 ($eq).
+Removed top 20 bits (of 24) from port B of cell plic.$procmux$396_CMP0 ($eq).
+Removed top 20 bits (of 24) from port B of cell plic.$procmux$406_CMP0 ($eq).
+Removed top 21 bits (of 24) from port B of cell plic.$procmux$417_CMP0 ($eq).
+Removed top 2 bits (of 24) from port B of cell plic.$procmux$421_CMP0 ($eq).
+Removed top 10 bits (of 24) from port B of cell plic.$procmux$426_CMP0 ($eq).
+Removed top 25 bits (of 32) from mux cell plic.$procmux$430 ($pmux).
+Removed top 11 bits (of 24) from port B of cell plic.$procmux$434_CMP0 ($eq).
+Removed top 2 bits (of 3) from mux cell plic.$procmux$477 ($mux).
+Removed top 1 bits (of 3) from port B of cell plic.$procmux$485_CMP0 ($eq).
+Removed top 1 bits (of 3) from port B of cell plic.$procmux$486_CMP0 ($eq).
+Removed top 2 bits (of 3) from port B of cell plic.$procmux$487_CMP0 ($eq).
+Removed top 2 bits (of 3) from wire plic.$1\winner_id[2:0].
+Removed top 25 bits (of 32) from wire plic.$procmux$430_Y.
+
+3.9. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \fv_plic_priority..
+Finding unused cells or wires in module \plic..
+Removed 0 unused cells and 2 unused wires.
+<suppressed ~1 debug messages>
+
+3.10. Executing MEMORY_COLLECT pass (generating $mem cells).
+
+3.11. Executing OPT pass (performing simple optimizations).
+
+3.11.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module fv_plic_priority.
+Optimizing module plic.
+
+3.11.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\fv_plic_priority'.
+Finding identical cells in module `\plic'.
+Removed a total of 0 cells.
+
+3.11.3. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \fv_plic_priority..
+Finding unused cells or wires in module \plic..
+
+3.11.4. Finished fast OPT passes.
+
+3.12. Printing statistics.
+
+=== fv_plic_priority ===
+
+   Number of wires:                 11
+   Number of wire bits:            101
+   Number of public wires:           9
+   Number of public wire bits:      99
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                  4
+     $assume                         1
+     $initstate                      1
+     $logic_not                      1
+     plic                            1
+
+=== plic ===
+
+   Number of wires:                231
+   Number of wire bits:            536
+   Number of public wires:          33
+   Number of public wire bits:     195
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                235
+     $adff                          11
+     $and                           14
+     $assert                        15
+     $dff                           29
+     $eq                            22
+     $gt                            12
+     $le                             7
+     $logic_and                      7
+     $mux                          111
+     $not                            2
+     $or                             1
+     $pmux                           2
+     $reduce_bool                    1
+     $reduce_or                      1
+
+=== design hierarchy ===
+
+   fv_plic_priority                  1
+     plic                            1
+
+   Number of wires:                242
+   Number of wire bits:            637
+   Number of public wires:          42
+   Number of public wire bits:     294
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                238
+     $adff                          11
+     $and                           14
+     $assert                        15
+     $assume                         1
+     $dff                           29
+     $eq                            22
+     $gt                            12
+     $initstate                      1
+     $le                             7
+     $logic_and                      7
+     $logic_not                      1
+     $mux                          111
+     $not                            2
+     $or                             1
+     $pmux                           2
+     $reduce_bool                    1
+     $reduce_or                      1
+
+3.13. Executing CHECK pass (checking for obvious problems).
+Checking module fv_plic_priority...
+Warning: Wire fv_plic_priority.\we is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [31] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [30] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [29] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [28] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [27] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [26] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [25] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [24] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [23] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [22] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [21] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [20] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [19] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [18] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [17] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [16] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [15] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [14] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [13] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [12] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [11] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [10] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [9] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [8] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [7] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [6] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [5] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [4] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [3] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [2] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [1] is used but has no driver.
+Warning: Wire fv_plic_priority.\wdata [0] is used but has no driver.
+Warning: Wire fv_plic_priority.\re is used but has no driver.
+Warning: Wire fv_plic_priority.\irq_src [5] is used but has no driver.
+Warning: Wire fv_plic_priority.\irq_src [4] is used but has no driver.
+Warning: Wire fv_plic_priority.\irq_src [3] is used but has no driver.
+Warning: Wire fv_plic_priority.\irq_src [2] is used but has no driver.
+Warning: Wire fv_plic_priority.\irq_src [1] is used but has no driver.
+Warning: Wire fv_plic_priority.\irq_src [0] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [23] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [22] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [21] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [20] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [19] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [18] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [17] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [16] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [15] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [14] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [13] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [12] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [11] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [10] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [9] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [8] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [7] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [6] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [5] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [4] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [3] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [2] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [1] is used but has no driver.
+Warning: Wire fv_plic_priority.\addr [0] is used but has no driver.
+Checking module plic...
+Found and reported 64 problems.
+
+4. Executing HIERARCHY pass (managing design hierarchy).
+
+4.1. Analyzing design hierarchy..
+Top module:  \fv_plic_priority
+Used module:     \plic
+
+4.2. Analyzing design hierarchy..
+Top module:  \fv_plic_priority
+Used module:     \plic
+Removed 0 unused modules.
+Module fv_plic_priority directly or indirectly contains formal properties -> setting "keep" attribute.
+Module plic directly or indirectly contains formal properties -> setting "keep" attribute.
+
+5. Executing jny backend.
+
+6. Executing RTLIL backend.
+Output filename: ../model/design.il
+
+Warnings: 65 unique messages, 129 total
+End of script. Logfile hash: d739de1c55, CPU: user 0.10s system 0.02s, MEM: 14.66 MB peak
+Yosys 0.33 (git sha1 2584903a060)
+Time spent: 26% 7x opt_expr (0 sec), 22% 6x opt_clean (0 sec), ...

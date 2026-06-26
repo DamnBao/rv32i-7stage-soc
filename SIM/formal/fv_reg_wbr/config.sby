@@ -1,0 +1,15 @@
+[options]
+mode prove
+depth 5
+
+[engines]
+smtbmc z3
+
+[script]
+read -formal register_file.sv
+read -formal fv_reg_wbr.sv
+prep -top fv_reg_wbr
+
+[files]
+../../RTL/register_file.sv
+fv_reg_wbr.sv

@@ -246,8 +246,9 @@ Mọi peripheral muốn kết nối với `soc_top` phải implement register ma
 | integ_ahb_err | tb_soc_ahb_err: AHB HRESP ERROR→store_fault(mcause=7); HRESP ERROR→load_fault(mcause=5) | 2/2 PASS |
 | rv32i_compliance | riscv-arch-test old-framework-2.x: 37/37 PASS; 1 SKIP (jal-01 ~1.7MB, cần 2MB IMEM) | **37/37 PASS** |
 | branch_pred | unit: tb_branch_predictor (23 cases BHT/BTB cold/warm/hysteresis/tag/reset); system: prog_branch_pred (4 tests: loop/JAL/nested/alternating) | **23/23 + 1/1 PASS** |
-| periph | tb_periph: prog_timer (Timer AXI compare-match IRQ, PLIC src 2); prog_gpio_ahb (GPIO AHB loopback 0x55 + INTR_TEST IRQ, PLIC src 4) | **2/2 PASS** |
+| periph | tb_periph: prog_timer (Timer AXI compare-match IRQ, PLIC src 2); prog_gpio_ahb (GPIO AHB loopback 0x55 + INTR_TEST IRQ, PLIC src 4); prog_uart (UART TX/RX loopback 0x55 + dual IRQ, PLIC src 3) | **3/3 PASS** |
 | unit_periph | tb_timer_axi (23), tb_gpio_ahb (21), tb_uart_axi (27) — peripheral unit tests | **71/71 PASS** |
+| formal_verify | SymbiYosys k-induction (smtbmc z3): P_REG_X0 (register_file, depth=15); P_GRAY+P_FIFO_DATA (async_fifo, depth=12); P_8N1+P_TX_PULSE+P_RX_PULSE+P_RX_BIT_CNT (uart_axi, depth=20); P_AXI_HANDSHAKE (axi_interface, depth=10); P_PLIC_PRIORITY (plic, depth=10); P_WBR+P_RF_SEQ (register_file, depth=5); ~22 assertions tổng; Phát hiện + sửa 1 RTL bug (UART TX) | **6/6 PROVED** |
 
 **Lệnh chạy:**
 ```bash
@@ -274,10 +275,18 @@ make unit_periph               # Cả 3 peripheral unit tests (71 cases)
 make p0_branch_pred            # Branch prediction system test (4 programs)
 make periph_timer              # Task 1: Timer AXI compare-match IRQ test
 make periph_gpio               # Task 1: GPIO AHB loopback + INTR_TEST IRQ test
-make periph_all                # Task 1: cả hai peripheral tests
+make periph_uart               # Task 1: UART AXI TX/RX loopback + dual IRQ test
+make periph_all                # Task 1: cả 3 peripheral tests
 make integ_bus_err             # Bus error integration test
 make integ_ahb_err             # AHB bus error integration test
 make rv32i_compliance          # RV32I formal compliance (riscv-arch-test)
+make formal_all                # Task 2: tất cả 6 formal verification jobs (6/6 PROVED)
+make formal_x0                 # Formal: register_file x0 immutability
+make formal_fifo               # Formal: async_fifo Gray-code + memory integrity
+make formal_uart               # Formal: uart_axi 8N1 + pulse + bit-cnt
+make formal_axi                # Formal: axi_interface VALID stability (AXI §A3.2.1)
+make formal_plic               # Formal: plic priority encoder correctness
+make formal_reg_wbr            # Formal: register_file WBR bypass + sequential read
 make p3_wave_csr               # dump VCD để debug Phase 3
 ```
 Chi tiết xem `SIM/TEST_LOG.md`.

@@ -1,0 +1,131 @@
+
+ /----------------------------------------------------------------------------\
+ |                                                                            |
+ |  yosys -- Yosys Open SYnthesis Suite                                       |
+ |                                                                            |
+ |  Copyright (C) 2012 - 2020  Claire Xenia Wolf <claire@yosyshq.com>         |
+ |                                                                            |
+ |  Permission to use, copy, modify, and/or distribute this software for any  |
+ |  purpose with or without fee is hereby granted, provided that the above    |
+ |  copyright notice and this permission notice appear in all copies.         |
+ |                                                                            |
+ |  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES  |
+ |  WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF          |
+ |  MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR   |
+ |  ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES    |
+ |  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN     |
+ |  ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF   |
+ |  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.            |
+ |                                                                            |
+ \----------------------------------------------------------------------------/
+
+ Yosys 0.33 (git sha1 2584903a060)
+
+
+-- Executing script file `design_smt2.ys' --
+
+1. Executing RTLIL frontend.
+Input filename: design_prep.il
+
+2. Executing HIERARCHY pass (managing design hierarchy).
+
+2.1. Analyzing design hierarchy..
+Top module:  \fv_reg_x0
+Used module:     \register_file
+
+2.2. Analyzing design hierarchy..
+Top module:  \fv_reg_x0
+Used module:     \register_file
+Removed 0 unused modules.
+Module fv_reg_x0 directly or indirectly contains formal properties -> setting "keep" attribute.
+
+3. Executing FORMALFF pass.
+
+4. Executing DFFUNMAP pass (unmap clock enable and synchronous reset from FFs).
+
+5. Printing statistics.
+
+=== register_file ===
+
+   Number of wires:                272
+   Number of wire bits:           5368
+   Number of public wires:          74
+   Number of public wire bits:    2163
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                266
+     $anyinit                       31
+     $anyseq                         2
+     $assume                         1
+     $eq                            95
+     $logic_and                      3
+     $logic_not                      2
+     $mux                          128
+     $not                            1
+     $pmux                           2
+     $reduce_bool                    1
+
+=== fv_reg_x0 ===
+
+   Number of wires:                 43
+   Number of wire bits:            152
+   Number of public wires:          21
+   Number of public wire bits:     130
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                 61
+     $anyinit                        6
+     $anyseq                        26
+     $assert                         4
+     $assume                         2
+     $ff                             2
+     $initstate                      1
+     $logic_and                      1
+     $logic_not                      4
+     $logic_or                       2
+     $mux                            9
+     $not                            1
+     $reduce_bool                    2
+     register_file                   1
+
+=== design hierarchy ===
+
+   fv_reg_x0                         1
+     register_file                   1
+
+   Number of wires:                315
+   Number of wire bits:           5520
+   Number of public wires:          95
+   Number of public wire bits:    2293
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                326
+     $anyinit                       37
+     $anyseq                        28
+     $assert                         4
+     $assume                         3
+     $eq                            95
+     $ff                             2
+     $initstate                      1
+     $logic_and                      4
+     $logic_not                      6
+     $logic_or                       2
+     $mux                          137
+     $not                            2
+     $pmux                           2
+     $reduce_bool                    3
+
+6. Executing SMT2 backend.
+
+6.1. Executing BMUXMAP pass.
+
+6.2. Executing DEMUXMAP pass.
+Creating SMT-LIBv2 representation of module register_file.
+Creating SMT-LIBv2 representation of module fv_reg_x0.
+
+End of script. Logfile hash: 5fdeb5c532, CPU: user 0.03s system 0.00s, MEM: 15.13 MB peak
+Yosys 0.33 (git sha1 2584903a060)
+Time spent: 77% 2x write_smt2 (0 sec), 18% 2x read_rtlil (0 sec), ...

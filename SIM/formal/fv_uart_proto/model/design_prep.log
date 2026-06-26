@@ -1,0 +1,232 @@
+
+ /----------------------------------------------------------------------------\
+ |                                                                            |
+ |  yosys -- Yosys Open SYnthesis Suite                                       |
+ |                                                                            |
+ |  Copyright (C) 2012 - 2020  Claire Xenia Wolf <claire@yosyshq.com>         |
+ |                                                                            |
+ |  Permission to use, copy, modify, and/or distribute this software for any  |
+ |  purpose with or without fee is hereby granted, provided that the above    |
+ |  copyright notice and this permission notice appear in all copies.         |
+ |                                                                            |
+ |  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES  |
+ |  WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF          |
+ |  MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR   |
+ |  ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES    |
+ |  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN     |
+ |  ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF   |
+ |  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.            |
+ |                                                                            |
+ \----------------------------------------------------------------------------/
+
+ Yosys 0.33 (git sha1 2584903a060)
+
+
+-- Executing script file `design_prep.ys' --
+
+1. Executing RTLIL frontend.
+Input filename: design.il
+
+2. Executing SCC pass (detecting logic loops).
+Found 0 SCCs in module uart_axi.
+Found 0 SCCs in module fv_uart_proto.
+Found 0 SCCs.
+
+3. Executing SIMPLEMAP pass (map simple cells to gate primitives).
+
+4. Executing MEMORY_NORDFF pass (extracting $dff cells from memories).
+
+5. Executing ASYNC2SYNC pass.
+Replacing uart_axi.$procdff$456 ($adff): ARST=\rst_n, D=\rx_s2, Q=\rx_s2_prev
+Replacing uart_axi.$procdff$455 ($adff): ARST=\rst_n, D=\rx_s1, Q=\rx_s2
+Replacing uart_axi.$procdff$454 ($adff): ARST=\rst_n, D=\uart_rx, Q=\rx_s1
+Replacing uart_axi.$procdff$453 ($adff): ARST=\rst_n, D=$0\tx_done_pulse[0:0], Q=\tx_done_pulse
+Replacing uart_axi.$procdff$452 ($adff): ARST=\rst_n, D=$0\tx_bit_cnt[2:0], Q=\tx_bit_cnt
+Replacing uart_axi.$procdff$451 ($adff): ARST=\rst_n, D=$0\tx_shift[7:0], Q=\tx_shift
+Replacing uart_axi.$procdff$450 ($adff): ARST=\rst_n, D=$0\tx_baud_cnt[31:0], Q=\tx_baud_cnt
+Replacing uart_axi.$procdff$449 ($adff): ARST=\rst_n, D=$0\tx_state[1:0], Q=\tx_state
+Replacing uart_axi.$procdff$448 ($adff): ARST=\rst_n, D=$0\uart_tx[0:0], Q=\uart_tx
+Replacing uart_axi.$procdff$447 ($adff): ARST=\rst_n, D=$0\rx_complete_pulse[0:0], Q=\rx_complete_pulse
+Replacing uart_axi.$procdff$446 ($adff): ARST=\rst_n, D=$0\rx_bit_cnt[2:0], Q=\rx_bit_cnt
+Replacing uart_axi.$procdff$445 ($adff): ARST=\rst_n, D=$0\rx_shift[7:0], Q=\rx_shift
+Replacing uart_axi.$procdff$444 ($adff): ARST=\rst_n, D=$0\rx_baud_cnt[31:0], Q=\rx_baud_cnt
+Replacing uart_axi.$procdff$443 ($adff): ARST=\rst_n, D=$0\rx_state[1:0], Q=\rx_state
+Replacing uart_axi.$procdff$442 ($adff): ARST=\rst_n, D=$0\reg_data2[31:0], Q=\reg_data2
+Replacing uart_axi.$procdff$441 ($adff): ARST=\rst_n, D=$0\reg_data1[31:0], Q=\reg_data1
+Replacing uart_axi.$procdff$440 ($adff): ARST=\rst_n, D=$0\reg_data0[31:0], Q=\reg_data0
+Replacing uart_axi.$procdff$439 ($adff): ARST=\rst_n, D=$0\reg_intr_state[31:0], Q=\reg_intr_state
+Replacing uart_axi.$procdff$438 ($adff): ARST=\rst_n, D=$0\reg_intr_enable[31:0], Q=\reg_intr_enable
+Replacing uart_axi.$procdff$437 ($adff): ARST=\rst_n, D=$0\reg_ctrl[31:0], Q=\reg_ctrl
+Replacing uart_axi.$procdff$436 ($adff): ARST=\rst_n, D=$0\rd_idx_r[5:0], Q=\rd_idx_r
+Replacing uart_axi.$procdff$435 ($adff): ARST=\rst_n, D=$0\w_strb_r[3:0], Q=\w_strb_r
+Replacing uart_axi.$procdff$434 ($adff): ARST=\rst_n, D=$0\w_data_r[31:0], Q=\w_data_r
+Replacing uart_axi.$procdff$433 ($adff): ARST=\rst_n, D=$0\aw_idx_r[5:0], Q=\aw_idx_r
+Replacing uart_axi.$procdff$432 ($adff): ARST=\rst_n, D=$0\w_got[0:0], Q=\w_got
+Replacing uart_axi.$procdff$431 ($adff): ARST=\rst_n, D=$0\aw_got[0:0], Q=\aw_got
+Replacing uart_axi.$procdff$430 ($adff): ARST=\rst_n, D=$0\state[1:0], Q=\state
+
+6. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \uart_axi..
+Finding unused cells or wires in module \fv_uart_proto..
+
+7. Executing FORMALFF pass.
+
+8. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \fv_uart_proto..
+Finding unused cells or wires in module \uart_axi..
+Removed 1 unused cells and 1 unused wires.
+<suppressed ~2 debug messages>
+
+9. Executing CHECK pass (checking for obvious problems).
+Checking module fv_uart_proto...
+Warning: Wire fv_uart_proto.\uart_rx is used but has no driver.
+Warning: Wire fv_uart_proto.\WVALID is used but has no driver.
+Warning: Wire fv_uart_proto.\WSTRB [3] is used but has no driver.
+Warning: Wire fv_uart_proto.\WSTRB [2] is used but has no driver.
+Warning: Wire fv_uart_proto.\WSTRB [1] is used but has no driver.
+Warning: Wire fv_uart_proto.\WSTRB [0] is used but has no driver.
+Warning: Wire fv_uart_proto.\WDATA [31] is used but has no driver.
+Warning: Wire fv_uart_proto.\WDATA [30] is used but has no driver.
+Warning: Wire fv_uart_proto.\WDATA [29] is used but has no driver.
+Warning: Wire fv_uart_proto.\WDATA [28] is used but has no driver.
+Warning: Wire fv_uart_proto.\WDATA [27] is used but has no driver.
+Warning: Wire fv_uart_proto.\WDATA [26] is used but has no driver.
+Warning: Wire fv_uart_proto.\WDATA [25] is used but has no driver.
+Warning: Wire fv_uart_proto.\WDATA [24] is used but has no driver.
+Warning: Wire fv_uart_proto.\WDATA [23] is used but has no driver.
+Warning: Wire fv_uart_proto.\WDATA [22] is used but has no driver.
+Warning: Wire fv_uart_proto.\WDATA [21] is used but has no driver.
+Warning: Wire fv_uart_proto.\WDATA [20] is used but has no driver.
+Warning: Wire fv_uart_proto.\WDATA [19] is used but has no driver.
+Warning: Wire fv_uart_proto.\WDATA [18] is used but has no driver.
+Warning: Wire fv_uart_proto.\WDATA [17] is used but has no driver.
+Warning: Wire fv_uart_proto.\WDATA [16] is used but has no driver.
+Warning: Wire fv_uart_proto.\WDATA [15] is used but has no driver.
+Warning: Wire fv_uart_proto.\WDATA [14] is used but has no driver.
+Warning: Wire fv_uart_proto.\WDATA [13] is used but has no driver.
+Warning: Wire fv_uart_proto.\WDATA [12] is used but has no driver.
+Warning: Wire fv_uart_proto.\WDATA [11] is used but has no driver.
+Warning: Wire fv_uart_proto.\WDATA [10] is used but has no driver.
+Warning: Wire fv_uart_proto.\WDATA [9] is used but has no driver.
+Warning: Wire fv_uart_proto.\WDATA [8] is used but has no driver.
+Warning: Wire fv_uart_proto.\WDATA [7] is used but has no driver.
+Warning: Wire fv_uart_proto.\WDATA [6] is used but has no driver.
+Warning: Wire fv_uart_proto.\WDATA [5] is used but has no driver.
+Warning: Wire fv_uart_proto.\WDATA [4] is used but has no driver.
+Warning: Wire fv_uart_proto.\WDATA [3] is used but has no driver.
+Warning: Wire fv_uart_proto.\WDATA [2] is used but has no driver.
+Warning: Wire fv_uart_proto.\WDATA [1] is used but has no driver.
+Warning: Wire fv_uart_proto.\WDATA [0] is used but has no driver.
+Warning: Wire fv_uart_proto.\RREADY is used but has no driver.
+Warning: Wire fv_uart_proto.\BREADY is used but has no driver.
+Warning: Wire fv_uart_proto.\AWVALID is used but has no driver.
+Warning: Wire fv_uart_proto.\AWPROT [2] is used but has no driver.
+Warning: Wire fv_uart_proto.\AWPROT [1] is used but has no driver.
+Warning: Wire fv_uart_proto.\AWPROT [0] is used but has no driver.
+Warning: Wire fv_uart_proto.\AWADDR [31] is used but has no driver.
+Warning: Wire fv_uart_proto.\AWADDR [30] is used but has no driver.
+Warning: Wire fv_uart_proto.\AWADDR [29] is used but has no driver.
+Warning: Wire fv_uart_proto.\AWADDR [28] is used but has no driver.
+Warning: Wire fv_uart_proto.\AWADDR [27] is used but has no driver.
+Warning: Wire fv_uart_proto.\AWADDR [26] is used but has no driver.
+Warning: Wire fv_uart_proto.\AWADDR [25] is used but has no driver.
+Warning: Wire fv_uart_proto.\AWADDR [24] is used but has no driver.
+Warning: Wire fv_uart_proto.\AWADDR [23] is used but has no driver.
+Warning: Wire fv_uart_proto.\AWADDR [22] is used but has no driver.
+Warning: Wire fv_uart_proto.\AWADDR [21] is used but has no driver.
+Warning: Wire fv_uart_proto.\AWADDR [20] is used but has no driver.
+Warning: Wire fv_uart_proto.\AWADDR [19] is used but has no driver.
+Warning: Wire fv_uart_proto.\AWADDR [18] is used but has no driver.
+Warning: Wire fv_uart_proto.\AWADDR [17] is used but has no driver.
+Warning: Wire fv_uart_proto.\AWADDR [16] is used but has no driver.
+Warning: Wire fv_uart_proto.\AWADDR [15] is used but has no driver.
+Warning: Wire fv_uart_proto.\AWADDR [14] is used but has no driver.
+Warning: Wire fv_uart_proto.\AWADDR [13] is used but has no driver.
+Warning: Wire fv_uart_proto.\AWADDR [12] is used but has no driver.
+Warning: Wire fv_uart_proto.\AWADDR [11] is used but has no driver.
+Warning: Wire fv_uart_proto.\AWADDR [10] is used but has no driver.
+Warning: Wire fv_uart_proto.\AWADDR [9] is used but has no driver.
+Warning: Wire fv_uart_proto.\AWADDR [8] is used but has no driver.
+Warning: Wire fv_uart_proto.\AWADDR [7] is used but has no driver.
+Warning: Wire fv_uart_proto.\AWADDR [6] is used but has no driver.
+Warning: Wire fv_uart_proto.\AWADDR [5] is used but has no driver.
+Warning: Wire fv_uart_proto.\AWADDR [4] is used but has no driver.
+Warning: Wire fv_uart_proto.\AWADDR [3] is used but has no driver.
+Warning: Wire fv_uart_proto.\AWADDR [2] is used but has no driver.
+Warning: Wire fv_uart_proto.\AWADDR [1] is used but has no driver.
+Warning: Wire fv_uart_proto.\AWADDR [0] is used but has no driver.
+Warning: Wire fv_uart_proto.\ARVALID is used but has no driver.
+Warning: Wire fv_uart_proto.\ARPROT [2] is used but has no driver.
+Warning: Wire fv_uart_proto.\ARPROT [1] is used but has no driver.
+Warning: Wire fv_uart_proto.\ARPROT [0] is used but has no driver.
+Warning: Wire fv_uart_proto.\ARADDR [31] is used but has no driver.
+Warning: Wire fv_uart_proto.\ARADDR [30] is used but has no driver.
+Warning: Wire fv_uart_proto.\ARADDR [29] is used but has no driver.
+Warning: Wire fv_uart_proto.\ARADDR [28] is used but has no driver.
+Warning: Wire fv_uart_proto.\ARADDR [27] is used but has no driver.
+Warning: Wire fv_uart_proto.\ARADDR [26] is used but has no driver.
+Warning: Wire fv_uart_proto.\ARADDR [25] is used but has no driver.
+Warning: Wire fv_uart_proto.\ARADDR [24] is used but has no driver.
+Warning: Wire fv_uart_proto.\ARADDR [23] is used but has no driver.
+Warning: Wire fv_uart_proto.\ARADDR [22] is used but has no driver.
+Warning: Wire fv_uart_proto.\ARADDR [21] is used but has no driver.
+Warning: Wire fv_uart_proto.\ARADDR [20] is used but has no driver.
+Warning: Wire fv_uart_proto.\ARADDR [19] is used but has no driver.
+Warning: Wire fv_uart_proto.\ARADDR [18] is used but has no driver.
+Warning: Wire fv_uart_proto.\ARADDR [17] is used but has no driver.
+Warning: Wire fv_uart_proto.\ARADDR [16] is used but has no driver.
+Warning: Wire fv_uart_proto.\ARADDR [15] is used but has no driver.
+Warning: Wire fv_uart_proto.\ARADDR [14] is used but has no driver.
+Warning: Wire fv_uart_proto.\ARADDR [13] is used but has no driver.
+Warning: Wire fv_uart_proto.\ARADDR [12] is used but has no driver.
+Warning: Wire fv_uart_proto.\ARADDR [11] is used but has no driver.
+Warning: Wire fv_uart_proto.\ARADDR [10] is used but has no driver.
+Warning: Wire fv_uart_proto.\ARADDR [9] is used but has no driver.
+Warning: Wire fv_uart_proto.\ARADDR [8] is used but has no driver.
+Warning: Wire fv_uart_proto.\ARADDR [7] is used but has no driver.
+Warning: Wire fv_uart_proto.\ARADDR [6] is used but has no driver.
+Warning: Wire fv_uart_proto.\ARADDR [5] is used but has no driver.
+Warning: Wire fv_uart_proto.\ARADDR [4] is used but has no driver.
+Warning: Wire fv_uart_proto.\ARADDR [3] is used but has no driver.
+Warning: Wire fv_uart_proto.\ARADDR [2] is used but has no driver.
+Warning: Wire fv_uart_proto.\ARADDR [1] is used but has no driver.
+Warning: Wire fv_uart_proto.\ARADDR [0] is used but has no driver.
+Checking module uart_axi...
+Found and reported 112 problems.
+
+10. Executing SETUNDEF pass (replace undef values with defined constants).
+
+11. Executing OPT pass (performing simple optimizations).
+
+11.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module fv_uart_proto.
+Optimizing module uart_axi.
+
+11.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\fv_uart_proto'.
+Finding identical cells in module `\uart_axi'.
+Removed a total of 0 cells.
+
+11.3. Executing OPT_DFF pass (perform DFF optimizations).
+
+11.4. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \fv_uart_proto..
+Finding unused cells or wires in module \uart_axi..
+Removed 0 unused cells and 46 unused wires.
+<suppressed ~1 debug messages>
+
+11.5. Finished fast OPT passes.
+
+12. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \fv_uart_proto..
+Finding unused cells or wires in module \uart_axi..
+Removed 0 unused cells and 44 unused wires.
+<suppressed ~1 debug messages>
+
+13. Executing RTLIL backend.
+Output filename: ../model/design_prep.il
+
+Warnings: 112 unique messages, 112 total
+End of script. Logfile hash: a3317870d4, CPU: user 0.10s system 0.00s, MEM: 14.95 MB peak
+Yosys 0.33 (git sha1 2584903a060)
+Time spent: 36% 4x opt_clean (0 sec), 21% 1x check (0 sec), ...

@@ -303,7 +303,7 @@ p6_compliance: system/tb_compliance.vvp $(P6_PROGS)
 p6_all: system p6_compliance
 
 # ───────── Task 1: Real Peripherals (Timer AXI + GPIO AHB) ─────────
-.PHONY: periph_timer periph_gpio periph_all
+.PHONY: periph_timer periph_gpio periph_uart periph_all
 
 system/tb_periph.vvp: system/tb_periph.sv $(RTL_ALL) $(RTL_PERIPH)
 	@echo "=== Compiling tb_periph ==="
@@ -317,7 +317,11 @@ periph_gpio: programs/prog_gpio_ahb.hex system/tb_periph.vvp
 	@echo "=== prog_gpio_ahb (GPIO AHB loopback + IRQ) ==="
 	$(VVP) system/tb_periph.vvp +HEX=programs/prog_gpio_ahb.hex
 
-periph_all: periph_timer periph_gpio
+periph_uart: programs/prog_uart.hex system/tb_periph.vvp
+	@echo "=== prog_uart (UART AXI TX/RX loopback + IRQ) ==="
+	$(VVP) system/tb_periph.vvp +HEX=programs/prog_uart.hex
+
+periph_all: periph_timer periph_gpio periph_uart
 
 # RV32I Formal Compliance (riscv-arch-test old-framework-2.x)
 # Runs 38 tests, reports PASS/SKIP/FAIL
@@ -333,6 +337,40 @@ programs/%.hex: programs/%.s
 
 programs/%.dump: programs/%.elf
 	$(OBJDUMP) -d -M numeric $< > $@
+
+# ───────── Formal Verification (SymbiYosys) ─────────
+SBY := ~/.local/bin/sby
+FORMAL_DIR := formal
+
+.PHONY: formal_x0 formal_fifo formal_uart formal_all
+
+formal_x0:
+	@echo "=== Formal: register_file x0 always-zero ==="
+	cd $(FORMAL_DIR) && $(SBY) -f fv_reg_x0.sby
+
+formal_fifo:
+	@echo "=== Formal: async_fifo Gray-code + data integrity ==="
+	cd $(FORMAL_DIR) && $(SBY) -f fv_fifo_gray.sby
+
+formal_uart:
+	@echo "=== Formal: uart_axi 8N1 frame boundaries + pulse-width + RX counter ==="
+	cd $(FORMAL_DIR) && $(SBY) -f fv_uart_proto.sby
+
+formal_axi:
+	@echo "=== Formal: axi_interface AXI4-Lite VALID-stability ==="
+	cd $(FORMAL_DIR) && $(SBY) -f fv_axi_handshake.sby
+
+formal_plic:
+	@echo "=== Formal: plic priority encoder correctness ==="
+	cd $(FORMAL_DIR) && $(SBY) -f fv_plic_priority.sby
+
+formal_reg_wbr:
+	@echo "=== Formal: register_file write-before-read bypass ==="
+	cd $(FORMAL_DIR) && $(SBY) -f fv_reg_wbr.sby
+
+formal_all: formal_x0 formal_fifo formal_uart formal_axi formal_plic formal_reg_wbr
+	@echo ""
+	@echo "=== Formal verification: 6/6 PROVED ==="
 
 # ───────── Run All ─────────
 .PHONY: all clean

@@ -1,0 +1,15 @@
+[options]
+mode prove
+depth 10
+
+[engines]
+smtbmc z3
+
+[script]
+read -formal axi_interface.sv
+read -formal fv_axi_handshake.sv
+prep -top fv_axi_handshake
+
+[files]
+../../RTL/axi_interface.sv
+fv_axi_handshake.sv
