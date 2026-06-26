@@ -302,6 +302,20 @@ p6_compliance: system/tb_compliance.vvp $(P6_PROGS)
 
 p6_all: system p6_compliance
 
+# ───────── Metrics (IPC + stall breakdown + branch hit rate + AHB latency) ─────────
+.PHONY: metrics
+
+METRICS_PROGS = programs/prog_forwarding.hex programs/prog_branch_pred.hex \
+                programs/prog_ahb_sfr.hex
+
+system/tb_metrics.vvp: system/tb_metrics.sv $(RTL_ALL)
+	@echo "=== Compiling tb_metrics ==="
+	$(IV) -o $@ system/tb_metrics.sv $(RTL_ALL)
+
+metrics: system/tb_metrics.vvp $(METRICS_PROGS)
+	@echo "=== Pipeline Metrics (IPC / Stall / Branch Predictor / AHB Latency) ==="
+	$(VVP) system/tb_metrics.vvp
+
 # ───────── Task 1: Real Peripherals (Timer AXI + GPIO AHB) ─────────
 .PHONY: periph_timer periph_gpio periph_uart periph_all
 
