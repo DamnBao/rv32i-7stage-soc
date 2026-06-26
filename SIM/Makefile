@@ -11,7 +11,8 @@ CFLAGS  := -march=rv32i_zicsr -mabi=ilp32 -nostdlib -nostartfiles -T link_defaul
 RTL_INFRA = $(RTL)/reset_sync.sv $(RTL)/async_fifo.sv $(RTL)/irq_sync2ff.sv
 RTL_MEM   = $(RTL)/imem.sv $(RTL)/dmem.sv
 
-RTL_CPU   = $(RTL)/if1_stage.sv $(RTL)/if1_if2_reg.sv \
+RTL_CPU   = $(RTL)/branch_predictor.sv \
+            $(RTL)/if1_stage.sv $(RTL)/if1_if2_reg.sv \
             $(RTL)/if2_stage.sv $(RTL)/if2_id_reg.sv \
             $(RTL)/id_decoder.sv $(RTL)/register_file.sv $(RTL)/id_ex_reg.sv \
             $(RTL)/alu.sv $(RTL)/branch_comp.sv $(RTL)/addr_adder.sv \
@@ -23,13 +24,15 @@ RTL_CPU   = $(RTL)/if1_stage.sv $(RTL)/if1_if2_reg.sv \
 
 RTL_AXI   = $(RTL)/axi_interface.sv $(RTL)/axi_interconnect.sv $(RTL)/axi_sfr.sv $(RTL)/gpio_sfr.sv
 RTL_AHB   = $(RTL)/ahb_interface.sv $(RTL)/ahb_interconnect.sv $(RTL)/ahb_sfr.sv
+# Real peripheral modules (outside soc_top, plugged in testbench)
+RTL_PERIPH = $(RTL)/timer_axi.sv $(RTL)/gpio_ahb.sv $(RTL)/uart_axi.sv
 
 RTL_PLIC  = $(RTL)/plic.sv
 RTL_ALL   = $(RTL_INFRA) $(RTL_MEM) $(RTL_CPU) $(RTL_PLIC) $(RTL_AXI) $(RTL_AHB) $(RTL)/soc_top.sv
 
 # ───────── Unit Tests ─────────
 .PHONY: unit_alu unit_branch unit_decoder unit_rf unit_fwd unit_haz unit_fifo unit_plic unit_ex unit_all
-.PHONY: unit_irq_sync unit_gpio unit_zicsr
+.PHONY: unit_irq_sync unit_gpio unit_zicsr unit_bp unit_timer unit_gpio_ahb unit_uart
 
 unit_alu:
 	@echo "=== tb_alu ==="
@@ -94,8 +97,31 @@ unit_zicsr:
 	$(IV) -o unit/tb_zicsr.vvp unit/tb_zicsr.sv $(RTL)/zicsr.sv
 	$(VVP) unit/tb_zicsr.vvp
 
+unit_bp:
+	@echo "=== tb_branch_predictor ==="
+	$(IV) -o unit/tb_branch_predictor.vvp unit/tb_branch_predictor.sv \
+	    $(RTL)/branch_predictor.sv
+	$(VVP) unit/tb_branch_predictor.vvp
+
+unit_timer:
+	@echo "=== tb_timer_axi ==="
+	$(IV) -o unit/tb_timer_axi.vvp unit/tb_timer_axi.sv $(RTL)/timer_axi.sv
+	$(VVP) unit/tb_timer_axi.vvp
+
+unit_gpio_ahb:
+	@echo "=== tb_gpio_ahb ==="
+	$(IV) -o unit/tb_gpio_ahb.vvp unit/tb_gpio_ahb.sv $(RTL)/gpio_ahb.sv
+	$(VVP) unit/tb_gpio_ahb.vvp
+
+unit_uart:
+	@echo "=== tb_uart_axi ==="
+	$(IV) -o unit/tb_uart_axi.vvp unit/tb_uart_axi.sv $(RTL)/uart_axi.sv
+	$(VVP) unit/tb_uart_axi.vvp
+
+unit_periph: unit_timer unit_gpio_ahb unit_uart
+
 unit_all: unit_alu unit_branch unit_decoder unit_rf unit_fwd unit_haz unit_fifo unit_plic unit_ex \
-          unit_irq_sync unit_gpio unit_zicsr
+          unit_irq_sync unit_gpio unit_zicsr unit_bp unit_timer unit_gpio_ahb unit_uart
 
 # ───────── Integration Tests ─────────
 .PHONY: integ_cpu integ_axi integ_ahb integ_all
@@ -170,6 +196,12 @@ p5_ahb_irq: programs/prog_ahb_irq.hex integration/tb_pipeline_cpu.vvp
 	$(VVP) integration/tb_pipeline_cpu.vvp +HEX=programs/prog_ahb_irq.hex
 
 p5_all: p5_axi_sfr p5_ahb_sfr p5_axi_irq p5_ahb_irq
+
+# Phase 0: Branch prediction correctness test
+.PHONY: p0_branch_pred
+p0_branch_pred: programs/prog_branch_pred.hex integration/tb_pipeline_cpu.vvp
+	@echo "=== prog_branch_pred (branch prediction) ==="
+	$(VVP) integration/tb_pipeline_cpu.vvp +HEX=programs/prog_branch_pred.hex
 
 # Waveform shortcut: make p3_wave_<prog> PROG=<name>
 p3_wave_%: programs/prog_%.hex integration/tb_pipeline_cpu.vvp
@@ -269,6 +301,23 @@ p6_compliance: system/tb_compliance.vvp $(P6_PROGS)
 	$(VVP) system/tb_compliance.vvp +HEX=programs/prog_dmem_endurance.hex
 
 p6_all: system p6_compliance
+
+# ───────── Task 1: Real Peripherals (Timer AXI + GPIO AHB) ─────────
+.PHONY: periph_timer periph_gpio periph_all
+
+system/tb_periph.vvp: system/tb_periph.sv $(RTL_ALL) $(RTL_PERIPH)
+	@echo "=== Compiling tb_periph ==="
+	$(IV) -o $@ system/tb_periph.sv $(RTL_ALL) $(RTL_PERIPH)
+
+periph_timer: programs/prog_timer.hex system/tb_periph.vvp
+	@echo "=== prog_timer (Timer AXI compare-match IRQ) ==="
+	$(VVP) system/tb_periph.vvp +HEX=programs/prog_timer.hex
+
+periph_gpio: programs/prog_gpio_ahb.hex system/tb_periph.vvp
+	@echo "=== prog_gpio_ahb (GPIO AHB loopback + IRQ) ==="
+	$(VVP) system/tb_periph.vvp +HEX=programs/prog_gpio_ahb.hex
+
+periph_all: periph_timer periph_gpio
 
 # RV32I Formal Compliance (riscv-arch-test old-framework-2.x)
 # Runs 38 tests, reports PASS/SKIP/FAIL

@@ -174,6 +174,9 @@ Mọi peripheral muốn kết nối với `soc_top` phải implement register ma
 `axi_sfr` — generic AXI-Lite SFR, implement SFR standard; tham số `PERIPH_ID_VAL`
 `ahb_sfr` — generic AHB-Lite SFR, implement SFR standard
 `gpio_sfr` — AXI-Lite GPIO peripheral: `DATA0`→`gpio_out`, `gpio_in`→`STATUS`, edge-detect IRQ
+`timer_axi` — AXI-Lite Timer (1GHz, AXI S1 = 0x2000_1000): prescaler+compare IRQ; PERIPH_ID="TIMR"
+`gpio_ahb` — AHB-Lite GPIO (500MHz, AHB S0 = 0x3000_0000): 2-FF sync, edge-detect IRQ; PERIPH_ID="GPIA"
+`uart_axi` — AXI-Lite 8N1 UART (1GHz): TX via DATA1 write, RX to DATA2; baud_div=DATA0; PERIPH_ID="UART"
 
 ---
 
@@ -181,17 +184,18 @@ Mọi peripheral muốn kết nối với `soc_top` phải implement register ma
 
 | File | Trạng thái |
 |------|-----------|
+| `branch_predictor.sv` | Hoàn thành (16-entry 2-bit BHT + BTB; lookup IF1 combinational; update at EX) |
 | `reset_sync.sv` | Hoàn thành |
 | `async_fifo.sv` | Hoàn thành |
 | `irq_sync2ff.sv` | Hoàn thành (2-FF synchronizer; dùng cho AHB IRQ CDC 500MHz→1GHz, 1 instance/slave) |
-| `if1_stage.sv` | Hoàn thành (English header; flush>stall priority documented) |
-| `if1_if2_reg.sv` | Hoàn thành (English header; stall/flush semantics documented) |
+| `if1_stage.sv` | Hoàn thành (thêm bp_redirect + bp_target; priority: flush > stall > bp_redirect > PC+4) |
+| `if1_if2_reg.sv` | Hoàn thành (thêm bp_taken + bp_target fields; cleared on flush) |
 | `imem.sv` | Hoàn thành (đã sửa bug mảng 64KB; thêm `stall` giữ output; thêm `flush` output NOP khi zicsr_flush để chặn ghost illegal_instr) |
-| `if2_stage.sv` | Hoàn thành (English header) |
-| `if2_id_reg.sv` | Hoàn thành (English header; stall/flush semantics documented) |
+| `if2_stage.sv` | Hoàn thành (thêm bp_taken + bp_target pass-through) |
+| `if2_id_reg.sv` | Hoàn thành (thêm bp_taken + bp_target fields; cleared on flush) |
 | `register_file.sv` | Hoàn thành (English header; gap-4 RAW WBR bypass explained) |
 | `id_decoder.sv` | Hoàn thành (English header; encoding tables documented) |
-| `id_ex_reg.sv` | Hoàn thành (English header; stall/flush semantics; csr_imm_sel_in/out) |
+| `id_ex_reg.sv` | Hoàn thành (thêm bp_taken + bp_target fields; cleared on flush) |
 | `alu.sv` | Hoàn thành (English header; shift_amt Icarus workaround noted) |
 | `addr_adder.sv` | Hoàn thành (English header; JALR bit[0] mask — ISA §2.5 reference) |
 | `branch_comp.sv` | Hoàn thành (English header; Icarus constant-select workaround noted) |
@@ -204,7 +208,7 @@ Mọi peripheral muốn kết nối với `soc_top` phải implement register ma
 | `mem2_stage.sv` | Hoàn thành (load/store fault signals; plic_rdata input; mem_src=2'b11 mux) |
 | `mem2_wb_reg.sv` | Hoàn thành (English header; stall/flush semantics) |
 | `wb_stage.sv` | Hoàn thành |
-| `hazard_unit.sv` | Hoàn thành (CSR-use stall; suppress fetch_stall flush khi bus_stall_req=1) |
+| `hazard_unit.sv` | Hoàn thành (thay branch_taken+jump bằng bp_mismatch; ctrl_flush=bp_mismatch) |
 | `zicsr.sv` | Hoàn thành (port meip_in từ PLIC; 6 CSR regs, vectored) |
 | `plic.sv` | Hoàn thành (6 sources, 3-bit priority, threshold, claim/complete; MMIO 0x0C000000; 1-cycle latency) |
 | `ahb_interface.sv` | Hoàn thành |
@@ -214,7 +218,10 @@ Mọi peripheral muốn kết nối với `soc_top` phải implement register ma
 | `axi_interconnect.sv` | Hoàn thành (3 slaves, addr[27:12] decode) |
 | `axi_sfr.sv` | Hoàn thành (Standard Register Map; irq=|(INTR_STATE&INTR_ENABLE)) |
 | `gpio_sfr.sv` | Hoàn thành (AXI-Lite peripheral; STATUS=gpio_in; edge-detect irq; DATA0=gpio_out) |
-| `soc_top.sv` | Hoàn thành (**không có logic datapath**; mọi EX logic → ex_stage; AHB IRQ sync → irq_sync2ff ×3; tất cả instance có I/O markers + section header) |
+| `timer_axi.sv` | Hoàn thành (AXI-Lite Timer; self-contained; PRESCALER=DATA0, COMPARE=DATA1, STATUS=counter; compare-match IRQ) |
+| `gpio_ahb.sv` | Hoàn thành (AHB-Lite GPIO; 2-FF sync; edge-detect on gpio_in[0]; DATA0=out value, DATA1[0]=OE, DATA2[0]=edge type) |
+| `uart_axi.sv` | Hoàn thành (AXI-Lite 8N1 UART; TX FSM 4-state; RX FSM 4-state + 2-FF sync; baud_div=DATA0; tx→DATA1 trigger; rx→DATA2; INTR_STATE[1]=rx,[0]=tx; PERIPH_ID="UART") |
+| `soc_top.sv` | Hoàn thành (thêm branch_predictor instance; bp_mismatch/bp_correct_pc; prediction metadata wires qua pipeline) |
 
 ---
 
@@ -238,6 +245,9 @@ Mọi peripheral muốn kết nối với `soc_top` phải implement register ma
 | integ_bus_err | tb_soc_bus_err: BRESP SLVERR→store_fault(mcause=7); RRESP SLVERR→load_fault(mcause=5) | 2/2 PASS |
 | integ_ahb_err | tb_soc_ahb_err: AHB HRESP ERROR→store_fault(mcause=7); HRESP ERROR→load_fault(mcause=5) | 2/2 PASS |
 | rv32i_compliance | riscv-arch-test old-framework-2.x: 37/37 PASS; 1 SKIP (jal-01 ~1.7MB, cần 2MB IMEM) | **37/37 PASS** |
+| branch_pred | unit: tb_branch_predictor (23 cases BHT/BTB cold/warm/hysteresis/tag/reset); system: prog_branch_pred (4 tests: loop/JAL/nested/alternating) | **23/23 + 1/1 PASS** |
+| periph | tb_periph: prog_timer (Timer AXI compare-match IRQ, PLIC src 2); prog_gpio_ahb (GPIO AHB loopback 0x55 + INTR_TEST IRQ, PLIC src 4) | **2/2 PASS** |
+| unit_periph | tb_timer_axi (23), tb_gpio_ahb (21), tb_uart_axi (27) — peripheral unit tests | **71/71 PASS** |
 
 **Lệnh chạy:**
 ```bash
@@ -255,7 +265,16 @@ make unit_ex                   # Phase 8: EX stage unit test (23 cases)
 make unit_irq_sync             # New: irq_sync2ff unit test (10 cases)
 make unit_gpio                 # New: gpio_sfr unit test (22 cases)
 make unit_zicsr                # New: zicsr unit test (38 cases)
-make unit_all                  # Tất cả unit tests (Phase 1+2+7+8+new)
+make unit_all                  # Tất cả unit tests (Phase 1+2+7+8+new+branch_pred+periph)
+make unit_bp                   # Branch predictor unit test (23 cases)
+make unit_timer                # Timer AXI unit test (23 cases)
+make unit_gpio_ahb             # GPIO AHB unit test (21 cases)
+make unit_uart                 # UART AXI unit test (27 cases)
+make unit_periph               # Cả 3 peripheral unit tests (71 cases)
+make p0_branch_pred            # Branch prediction system test (4 programs)
+make periph_timer              # Task 1: Timer AXI compare-match IRQ test
+make periph_gpio               # Task 1: GPIO AHB loopback + INTR_TEST IRQ test
+make periph_all                # Task 1: cả hai peripheral tests
 make integ_bus_err             # Bus error integration test
 make integ_ahb_err             # AHB bus error integration test
 make rv32i_compliance          # RV32I formal compliance (riscv-arch-test)
@@ -275,7 +294,8 @@ Chi tiết xem `SIM/TEST_LOG.md`.
 | Gap-4 RAW | WBR bypass trong register_file | 0 |
 | Load-use | hazard_unit: stall IF1..ID, bubble EX | 1 |
 | CSR-use | hazard_unit: stall IF1..ID khi CSR@EX/MEM1/MEM2 | 3/2/1 |
-| Branch/Jump | flush IF1/IF2 và IF2/ID | 2 slots flushed |
+| Branch predicted correctly | không flush (0 penalty) | 0 |
+| Branch mispredicted | flush IF1/IF2 và IF2/ID (bp_mismatch) | 2 slots flushed |
 | Bus stall | stall toàn pipeline | N (đến khi xong) |
 
 ---
