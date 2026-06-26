@@ -306,7 +306,7 @@ p6_all: system p6_compliance
 .PHONY: metrics
 
 METRICS_PROGS = programs/prog_forwarding.hex programs/prog_branch_pred.hex \
-                programs/prog_ahb_sfr.hex
+                programs/prog_ahb_sfr.hex programs/prog_fib.hex
 
 system/tb_metrics.vvp: system/tb_metrics.sv $(RTL_ALL)
 	@echo "=== Compiling tb_metrics ==="

@@ -193,26 +193,45 @@ module tb_metrics;
     integer ahb_lat_min;
     integer ahb_lat_max;
     integer ahb_lat_total;
-    logic   measure_ahb;   // enabled only for prog_ahb_sfr run
+    logic   measure_ahb;
+
+    // Per-test branch tracking for prog_branch_pred.
+    // prog_branch_pred stores a phase number (1-4) in x8 (s0) using sentinel
+    // instructions.  x8 is not used by any test pattern (all tests use t0-t6,
+    // a0-a2), so it stays stable between sentinels.
+    logic   measure_bp_phases;
+    integer bp_cur_phase;
+    integer x30_cur;        // scratch: reads registers[8] (s0 sentinel)
+    integer t1_branches, t1_misses;
+    integer t2_branches, t2_misses;
+    integer t3_branches, t3_misses;
+    integer t4_branches, t4_misses;
 
     logic running;
 
     task reset_counters;
-        total_cycles         = 0;
-        instr_retired        = 0;
+        total_cycles          = 0;
+        instr_retired         = 0;
         stall_load_use_cycles = 0;
-        stall_csr_cycles     = 0;
-        stall_bus_cycles     = 0;
-        bp_total_branches    = 0;
-        bp_mispredictions    = 0;
-        ahb_txn_count        = 0;
-        ahb_lat_min          = 99999;
-        ahb_lat_max          = 0;
-        ahb_lat_total        = 0;
-        ahb_stall_start      = 0;
-        bus_stall_prev       = 0;
-        measure_ahb          = 0;
-        running              = 0;
+        stall_csr_cycles      = 0;
+        stall_bus_cycles      = 0;
+        bp_total_branches     = 0;
+        bp_mispredictions     = 0;
+        ahb_txn_count         = 0;
+        ahb_lat_min           = 99999;
+        ahb_lat_max           = 0;
+        ahb_lat_total         = 0;
+        ahb_stall_start       = 0;
+        bus_stall_prev        = 0;
+        measure_ahb           = 0;
+        measure_bp_phases     = 0;
+        bp_cur_phase          = 0;
+        x30_cur               = 0;
+        t1_branches = 0; t1_misses = 0;
+        t2_branches = 0; t2_misses = 0;
+        t3_branches = 0; t3_misses = 0;
+        t4_branches = 0; t4_misses = 0;
+        running               = 0;
     endtask
 
     always @(posedge clk_cpu) begin
@@ -223,8 +242,7 @@ module tb_metrics;
             if (instr_valid_ex && !u_soc.stall_idex)
                 instr_retired = instr_retired + 1;
 
-            // Stall type breakdown (mutually exclusive in most cycles;
-            // bus_stall wins: if bus_stall_req=1, load_use/csr_use are not active)
+            // Stall type breakdown
             if (u_soc.u_haz.load_use_stall)
                 stall_load_use_cycles = stall_load_use_cycles + 1;
             if (u_soc.u_haz.csr_use_stall)
@@ -232,29 +250,46 @@ module tb_metrics;
             if (u_soc.bus_stall_req)
                 stall_bus_cycles = stall_bus_cycles + 1;
 
-            // Branch predictor: count at EX (non-stalled) to avoid double-count
+            // Global branch predictor counters
             if ((u_soc.idex_branch | u_soc.idex_jump) && !u_soc.stall_idex)
                 bp_total_branches = bp_total_branches + 1;
-            // Mispredictions: suppress during bus stall (EX frozen → same branch repeats)
             if (u_soc.bp_mismatch && !u_soc.bus_stall_req)
                 bp_mispredictions = bp_mispredictions + 1;
 
-            // AHB latency: detect rising/falling edge of bus_stall_req.
-            // bus_stall_prev must be read BEFORE updating so edge detection works.
-            if (measure_ahb) begin
-                if (!bus_stall_prev && u_soc.bus_stall_req) begin
-                    // rising edge: stall begins
-                    ahb_stall_start = total_cycles;
+            // Per-test branch breakdown (prog_branch_pred only).
+            // NB semantics: registers[30] here reflects the value committed
+            // at the END of the PREVIOUS cycle, which is what we want.
+            if (measure_bp_phases) begin
+                x30_cur = u_soc.u_rf.registers[8];
+                if (x30_cur != bp_cur_phase && x30_cur >= 1 && x30_cur <= 4)
+                    bp_cur_phase = x30_cur;
+
+                if ((u_soc.idex_branch | u_soc.idex_jump) && !u_soc.stall_idex) begin
+                    if      (bp_cur_phase == 1) t1_branches = t1_branches + 1;
+                    else if (bp_cur_phase == 2) t2_branches = t2_branches + 1;
+                    else if (bp_cur_phase == 3) t3_branches = t3_branches + 1;
+                    else if (bp_cur_phase == 4) t4_branches = t4_branches + 1;
                 end
+                if (u_soc.bp_mismatch && !u_soc.bus_stall_req) begin
+                    if      (bp_cur_phase == 1) t1_misses = t1_misses + 1;
+                    else if (bp_cur_phase == 2) t2_misses = t2_misses + 1;
+                    else if (bp_cur_phase == 3) t3_misses = t3_misses + 1;
+                    else if (bp_cur_phase == 4) t4_misses = t4_misses + 1;
+                end
+            end
+
+            // AHB latency edge detection (prog_ahb_sfr only)
+            if (measure_ahb) begin
+                if (!bus_stall_prev && u_soc.bus_stall_req)
+                    ahb_stall_start = total_cycles;
                 if (bus_stall_prev && !u_soc.bus_stall_req) begin
-                    // falling edge: stall ends — measure duration
                     ahb_lat_this  = total_cycles - ahb_stall_start;
                     ahb_txn_count = ahb_txn_count + 1;
                     ahb_lat_total = ahb_lat_total + ahb_lat_this;
                     if (ahb_lat_this < ahb_lat_min) ahb_lat_min = ahb_lat_this;
                     if (ahb_lat_this > ahb_lat_max) ahb_lat_max = ahb_lat_this;
                 end
-                bus_stall_prev = u_soc.bus_stall_req;  // update AFTER edge check
+                bus_stall_prev = u_soc.bus_stall_req;
             end
         end
     end
@@ -339,28 +374,46 @@ module tb_metrics;
         // ============================================================
         $display("");
         $display("--- [2/3] prog_branch_pred : Branch Predictor Hit Rate --");
-        $display("  (Patterns: tight loop, JAL BTB, nested loops, alternating)");
-        $display("  Note: Test 4 alternating T/NT is adversarial for 2-bit predictor.");
         reset_counters();
+        measure_bp_phases = 1;
         run_program("programs/prog_branch_pred.hex");
 
-        $display("  Total cycles          : %0d", total_cycles);
-        $display("  Instr retired         : %0d", instr_retired);
-        $display("  Branches + jumps      : %0d", bp_total_branches);
-        $display("  Mispredictions        : %0d", bp_mispredictions);
-        if (bp_total_branches > 0) begin
-            $display("  Hit rate              : %.1f%%",
-                     (real'(bp_total_branches - bp_mispredictions)
-                      / real'(bp_total_branches)) * 100.0);
-            $display("  Miss rate             : %.1f%%",
-                     real'(bp_mispredictions)
-                     / real'(bp_total_branches) * 100.0);
-            $display("  Cycles saved vs always-miss: %0d  (%.1f%%)",
-                     (bp_total_branches - bp_mispredictions) * 2,
-                     real'((bp_total_branches - bp_mispredictions) * 2)
-                     / real'(total_cycles) * 100.0);
-        end else
-            $display("  (no branches detected)");
+        $display("  Total cycles     : %0d", total_cycles);
+        $display("  Instr retired    : %0d", instr_retired);
+        $display("");
+        $display("  Per-test breakdown (x8/s0 sentinel; phase attributed at EX):");
+        $display("  %-30s %8s %8s %8s", "Pattern", "Branches", "Misses", "HitRate");
+        $display("  %-30s %8s %8s %8s", "-------", "--------", "------", "-------");
+        if (t1_branches > 0)
+            $display("  %-30s %8d %8d %7.1f%%",
+                     "T1: tight loop (taken 9x/10)",
+                     t1_branches, t1_misses,
+                     real'(t1_branches-t1_misses)/real'(t1_branches)*100.0);
+        if (t2_branches > 0)
+            $display("  %-30s %8d %8d %7.1f%%",
+                     "T2: JAL BTB (2 calls)",
+                     t2_branches, t2_misses,
+                     real'(t2_branches-t2_misses)/real'(t2_branches)*100.0);
+        if (t3_branches > 0)
+            $display("  %-30s %8d %8d %7.1f%%",
+                     "T3: nested loops (3x5)",
+                     t3_branches, t3_misses,
+                     real'(t3_branches-t3_misses)/real'(t3_branches)*100.0);
+        if (t4_branches > 0)
+            $display("  %-30s %8d %8d %7.1f%%",
+                     "T4: alternating T/NT (adversarial)",
+                     t4_branches, t4_misses,
+                     real'(t4_branches-t4_misses)/real'(t4_branches)*100.0);
+        $display("  %-30s %8d %8d %7.1f%%",
+                 "Overall",
+                 bp_total_branches, bp_mispredictions,
+                 bp_total_branches > 0 ?
+                     real'(bp_total_branches-bp_mispredictions)
+                     /real'(bp_total_branches)*100.0 : 0.0);
+        $display("  Cycles saved vs always-miss: %0d  (%.1f%% of runtime)",
+                 (bp_total_branches - bp_mispredictions) * 2,
+                 real'((bp_total_branches - bp_mispredictions) * 2)
+                 / real'(total_cycles) * 100.0);
 
         // ============================================================
         // 3. AHB CDC latency — prog_ahb_sfr
@@ -393,6 +446,40 @@ module tb_metrics;
             $display("   = 6 AHB cycles = 12 CPU cycles (2:1 ratio), best-case ~9");
         end else
             $display("  (no AHB transactions detected — check measure_ahb logic)");
+
+        // ============================================================
+        // 4. IPC under realistic compute — prog_fib
+        //    Fibonacci(10): array generation (8 load-use stalls) + sum
+        //    (10 load-use stalls).  Total expected: 18 load-use stalls.
+        //    Compares CPI against forwarding-only test to show impact.
+        // ============================================================
+        $display("");
+        $display("--- [4/4] prog_fib : IPC Under Realistic Compute Workload --");
+        $display("  (fib[0..9] generation + sum; 18 intended load-use stalls)");
+        reset_counters();
+        run_program("programs/prog_fib.hex");
+
+        $display("  Total cycles          : %0d", total_cycles);
+        $display("  Instr retired         : %0d", instr_retired);
+        if (instr_retired > 0)
+            $display("  CPI                   : %.3f  (IPC = %.3f)",
+                     real'(total_cycles) / real'(instr_retired),
+                     real'(instr_retired) / real'(total_cycles));
+        $display("  Load-use stall cycles : %0d  (expected 18)", stall_load_use_cycles);
+        $display("  Branch+jump events    : %0d  (expected 20)", bp_total_branches);
+        $display("  Mispredictions        : %0d", bp_mispredictions);
+        if (bp_total_branches > 0)
+            $display("  Branch hit rate       : %.1f%%",
+                     real'(bp_total_branches-bp_mispredictions)
+                     /real'(bp_total_branches)*100.0);
+        begin
+            integer total_stall4;
+            total_stall4 = stall_load_use_cycles + stall_csr_cycles
+                         + stall_bus_cycles + bp_mispredictions * 2;
+            $display("  Total stall+flush     : %0d cycles (%.1f%% of runtime)",
+                     total_stall4,
+                     real'(total_stall4) * 100.0 / real'(total_cycles));
+        end
 
         $display("");
         $display("================================================================");

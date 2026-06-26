@@ -246,7 +246,7 @@ Mọi peripheral muốn kết nối với `soc_top` phải implement register ma
 | integ_ahb_err | tb_soc_ahb_err: AHB HRESP ERROR→store_fault(mcause=7); HRESP ERROR→load_fault(mcause=5) | 2/2 PASS |
 | rv32i_compliance | riscv-arch-test old-framework-2.x: 37/37 PASS; 1 SKIP (jal-01 ~1.7MB, cần 2MB IMEM) | **37/37 PASS** |
 | branch_pred | unit: tb_branch_predictor (23 cases BHT/BTB cold/warm/hysteresis/tag/reset); system: prog_branch_pred (4 tests: loop/JAL/nested/alternating) | **23/23 + 1/1 PASS** |
-| metrics | tb_metrics (3 programs): IPC=1.10 (forwarding, 1 load-use stall, 2.3% overhead); branch hit=64.9% (57 branches, adversarial incl.); AHB CDC latency avg=9.4 CPU cycles (min=9 max=10, 10 txn) | **PASS** |
+| metrics | tb_metrics (4 programs): prog_forwarding CPI=1.100 (1 load-use stall); prog_branch_pred per-test: T1=81.8%(loop), T2=16.7%(BTB cold), T3=68.4%(nested), T4=47.6%(adversarial), overall=57.9%(57 br); prog_ahb_sfr AHB latency avg=9.4 CPU cycles (min=9 max=10, 10 txn); prog_fib CPI=1.182 (18 load-use stalls, 80% branch hit) | **PASS** |
 | periph | tb_periph: prog_timer (Timer AXI compare-match IRQ, PLIC src 2); prog_gpio_ahb (GPIO AHB loopback 0x55 + INTR_TEST IRQ, PLIC src 4); prog_uart (UART TX/RX loopback 0x55 + dual IRQ, PLIC src 3) | **3/3 PASS** |
 | unit_periph | tb_timer_axi (23), tb_gpio_ahb (21), tb_uart_axi (27) — peripheral unit tests | **71/71 PASS** |
 | formal_verify | SymbiYosys k-induction (smtbmc z3): P_REG_X0 (register_file, depth=15); P_GRAY+P_FIFO_DATA (async_fifo, depth=12); P_8N1+P_TX_PULSE+P_RX_PULSE+P_RX_BIT_CNT (uart_axi, depth=20); P_AXI_HANDSHAKE (axi_interface, depth=10); P_PLIC_PRIORITY (plic, depth=10); P_WBR+P_RF_SEQ (register_file, depth=5); P_STALL_COHERENCE+P_FLUSH (hazard_unit+3 pipeline regs, depth=8); ~30 assertions tổng; Phát hiện + sửa 1 RTL bug (UART TX) | **7/7 PROVED** |
@@ -274,7 +274,7 @@ make unit_gpio_ahb             # GPIO AHB unit test (21 cases)
 make unit_uart                 # UART AXI unit test (27 cases)
 make unit_periph               # Cả 3 peripheral unit tests (71 cases)
 make p0_branch_pred            # Branch prediction system test (4 programs)
-make metrics                   # IPC + stall breakdown + branch hit rate + AHB latency
+make metrics                   # IPC + stall breakdown + per-test branch hit rate + AHB latency (4 programs)
 make periph_timer              # Task 1: Timer AXI compare-match IRQ test
 make periph_gpio               # Task 1: GPIO AHB loopback + INTR_TEST IRQ test
 make periph_uart               # Task 1: UART AXI TX/RX loopback + dual IRQ test
