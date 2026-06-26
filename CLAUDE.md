@@ -248,7 +248,7 @@ Mọi peripheral muốn kết nối với `soc_top` phải implement register ma
 | branch_pred | unit: tb_branch_predictor (23 cases BHT/BTB cold/warm/hysteresis/tag/reset); system: prog_branch_pred (4 tests: loop/JAL/nested/alternating) | **23/23 + 1/1 PASS** |
 | periph | tb_periph: prog_timer (Timer AXI compare-match IRQ, PLIC src 2); prog_gpio_ahb (GPIO AHB loopback 0x55 + INTR_TEST IRQ, PLIC src 4); prog_uart (UART TX/RX loopback 0x55 + dual IRQ, PLIC src 3) | **3/3 PASS** |
 | unit_periph | tb_timer_axi (23), tb_gpio_ahb (21), tb_uart_axi (27) — peripheral unit tests | **71/71 PASS** |
-| formal_verify | SymbiYosys k-induction (smtbmc z3): P_REG_X0 (register_file, depth=15); P_GRAY+P_FIFO_DATA (async_fifo, depth=12); P_8N1+P_TX_PULSE+P_RX_PULSE+P_RX_BIT_CNT (uart_axi, depth=20); P_AXI_HANDSHAKE (axi_interface, depth=10); P_PLIC_PRIORITY (plic, depth=10); P_WBR+P_RF_SEQ (register_file, depth=5); ~22 assertions tổng; Phát hiện + sửa 1 RTL bug (UART TX) | **6/6 PROVED** |
+| formal_verify | SymbiYosys k-induction (smtbmc z3): P_REG_X0 (register_file, depth=15); P_GRAY+P_FIFO_DATA (async_fifo, depth=12); P_8N1+P_TX_PULSE+P_RX_PULSE+P_RX_BIT_CNT (uart_axi, depth=20); P_AXI_HANDSHAKE (axi_interface, depth=10); P_PLIC_PRIORITY (plic, depth=10); P_WBR+P_RF_SEQ (register_file, depth=5); P_STALL_COHERENCE+P_FLUSH (hazard_unit+3 pipeline regs, depth=8); ~30 assertions tổng; Phát hiện + sửa 1 RTL bug (UART TX) | **7/7 PROVED** |
 
 **Lệnh chạy:**
 ```bash
@@ -280,7 +280,8 @@ make periph_all                # Task 1: cả 3 peripheral tests
 make integ_bus_err             # Bus error integration test
 make integ_ahb_err             # AHB bus error integration test
 make rv32i_compliance          # RV32I formal compliance (riscv-arch-test)
-make formal_all                # Task 2: tất cả 6 formal verification jobs (6/6 PROVED)
+make formal_all                # Task 2: tất cả 7 formal verification jobs (7/7 PROVED)
+make formal_stall              # Formal: pipeline stall coherence (hazard_unit + 3 regs)
 make formal_x0                 # Formal: register_file x0 immutability
 make formal_fifo               # Formal: async_fifo Gray-code + memory integrity
 make formal_uart               # Formal: uart_axi 8N1 + pulse + bit-cnt

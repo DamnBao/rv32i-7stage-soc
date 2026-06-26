@@ -1,0 +1,12 @@
+# running in fv_stall_coherence/src/
+read -formal hazard_unit.sv
+read -formal if1_if2_reg.sv
+read -formal if2_id_reg.sv
+read -formal id_ex_reg.sv
+read -formal fv_stall_coherence.sv
+prep -top fv_stall_coherence
+
+hierarchy -smtcheck
+rename -witness
+write_jny -no-connections ../model/design.json
+write_rtlil ../model/design.il

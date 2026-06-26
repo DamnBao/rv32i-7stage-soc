@@ -342,7 +342,7 @@ programs/%.dump: programs/%.elf
 SBY := ~/.local/bin/sby
 FORMAL_DIR := formal
 
-.PHONY: formal_x0 formal_fifo formal_uart formal_all
+.PHONY: formal_x0 formal_fifo formal_uart formal_axi formal_plic formal_reg_wbr formal_stall formal_all
 
 formal_x0:
 	@echo "=== Formal: register_file x0 always-zero ==="
@@ -368,9 +368,13 @@ formal_reg_wbr:
 	@echo "=== Formal: register_file write-before-read bypass ==="
 	cd $(FORMAL_DIR) && $(SBY) -f fv_reg_wbr.sby
 
-formal_all: formal_x0 formal_fifo formal_uart formal_axi formal_plic formal_reg_wbr
+formal_stall:
+	@echo "=== Formal: pipeline stall coherence (hazard_unit + IF1/IF2 + IF2/ID + ID/EX regs) ==="
+	cd $(FORMAL_DIR) && $(SBY) -f fv_stall_coherence.sby
+
+formal_all: formal_x0 formal_fifo formal_uart formal_axi formal_plic formal_reg_wbr formal_stall
 	@echo ""
-	@echo "=== Formal verification: 6/6 PROVED ==="
+	@echo "=== Formal verification: 7/7 PROVED ==="
 
 # ───────── Run All ─────────
 .PHONY: all clean
