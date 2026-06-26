@@ -1,18 +1,24 @@
-// IF2 Stage — instruction fetch second cycle, currently a pass-through.
+// IF2 Stage — instruction fetch second cycle, pass-through including prediction metadata.
 //
 // IMEM has 1-cycle read latency, so the instruction arrives in IF2.
-// Stall/flush on the IF1/IF2 register propagates control to this stage.
-// A branch predictor or I-cache miss handler would be inserted here.
+// Branch prediction metadata (bp_taken, bp_target) flows through unchanged
+// so EX can compare predicted vs actual outcome.
 
 module if2_stage (
-    input  logic [31:0] pc_in,       // PC from IF1/IF2 register
-    input  logic [31:0] instr_in,    // Instruction from IMEM (1-cycle latency)
+    input  logic [31:0] pc_in,
+    input  logic [31:0] instr_in,
+    input  logic        bp_taken_in,
+    input  logic [31:0] bp_target_in,
 
-    output logic [31:0] pc_out,      // PC to IF2/ID register
-    output logic [31:0] instr_out    // Instruction to IF2/ID register
+    output logic [31:0] pc_out,
+    output logic [31:0] instr_out,
+    output logic        bp_taken_out,
+    output logic [31:0] bp_target_out
 );
 
-    assign pc_out    = pc_in;
-    assign instr_out = instr_in;
+    assign pc_out        = pc_in;
+    assign instr_out     = instr_in;
+    assign bp_taken_out  = bp_taken_in;
+    assign bp_target_out = bp_target_in;
 
 endmodule

@@ -1,9 +1,12 @@
-// IF1 Stage — PC register with stall/flush control.
+// IF1 Stage — PC register with stall/flush/branch-prediction control.
 //
-// flush has priority over stall. On flush, PC loads jump_addr (the redirect
-// target from soc_top mux: zicsr_pc on trap/MRET, ex_jump_addr on branch/jump).
-// On stall without flush, PC holds its current value.
-// Normal operation: PC increments by 4 each cycle.
+// Priority (highest first):
+//   flush=1     → load jump_addr (bp_mismatch correction or trap/MRET)
+//   stall=1     → hold PC
+//   bp_redirect → load bp_target (speculative branch predictor redirect)
+//   else        → PC + 4
+//
+// bp_redirect is suppressed by both flush and stall via priority ordering.
 
 module if1_stage #(
     parameter PC_RESET_VAL = 32'h0000_0000
@@ -11,9 +14,12 @@ module if1_stage #(
     input  logic        clk,
     input  logic        rst_n,
 
-    input  logic        stall,       // Freeze PC (from hazard_unit: bus_stall or load/CSR-use)
-    input  logic        flush,       // Redirect PC (branch, jump, trap, MRET)
-    input  logic [31:0] jump_addr,   // Redirect target (zicsr_pc or ex_jump_addr, muxed in soc_top)
+    input  logic        stall,       // Freeze PC (bus_stall or load/CSR-use hazard)
+    input  logic        flush,       // Redirect PC (bp_mismatch, trap, MRET)
+    input  logic [31:0] jump_addr,   // Redirect target (bp_correct_pc or zicsr_pc, muxed in soc_top)
+
+    input  logic        bp_redirect, // Branch predictor: 1 = speculative redirect to bp_target
+    input  logic [31:0] bp_target,   // Branch predictor: predicted target address
 
     output logic [31:0] pc_out       // Current PC → IMEM address + IF1/IF2 register
 );
@@ -21,13 +27,11 @@ module if1_stage #(
     logic [31:0] pc_reg;
     logic [31:0] next_pc;
 
-    //=========================================================
-    // Mạch tổ hợp (Combinational Logic) tính toán PC tiếp theo
-    //=========================================================
     always_comb begin
-        if (flush)      next_pc = jump_addr;      // Redirect: highest priority
-        else if (stall) next_pc = pc_reg;         // Freeze
-        else            next_pc = pc_reg + 32'd4; // Normal sequential fetch
+        if (flush)           next_pc = jump_addr;      // highest priority: correction / trap
+        else if (stall)      next_pc = pc_reg;          // freeze
+        else if (bp_redirect) next_pc = bp_target;     // speculative redirect
+        else                 next_pc = pc_reg + 32'd4; // sequential fetch
     end
 
     always_ff @(posedge clk or negedge rst_n) begin

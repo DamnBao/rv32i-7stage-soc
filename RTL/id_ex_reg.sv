@@ -48,6 +48,10 @@ module id_ex_reg (
     input  logic        mret_in,
     input  logic        illegal_instr_in,
 
+    // Branch prediction metadata (prediction made at IF1 for this instruction)
+    input  logic        bp_taken_in,
+    input  logic [31:0] bp_target_in,
+
     //----------------- OUTPUTS SANG TẦNG EX -----------------
     output logic [31:0] pc_out,
     output logic [31:0] rs1_data_out,
@@ -79,7 +83,10 @@ module id_ex_reg (
     output logic        ecall_out,
     output logic        ebreak_out,
     output logic        mret_out,
-    output logic        illegal_instr_out
+    output logic        illegal_instr_out,
+
+    output logic        bp_taken_out,
+    output logic [31:0] bp_target_out
 );
 
     always_ff @(posedge clk or negedge rst_n) begin
@@ -116,6 +123,8 @@ module id_ex_reg (
             ebreak_out        <= 1'b0;
             mret_out          <= 1'b0;
             illegal_instr_out <= 1'b0;
+            bp_taken_out      <= 1'b0;
+            bp_target_out     <= 32'd0;
 
         end else if (flush) begin
             // Chỉ xóa các tín hiệu Control gây tác động, để nó biến thành NOP
@@ -131,6 +140,8 @@ module id_ex_reg (
             ebreak_out        <= 1'b0;
             mret_out          <= 1'b0;
             illegal_instr_out <= 1'b0;
+            bp_taken_out      <= 1'b0;
+            bp_target_out     <= 32'd0;
             
         end else if (!stall) begin
             // Khi không bị đóng băng, lấy tín hiệu từ tầng ID đi vào
@@ -165,6 +176,8 @@ module id_ex_reg (
             ebreak_out        <= ebreak_in;
             mret_out          <= mret_in;
             illegal_instr_out <= illegal_instr_in;
+            bp_taken_out      <= bp_taken_in;
+            bp_target_out     <= bp_target_in;
         end
     end
 

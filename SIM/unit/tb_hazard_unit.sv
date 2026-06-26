@@ -15,7 +15,7 @@ module tb_hazard_unit;
     logic [4:0] mem2_rd_addr;
     logic       mem2_reg_write;
     logic [4:0] id_rs1_addr, id_rs2_addr;
-    logic       branch_taken, jump;
+    logic       bp_mismatch;
     logic       zicsr_flush;
 
     // Outputs
@@ -53,8 +53,7 @@ module tb_hazard_unit;
         mem2_reg_write = 0;
         id_rs1_addr    = 5'd1;
         id_rs2_addr    = 5'd2;
-        branch_taken   = 0;
-        jump           = 0;
+        bp_mismatch    = 0;
         zicsr_flush    = 0;
         #1;
     endtask
@@ -129,28 +128,17 @@ module tb_hazard_unit;
         #1;
         chk1("stall_pc=0 (not load)", stall_pc,    1'b0);
 
-        // ── Branch taken: flush IF fetch stages + ID/EX ──
-        $display("--- Branch taken ---");
+        // ── BP mismatch: flush fetch stages + ID/EX (discards wrong speculative instructions) ──
+        $display("--- BP mismatch ---");
         idle();
-        branch_taken = 1;
+        bp_mismatch = 1;
         #1;
         chk1("flush_if1_if2=1",    flush_if1_if2,   1'b1);
         chk1("flush_if2_id=1",     flush_if2_id,    1'b1);
         chk1("flush_id_ex=1",      flush_id_ex,     1'b1);
-        chk1("flush_ex_mem1=0",    flush_ex_mem1,   1'b0); // EX không flush
-        chk1("stall_pc=0",         stall_pc,        1'b0); // không stall
+        chk1("flush_ex_mem1=0",    flush_ex_mem1,   1'b0); // EX does not flush (branch completes)
+        chk1("stall_pc=0",         stall_pc,        1'b0); // not stalled
         chk1("stall_if1_if2=0",    stall_if1_if2,   1'b0);
-
-        // ── Jump: same flush pattern as branch ──
-        $display("--- Jump ---");
-        idle();
-        jump = 1;
-        #1;
-        chk1("flush_if1_if2=1",    flush_if1_if2,   1'b1);
-        chk1("flush_if2_id=1",     flush_if2_id,    1'b1);
-        chk1("flush_id_ex=1",      flush_id_ex,     1'b1);
-        chk1("flush_ex_mem1=0",    flush_ex_mem1,   1'b0);
-        chk1("stall_pc=0",         stall_pc,        1'b0);
 
         // ── Bus stall: đóng băng toàn pipeline ──
         $display("--- Bus stall ---");
@@ -182,26 +170,27 @@ module tb_hazard_unit;
         chk1("flush_mem2_wb=1",    flush_mem2_wb,   1'b1);
         chk1("stall_pc=0",         stall_pc,        1'b0);  // flush, không stall
 
-        // ── Load-use + branch taken cùng lúc ──
-        // Load-use stalls IF1/IF2, IF2/ID, flushes ID/EX
-        // Branch flush flushes IF1/IF2, IF2/ID, ID/EX → cùng effect
-        // Kết quả: stall_if1_if2=1, stall_if2_id=1, flush_id_ex=1
-        $display("--- Load-use + branch taken ---");
+        // ── Load-use + bp_mismatch simultaneously ──
+        // load-use stalls IF1/IF2..ID, bp_mismatch also flushes these — both result in
+        // stall_if1_if2=1 (stall wins for reg), flush_id_ex=1 (bubble into EX).
+        // Note: in practice this cannot occur (load and branch are mutually exclusive at EX)
+        // but the logic handles it correctly.
+        $display("--- Load-use + bp_mismatch ---");
         idle();
         ex_mem_read  = 1;
         ex_rd_addr   = 5'd5;
         id_rs1_addr  = 5'd5;
-        branch_taken = 1;
+        bp_mismatch  = 1;
         #1;
         chk1("stall_pc=1",         stall_pc,        1'b1);
         chk1("flush_if1_if2=1",    flush_if1_if2,   1'b1);
         chk1("flush_id_ex=1",      flush_id_ex,     1'b1);
 
         // ── Zicsr flush trumps tất cả ──
-        $display("--- Zicsr + branch + load-use ---");
+        $display("--- Zicsr + bp_mismatch + load-use ---");
         idle();
         zicsr_flush  = 1;
-        branch_taken = 1;
+        bp_mismatch  = 1;
         ex_mem_read  = 1;
         ex_rd_addr   = 5'd5;
         id_rs1_addr  = 5'd5;

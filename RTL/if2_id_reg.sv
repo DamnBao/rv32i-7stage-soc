@@ -1,39 +1,44 @@
-// IF2/ID Pipeline Register — carries PC and instruction from IF2 to ID.
+// IF2/ID Pipeline Register — carries PC, instruction, and branch prediction metadata.
 //
-// flush: clears to NOP (ADDI x0,x0,0) and zeroes PC — inserts a bubble.
-// stall: holds current register values (freeze entire fetch pipeline).
+// flush: clears to NOP, zeroes PC, clears bp fields — inserts a bubble with no prediction.
+// stall: holds all register values.
 // flush wins if both assert simultaneously.
 
 module if2_id_reg (
     input  logic        clk,
     input  logic        rst_n,
 
-    input  logic        stall,   // Freeze (from hazard_unit)
-    input  logic        flush,   // Clear to NOP bubble (branch/jump/trap)
+    input  logic        stall,
+    input  logic        flush,
 
-    // Data in (Từ tầng IF2)
     input  logic [31:0] pc_in,
     input  logic [31:0] instr_in,
+    input  logic        bp_taken_in,
+    input  logic [31:0] bp_target_in,
 
-    // Data out (Đưa sang tầng ID)
     output logic [31:0] pc_out,
-    output logic [31:0] instr_out
+    output logic [31:0] instr_out,
+    output logic        bp_taken_out,
+    output logic [31:0] bp_target_out
 );
 
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            pc_out    <= 32'd0;
-            instr_out <= 32'h0000_0013; // Khởi tạo bằng lệnh NOP
+            pc_out        <= 32'd0;
+            instr_out     <= 32'h0000_0013;
+            bp_taken_out  <= 1'b0;
+            bp_target_out <= 32'd0;
         end else if (flush) begin
-            // Xóa lệnh đang nạp khi bị bẻ hướng, chèn bong bóng (NOP)
-            pc_out    <= 32'd0;
-            instr_out <= 32'h0000_0013;
+            pc_out        <= 32'd0;
+            instr_out     <= 32'h0000_0013;
+            bp_taken_out  <= 1'b0;
+            bp_target_out <= 32'd0;
         end else if (!stall) begin
-            // Cập nhật đường ống khi không bị stall
-            pc_out    <= pc_in;
-            instr_out <= instr_in;
+            pc_out        <= pc_in;
+            instr_out     <= instr_in;
+            bp_taken_out  <= bp_taken_in;
+            bp_target_out <= bp_target_in;
         end
-        // Nếu stall = 1 và flush = 0: Thanh ghi giữ nguyên giá trị cũ để chờ
     end
 
 endmodule

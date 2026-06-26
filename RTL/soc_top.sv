@@ -112,21 +112,35 @@ module soc_top #(
     // ── Domain resets ───────────────────────────────────────
     logic rst_cpu_n, rst_ahb_n;
 
+    // ── Branch predictor ────────────────────────────────────
+    logic        bp_predict_taken;
+    logic [31:0] bp_predict_target;
+    logic        bp_update_en;
+    logic        ex_actual_redirect;
+    logic        bp_mismatch;
+    logic [31:0] bp_correct_pc;
+
     // ── IF1 stage ───────────────────────────────────────────
     logic [31:0] if1_pc;
-    logic [31:0] if1_jump_addr;  // Mux: zicsr_pc (trap) or ex_jump_addr (branch/jump)
+    logic [31:0] if1_jump_addr;  // Mux: zicsr_pc (trap) or bp_correct_pc (mismatch correction)
 
     // ── IF1/IF2 pipeline register ───────────────────────────
     logic [31:0] if1if2_pc;
+    logic        if1if2_bp_taken;
+    logic [31:0] if1if2_bp_target;
 
     // ── IMEM ────────────────────────────────────────────────
     logic [31:0] imem_instr;
 
     // ── IF2 stage (pass-through) ────────────────────────────
     logic [31:0] if2_pc, if2_instr;
+    logic        if2_bp_taken;
+    logic [31:0] if2_bp_target;
 
     // ── IF2/ID pipeline register ────────────────────────────
     logic [31:0] if2id_pc, if2id_instr;
+    logic        if2id_bp_taken;
+    logic [31:0] if2id_bp_target;
 
     // ── ID stage: decoder outputs ───────────────────────────
     logic [4:0]  id_rs1_addr, id_rs2_addr, id_rd_addr;
@@ -164,6 +178,8 @@ module soc_top #(
     logic [1:0]  idex_csr_op;
     logic        idex_csr_imm_sel;
     logic        idex_ecall, idex_ebreak, idex_mret, idex_illegal;
+    logic        idex_bp_taken;
+    logic [31:0] idex_bp_target;
 
     // ── EX stage outputs ────────────────────────────────────
     logic [31:0] ex_rs1_fwd;      // Forwarded rs1 → EX/MEM1 (CSR write source)
@@ -296,9 +312,23 @@ module soc_top #(
     logic stall_mem1mem2, flush_mem1mem2;
     logic stall_mem2wb,  flush_mem2wb;
 
-    // ── PC redirect MUX: trap takes priority over branch/jump ─
-    // zicsr_flush=1 → use trap handler address; else use branch/jump target
-    assign if1_jump_addr = zicsr_flush ? zicsr_pc : ex_jump_addr;
+    // ── Branch predictor mismatch: compute actual redirect and correction address ──
+    // ex_actual_redirect: 1 when branch IS taken or instruction is an unconditional jump
+    // bp_mismatch: prediction was wrong (direction or target differs from actual)
+    // bp_correct_pc: the right PC to load on mismatch
+    //   - branch taken / jump: use actual target (ex_jump_addr)
+    //   - branch not taken:    use sequential PC (idex_pc + 4)
+    assign ex_actual_redirect = ex_branch_taken | idex_jump;
+    assign bp_mismatch = (idex_branch | idex_jump) &&
+                         ((ex_actual_redirect != idex_bp_taken) ||
+                          (ex_actual_redirect && (ex_jump_addr != idex_bp_target)));
+    assign bp_correct_pc = ex_actual_redirect ? ex_jump_addr : (idex_pc + 32'd4);
+
+    // ── Predictor update enable: one update per branch/jump, suppressed during bus stall ──
+    assign bp_update_en = (idex_branch | idex_jump) & ~bus_stall_req;
+
+    // ── PC redirect MUX: trap takes highest priority, then bp_mismatch correction ──
+    assign if1_jump_addr = zicsr_flush ? zicsr_pc : bp_correct_pc;
 
     //=========================================================
     // 0. Domain Reset Synchronizers
@@ -317,15 +347,35 @@ module soc_top #(
     );
 
     //=========================================================
+    // 0.5. Branch Predictor — 16-entry 2-bit BHT + BTB
+    //      Lookup uses IF1 PC (combinational); update at EX resolution.
+    //=========================================================
+    branch_predictor u_bp (
+        .clk           (clk_cpu),           // input:  1GHz clock
+        .rst_n         (rst_cpu_n),         // input:  CPU domain reset
+        // ── IF1 lookup ──
+        .fetch_pc      (if1_pc),            // input:  current IF1 PC
+        .predict_taken (bp_predict_taken),  // output: 1 = speculative redirect
+        .predict_target(bp_predict_target), // output: predicted target address
+        // ── EX update ──
+        .update_en     (bp_update_en),      // input:  branch/jump resolved at EX
+        .update_pc     (idex_pc),           // input:  PC of resolved branch/jump
+        .update_taken  (ex_actual_redirect),// input:  actual taken / not-taken
+        .update_target (ex_jump_addr)       // input:  actual target address
+    );
+
+    //=========================================================
     // 1. IF1 Stage — PC register, next-PC select
     //=========================================================
     if1_stage #(.PC_RESET_VAL(PC_RESET_VAL)) u_if1 (
-        .clk      (clk_cpu),       // input:  1GHz clock
-        .rst_n    (rst_cpu_n),     // input:  CPU domain reset
-        .stall    (stall_pc),      // input:  freeze PC (from hazard_unit)
-        .flush    (flush_if1if2),  // input:  redirect PC (branch/jump/trap)
-        .jump_addr(if1_jump_addr), // input:  redirect target (zicsr_pc or ex_jump_addr)
-        .pc_out   (if1_pc)         // output: current PC → imem addr + if1_if2_reg
+        .clk         (clk_cpu),          // input:  1GHz clock
+        .rst_n       (rst_cpu_n),        // input:  CPU domain reset
+        .stall       (stall_pc),         // input:  freeze PC (hazard_unit)
+        .flush       (flush_if1if2),     // input:  redirect PC (bp_mismatch or trap)
+        .jump_addr   (if1_jump_addr),    // input:  correction/trap target address
+        .bp_redirect (bp_predict_taken), // input:  speculative redirect from predictor
+        .bp_target   (bp_predict_target),// input:  predicted target address
+        .pc_out      (if1_pc)            // output: current PC → IMEM + if1_if2_reg
     );
 
     //=========================================================
@@ -343,12 +393,16 @@ module soc_top #(
     // 3. IF1/IF2 Pipeline Register
     //=========================================================
     if1_if2_reg u_if1if2 (
-        .clk   (clk_cpu),      // input:  1GHz clock
-        .rst_n (rst_cpu_n),    // input:  CPU domain reset
-        .stall (stall_if1if2), // input:  freeze (from hazard_unit)
-        .flush (flush_if1if2), // input:  clear to bubble (branch/jump/trap)
-        .pc_in (if1_pc),       // input:  PC from if1_stage
-        .pc_out(if1if2_pc)     // output: registered PC → if2_stage
+        .clk          (clk_cpu),           // input:  1GHz clock
+        .rst_n        (rst_cpu_n),         // input:  CPU domain reset
+        .stall        (stall_if1if2),      // input:  freeze
+        .flush        (flush_if1if2),      // input:  clear to bubble
+        .pc_in        (if1_pc),            // input:  PC from if1_stage
+        .bp_taken_in  (bp_predict_taken),  // input:  prediction for if1_pc
+        .bp_target_in (bp_predict_target), // input:  predicted target for if1_pc
+        .pc_out       (if1if2_pc),         // output: registered PC → if2_stage
+        .bp_taken_out (if1if2_bp_taken),   // output: prediction propagating with instruction
+        .bp_target_out(if1if2_bp_target)   // output: predicted target propagating
     );
 
     //=========================================================
@@ -357,24 +411,32 @@ module soc_top #(
     //    Branch prediction or I-cache miss handling would go here.
     //=========================================================
     if2_stage u_if2 (
-        .pc_in    (if1if2_pc),  // input:  PC from IF1/IF2 register
-        .instr_in (imem_instr), // input:  instruction word from IMEM
-        .pc_out   (if2_pc),     // output: PC → if2_id_reg
-        .instr_out(if2_instr)   // output: instruction → if2_id_reg
+        .pc_in        (if1if2_pc),       // input:  PC from IF1/IF2 register
+        .instr_in     (imem_instr),      // input:  instruction from IMEM
+        .bp_taken_in  (if1if2_bp_taken), // input:  prediction metadata
+        .bp_target_in (if1if2_bp_target),
+        .pc_out       (if2_pc),          // output: PC → if2_id_reg
+        .instr_out    (if2_instr),       // output: instruction → if2_id_reg
+        .bp_taken_out (if2_bp_taken),    // output: prediction propagating
+        .bp_target_out(if2_bp_target)
     );
 
     //=========================================================
     // 5. IF2/ID Pipeline Register
     //=========================================================
     if2_id_reg u_if2id (
-        .clk      (clk_cpu),     // input:  1GHz clock
-        .rst_n    (rst_cpu_n),   // input:  CPU domain reset
-        .stall    (stall_if2id), // input:  freeze (from hazard_unit)
-        .flush    (flush_if2id), // input:  clear to NOP bubble
-        .pc_in    (if2_pc),      // input:  PC from if2_stage
-        .instr_in (if2_instr),   // input:  instruction from if2_stage
-        .pc_out   (if2id_pc),    // output: PC → id_decoder + id_ex_reg
-        .instr_out(if2id_instr)  // output: instruction → id_decoder
+        .clk          (clk_cpu),       // input:  1GHz clock
+        .rst_n        (rst_cpu_n),     // input:  CPU domain reset
+        .stall        (stall_if2id),   // input:  freeze
+        .flush        (flush_if2id),   // input:  clear to NOP bubble
+        .pc_in        (if2_pc),        // input:  PC from if2_stage
+        .instr_in     (if2_instr),     // input:  instruction from if2_stage
+        .bp_taken_in  (if2_bp_taken),  // input:  prediction metadata from if2_stage
+        .bp_target_in (if2_bp_target),
+        .pc_out       (if2id_pc),      // output: PC → id_decoder + id_ex_reg
+        .instr_out    (if2id_instr),   // output: instruction → id_decoder
+        .bp_taken_out (if2id_bp_taken),
+        .bp_target_out(if2id_bp_target)
     );
 
     //=========================================================
@@ -458,6 +520,8 @@ module soc_top #(
         .ebreak_in        (id_ebreak),
         .mret_in          (id_mret),
         .illegal_instr_in (id_illegal),
+        .bp_taken_in      (if2id_bp_taken),   // input:  prediction from IF2/ID register
+        .bp_target_in     (if2id_bp_target),
         // ── Outputs to EX stage ──
         .pc_out           (idex_pc),          // output: registered PC
         .rs1_data_out     (idex_rs1_data),    // output: rs1 (pre-forward; ex_stage resolves)
@@ -486,7 +550,9 @@ module soc_top #(
         .ecall_out        (idex_ecall),
         .ebreak_out       (idex_ebreak),
         .mret_out         (idex_mret),
-        .illegal_instr_out(idex_illegal)
+        .illegal_instr_out(idex_illegal),
+        .bp_taken_out     (idex_bp_taken),   // output: prediction arriving at EX
+        .bp_target_out    (idex_bp_target)
     );
 
     //=========================================================
@@ -951,9 +1017,8 @@ module soc_top #(
         // ── Source register addresses at ID (for hazard check) ──
         .id_rs1_addr    (id_rs1_addr),       // input:  rs1 of instruction at ID
         .id_rs2_addr    (id_rs2_addr),       // input:  rs2 of instruction at ID
-        // ── Branch/jump redirect ──
-        .branch_taken   (ex_branch_taken),   // input:  branch condition true at EX
-        .jump           (idex_jump),         // input:  unconditional jump at EX
+        // ── Branch predictor mismatch ──
+        .bp_mismatch    (bp_mismatch),       // input:  predicted outcome ≠ actual outcome at EX
         // ── Zicsr trap/mret redirect ──
         .zicsr_flush    (zicsr_flush),       // input:  trap or mret fired
         // ── Stall outputs (per pipeline register) ──

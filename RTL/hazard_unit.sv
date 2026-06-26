@@ -8,19 +8,18 @@
 //   2. CSR-Use hazard: lệnh CSR (wb_sel==11) ở EX/MEM1/MEM2 (kết quả csr_old chỉ
 //                      sẵn ở WB) → stall 3/2/1 chu kỳ, giải phóng khi CSR vào WB
 //   3. Bus stall: AXI/AHB transaction chưa xong → stall toàn pipeline
-//   4. Branch/Jump flush: nhánh được lấy hoặc jump → flush IF1/IF2 và IF2/ID
+//   4. bp_mismatch flush: branch predictor prediction wrong → flush IF1/IF2 và IF2/ID
+//      (replaces unconditional branch/jump flush; only flushes on wrong prediction)
 //   5. Zicsr flush: exception/interrupt → flush toàn pipeline từ IF1 đến MEM2/WB
 //
 // Stall logic:
 //   - bus_stall_req stall toàn pipeline (mọi stage)
 //   - load_use_stall stall IF1..ID (chèn bubble vào EX)
 //   - csr_use_stall: tương tự — stall IF1..ID khi CSR ở EX, MEM1, hoặc MEM2
-//     (CSR ở EX → stall 1 chu kỳ trước khi lệnh kế vào EX với forwarding sai)
 //
 // Flush logic (ưu tiên cao hơn stall):
-//   - branch/jump flush: IF1/IF2 và IF2/ID
+//   - bp_mismatch: flush IF1/IF2, IF2/ID, ID/EX (discard 2 wrong speculative instructions)
 //   - load_use/csr_use: flush ID/EX (bubble) — bị suppress khi bus_stall_req=1
-//     (load/CSR đang ở EX không được cancel; bubble sẽ fire khi bus_stall thoả)
 //   - zicsr_flush: toàn bộ pipeline
 
 module hazard_unit (
@@ -48,9 +47,10 @@ module hazard_unit (
     input  logic [4:0] id_rs1_addr,
     input  logic [4:0] id_rs2_addr,
 
-    //----------------- BRANCH/JUMP (từ EX stage) -----------------
-    input  logic       branch_taken,
-    input  logic       jump,
+    //----------------- BRANCH PREDICTION MISMATCH (từ soc_top) -----------------
+    // 1 when branch/jump at EX has a different outcome from what was predicted at IF1.
+    // Only flush on mismatch — correct predictions cost 0 cycles.
+    input  logic       bp_mismatch,
 
     //----------------- ZICSR FLUSH -----------------
     input  logic       zicsr_flush,
@@ -97,9 +97,9 @@ module hazard_unit (
                             ((mem2_rd_addr == id_rs1_addr) || (mem2_rd_addr == id_rs2_addr));
     assign csr_use_stall  = csr_stall_ex | csr_stall_mem1 | csr_stall_mem2;
 
-    // Branch/jump flush
+    // Branch predictor mismatch flush
     logic ctrl_flush;
-    assign ctrl_flush = branch_taken | jump;
+    assign ctrl_flush = bp_mismatch;
 
     // Combined fetch stall (load-use or csr-use)
     logic fetch_stall;
