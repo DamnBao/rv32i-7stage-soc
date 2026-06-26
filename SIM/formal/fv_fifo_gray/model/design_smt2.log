@@ -123,6 +123,6 @@ Module $paramod\async_fifo_depth2\DATA_WIDTH=s32'0000000000000000000000000000100
 Creating SMT-LIBv2 representation of module $paramod\async_fifo_depth2\DATA_WIDTH=s32'00000000000000000000000000001000.
 Creating SMT-LIBv2 representation of module fv_fifo_gray.
 
-End of script. Logfile hash: 063f1cf665, CPU: user 0.00s system 0.01s, MEM: 14.79 MB peak
+End of script. Logfile hash: 063f1cf665, CPU: user 0.01s system 0.00s, MEM: 14.79 MB peak
 Yosys 0.33 (git sha1 2584903a060)
-Time spent: 63% 2x write_smt2 (0 sec), 26% 2x read_rtlil (0 sec), ...
+Time spent: 67% 2x write_smt2 (0 sec), 22% 2x read_rtlil (0 sec), ...

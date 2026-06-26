@@ -126,6 +126,6 @@ Module fv_reg_x0 directly or indirectly contains formal properties -> setting "k
 Creating SMT-LIBv2 representation of module register_file.
 Creating SMT-LIBv2 representation of module fv_reg_x0.
 
-End of script. Logfile hash: 5fdeb5c532, CPU: user 0.03s system 0.00s, MEM: 15.13 MB peak
+End of script. Logfile hash: 5fdeb5c532, CPU: user 0.02s system 0.02s, MEM: 15.09 MB peak
 Yosys 0.33 (git sha1 2584903a060)
-Time spent: 77% 2x write_smt2 (0 sec), 18% 2x read_rtlil (0 sec), ...
+Time spent: 76% 2x write_smt2 (0 sec), 18% 2x read_rtlil (0 sec), ...

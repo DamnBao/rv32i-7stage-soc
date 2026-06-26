@@ -24,8 +24,8 @@
 ##   0:00:01  Checking assumptions in step 11..
 ##   0:00:02  Checking assertions in step 11..
 ##   0:00:02  Checking assumptions in step 12..
-##   0:00:02  Checking assertions in step 12..
-##   0:00:02  Checking assumptions in step 13..
+##   0:00:03  Checking assertions in step 12..
+##   0:00:03  Checking assumptions in step 13..
 ##   0:00:03  Checking assertions in step 13..
 ##   0:00:03  Checking assumptions in step 14..
 ##   0:00:04  Checking assertions in step 14..

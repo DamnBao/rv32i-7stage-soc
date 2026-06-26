@@ -129,6 +129,6 @@ Module fv_plic_priority directly or indirectly contains formal properties -> set
 Creating SMT-LIBv2 representation of module plic.
 Creating SMT-LIBv2 representation of module fv_plic_priority.
 
-End of script. Logfile hash: 635ebb6071, CPU: user 0.01s system 0.01s, MEM: 15.10 MB peak
+End of script. Logfile hash: 635ebb6071, CPU: user 0.02s system 0.01s, MEM: 15.05 MB peak
 Yosys 0.33 (git sha1 2584903a060)
-Time spent: 59% 2x write_smt2 (0 sec), 33% 2x read_rtlil (0 sec), ...
+Time spent: 58% 2x write_smt2 (0 sec), 33% 2x read_rtlil (0 sec), ...

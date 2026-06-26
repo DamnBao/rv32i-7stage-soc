@@ -654,6 +654,6 @@ Module fv_reg_wbr directly or indirectly contains formal properties -> setting "
 Output filename: ../model/design.il
 
 Warnings: 49 unique messages, 97 total
-End of script. Logfile hash: df16bb31a5, CPU: user 0.22s system 0.00s, MEM: 14.78 MB peak
+End of script. Logfile hash: df16bb31a5, CPU: user 0.22s system 0.01s, MEM: 14.65 MB peak
 Yosys 0.33 (git sha1 2584903a060)
-Time spent: 25% 2x check (0 sec), 23% 5x opt_clean (0 sec), ...
+Time spent: 25% 2x check (0 sec), 22% 5x opt_clean (0 sec), ...

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-<testsuite timestamp="2026-06-26T12:27:55" hostname="LAPTOP-7V2VIHT3" package="fv_reg_x0" id="0" name="default" tests="4" errors="0" failures="0" time="5" skipped="0">
+<testsuite timestamp="2026-06-26T12:37:14" hostname="LAPTOP-7V2VIHT3" package="fv_reg_x0" id="0" name="default" tests="4" errors="0" failures="0" time="5" skipped="0">
 <properties>
 <property name="os" value="Linux"/>
 <property name="expect" value="PASS"/>
@@ -16,163 +16,163 @@
 </testcase>
 <testcase classname="default" name="Property ASSERT in fv_reg_x0 at fv_reg_x0.sv:62.67-63.66" time="0" type="ASSERT" location="fv_reg_x0.sv:62.67-63.66" id="$assert$fv_reg_x0.sv:62$41">
 </testcase>
-<system-out>SBY 12:27:51 [fv_reg_x0] Removing directory '/home/baoslinux/riscv_soc_thesis/SIM/formal/fv_reg_x0'.
-SBY 12:27:51 [fv_reg_x0] Copy '/home/baoslinux/riscv_soc_thesis/SIM/formal/../../RTL/register_file.sv' to '/home/baoslinux/riscv_soc_thesis/SIM/formal/fv_reg_x0/src/register_file.sv'.
-SBY 12:27:51 [fv_reg_x0] Copy '/home/baoslinux/riscv_soc_thesis/SIM/formal/fv_reg_x0.sv' to '/home/baoslinux/riscv_soc_thesis/SIM/formal/fv_reg_x0/src/fv_reg_x0.sv'.
-SBY 12:27:51 [fv_reg_x0] engine_0: smtbmc z3
-SBY 12:27:51 [fv_reg_x0] base: starting process &quot;cd fv_reg_x0/src; yosys -ql ../model/design.log ../model/design.ys&quot;
-SBY 12:27:51 [fv_reg_x0] base: Warning: Replacing memory \registers with list of registers. See register_file.sv:41
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [31] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [30] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [29] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [28] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [27] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [26] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [25] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [24] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [23] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [22] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [21] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [20] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [19] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [18] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [17] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [16] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [15] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [14] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [13] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [12] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [11] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [10] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [9] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [8] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [7] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [6] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [5] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [4] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [3] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [2] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [1] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [0] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_addr [4] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_addr [3] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_addr [2] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_addr [1] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_addr [0] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\we is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rs2_addr [4] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rs2_addr [3] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rs2_addr [2] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rs2_addr [1] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rs2_addr [0] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rs1_addr [4] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rs1_addr [3] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rs1_addr [2] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rs1_addr [1] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rs1_addr [0] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] base: finished (returncode=0)
-SBY 12:27:51 [fv_reg_x0] prep: starting process &quot;cd fv_reg_x0/model; yosys -ql design_prep.log design_prep.ys&quot;
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [31] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [30] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [29] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [28] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [27] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [26] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [25] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [24] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [23] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [22] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [21] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [20] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [19] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [18] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [17] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [16] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [15] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [14] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [13] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [12] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [11] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [10] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [9] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [8] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [7] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [6] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [5] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [4] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [3] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [2] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [1] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [0] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_addr [4] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_addr [3] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_addr [2] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_addr [1] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_addr [0] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\we is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rs2_addr [4] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rs2_addr [3] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rs2_addr [2] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rs2_addr [1] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rs2_addr [0] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rs1_addr [4] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rs1_addr [3] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rs1_addr [2] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rs1_addr [1] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rs1_addr [0] is used but has no driver.
-SBY 12:27:51 [fv_reg_x0] prep: finished (returncode=0)
-SBY 12:27:51 [fv_reg_x0] smt2: starting process &quot;cd fv_reg_x0/model; yosys -ql design_smt2.log design_smt2.ys&quot;
-SBY 12:27:51 [fv_reg_x0] smt2: finished (returncode=0)
-SBY 12:27:51 [fv_reg_x0] engine_0.basecase: starting process &quot;cd fv_reg_x0; yosys-smtbmc -s z3 --presat --noprogress -t 15  --append 0 --dump-vcd engine_0/trace.vcd --dump-yw engine_0/trace.yw --dump-vlogtb engine_0/trace_tb.v --dump-smtc engine_0/trace.smtc model/design_smt2.smt2&quot;
-SBY 12:27:51 [fv_reg_x0] engine_0.induction: starting process &quot;cd fv_reg_x0; yosys-smtbmc -s z3 --presat -i --noprogress -t 15  --append 0 --dump-vcd engine_0/trace_induct.vcd --dump-yw engine_0/trace_induct.yw --dump-vlogtb engine_0/trace_induct_tb.v --dump-smtc engine_0/trace_induct.smtc model/design_smt2.smt2&quot;
-SBY 12:27:51 [fv_reg_x0] engine_0.basecase: ##   0:00:00  Solver: z3
-SBY 12:27:51 [fv_reg_x0] engine_0.induction: ##   0:00:00  Solver: z3
-SBY 12:27:51 [fv_reg_x0] engine_0.basecase: ##   0:00:00  Checking assumptions in step 0..
-SBY 12:27:51 [fv_reg_x0] engine_0.induction: ##   0:00:00  Trying induction in step 15..
-SBY 12:27:51 [fv_reg_x0] engine_0.basecase: ##   0:00:00  Checking assertions in step 0..
-SBY 12:27:51 [fv_reg_x0] engine_0.basecase: ##   0:00:00  Checking assumptions in step 1..
-SBY 12:27:51 [fv_reg_x0] engine_0.induction: ##   0:00:00  Trying induction in step 14..
-SBY 12:27:51 [fv_reg_x0] engine_0.basecase: ##   0:00:00  Checking assertions in step 1..
-SBY 12:27:51 [fv_reg_x0] engine_0.basecase: ##   0:00:00  Checking assumptions in step 2..
-SBY 12:27:51 [fv_reg_x0] engine_0.induction: ##   0:00:00  Temporal induction successful.
-SBY 12:27:51 [fv_reg_x0] engine_0.basecase: ##   0:00:00  Checking assertions in step 2..
-SBY 12:27:51 [fv_reg_x0] engine_0.basecase: ##   0:00:00  Checking assumptions in step 3..
-SBY 12:27:51 [fv_reg_x0] engine_0.induction: ##   0:00:00  Status: passed
-SBY 12:27:51 [fv_reg_x0] engine_0.induction: finished (returncode=0)
-SBY 12:27:51 [fv_reg_x0] engine_0.induction: Status returned by engine for induction: pass
-SBY 12:27:51 [fv_reg_x0] engine_0.basecase: ##   0:00:00  Checking assertions in step 3..
-SBY 12:27:51 [fv_reg_x0] engine_0.basecase: ##   0:00:00  Checking assumptions in step 4..
-SBY 12:27:51 [fv_reg_x0] engine_0.basecase: ##   0:00:00  Checking assertions in step 4..
-SBY 12:27:51 [fv_reg_x0] engine_0.basecase: ##   0:00:00  Checking assumptions in step 5..
-SBY 12:27:51 [fv_reg_x0] engine_0.basecase: ##   0:00:00  Checking assertions in step 5..
-SBY 12:27:51 [fv_reg_x0] engine_0.basecase: ##   0:00:00  Checking assumptions in step 6..
-SBY 12:27:51 [fv_reg_x0] engine_0.basecase: ##   0:00:00  Checking assertions in step 6..
-SBY 12:27:51 [fv_reg_x0] engine_0.basecase: ##   0:00:00  Checking assumptions in step 7..
-SBY 12:27:51 [fv_reg_x0] engine_0.basecase: ##   0:00:00  Checking assertions in step 7..
-SBY 12:27:51 [fv_reg_x0] engine_0.basecase: ##   0:00:00  Checking assumptions in step 8..
-SBY 12:27:52 [fv_reg_x0] engine_0.basecase: ##   0:00:01  Checking assertions in step 8..
-SBY 12:27:52 [fv_reg_x0] engine_0.basecase: ##   0:00:01  Checking assumptions in step 9..
-SBY 12:27:52 [fv_reg_x0] engine_0.basecase: ##   0:00:01  Checking assertions in step 9..
-SBY 12:27:52 [fv_reg_x0] engine_0.basecase: ##   0:00:01  Checking assumptions in step 10..
-SBY 12:27:53 [fv_reg_x0] engine_0.basecase: ##   0:00:01  Checking assertions in step 10..
-SBY 12:27:53 [fv_reg_x0] engine_0.basecase: ##   0:00:01  Checking assumptions in step 11..
-SBY 12:27:54 [fv_reg_x0] engine_0.basecase: ##   0:00:02  Checking assertions in step 11..
-SBY 12:27:54 [fv_reg_x0] engine_0.basecase: ##   0:00:02  Checking assumptions in step 12..
-SBY 12:27:54 [fv_reg_x0] engine_0.basecase: ##   0:00:02  Checking assertions in step 12..
-SBY 12:27:54 [fv_reg_x0] engine_0.basecase: ##   0:00:02  Checking assumptions in step 13..
-SBY 12:27:54 [fv_reg_x0] engine_0.basecase: ##   0:00:03  Checking assertions in step 13..
-SBY 12:27:55 [fv_reg_x0] engine_0.basecase: ##   0:00:03  Checking assumptions in step 14..
-SBY 12:27:55 [fv_reg_x0] engine_0.basecase: ##   0:00:04  Checking assertions in step 14..
-SBY 12:27:55 [fv_reg_x0] engine_0.basecase: ##   0:00:04  Status: passed
-SBY 12:27:55 [fv_reg_x0] engine_0.basecase: finished (returncode=0)
-SBY 12:27:55 [fv_reg_x0] engine_0.basecase: Status returned by engine for basecase: pass
-SBY 12:27:55 [fv_reg_x0] summary: Elapsed clock time [H:MM:SS (secs)]: 0:00:04 (4)
-SBY 12:27:55 [fv_reg_x0] summary: Elapsed process time [H:MM:SS (secs)]: 0:00:05 (5)
-SBY 12:27:55 [fv_reg_x0] summary: engine_0 (smtbmc z3) returned pass for basecase
-SBY 12:27:55 [fv_reg_x0] summary: engine_0 (smtbmc z3) returned pass for induction
-SBY 12:27:55 [fv_reg_x0] summary: engine_0 did not produce any traces
-SBY 12:27:55 [fv_reg_x0] summary: successful proof by k-induction.
-SBY 12:27:55 [fv_reg_x0] DONE (PASS, rc=0)
+<system-out>SBY 12:37:08 [fv_reg_x0] Removing directory '/home/baoslinux/riscv_soc_thesis/SIM/formal/fv_reg_x0'.
+SBY 12:37:08 [fv_reg_x0] Copy '/home/baoslinux/riscv_soc_thesis/SIM/formal/../../RTL/register_file.sv' to '/home/baoslinux/riscv_soc_thesis/SIM/formal/fv_reg_x0/src/register_file.sv'.
+SBY 12:37:08 [fv_reg_x0] Copy '/home/baoslinux/riscv_soc_thesis/SIM/formal/fv_reg_x0.sv' to '/home/baoslinux/riscv_soc_thesis/SIM/formal/fv_reg_x0/src/fv_reg_x0.sv'.
+SBY 12:37:08 [fv_reg_x0] engine_0: smtbmc z3
+SBY 12:37:08 [fv_reg_x0] base: starting process &quot;cd fv_reg_x0/src; yosys -ql ../model/design.log ../model/design.ys&quot;
+SBY 12:37:08 [fv_reg_x0] base: Warning: Replacing memory \registers with list of registers. See register_file.sv:41
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [31] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [30] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [29] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [28] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [27] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [26] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [25] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [24] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [23] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [22] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [21] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [20] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [19] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [18] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [17] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [16] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [15] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [14] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [13] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [12] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [11] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [10] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [9] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [8] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [7] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [6] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [5] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [4] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [3] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [2] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [1] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_data [0] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_addr [4] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_addr [3] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_addr [2] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_addr [1] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rd_addr [0] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\we is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rs2_addr [4] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rs2_addr [3] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rs2_addr [2] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rs2_addr [1] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rs2_addr [0] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rs1_addr [4] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rs1_addr [3] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rs1_addr [2] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rs1_addr [1] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: Warning: Wire fv_reg_x0.\rs1_addr [0] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] base: finished (returncode=0)
+SBY 12:37:09 [fv_reg_x0] prep: starting process &quot;cd fv_reg_x0/model; yosys -ql design_prep.log design_prep.ys&quot;
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [31] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [30] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [29] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [28] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [27] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [26] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [25] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [24] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [23] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [22] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [21] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [20] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [19] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [18] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [17] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [16] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [15] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [14] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [13] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [12] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [11] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [10] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [9] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [8] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [7] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [6] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [5] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [4] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [3] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [2] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [1] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_data [0] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_addr [4] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_addr [3] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_addr [2] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_addr [1] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rd_addr [0] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\we is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rs2_addr [4] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rs2_addr [3] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rs2_addr [2] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rs2_addr [1] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rs2_addr [0] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rs1_addr [4] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rs1_addr [3] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rs1_addr [2] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rs1_addr [1] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: Warning: Wire fv_reg_x0.\rs1_addr [0] is used but has no driver.
+SBY 12:37:09 [fv_reg_x0] prep: finished (returncode=0)
+SBY 12:37:09 [fv_reg_x0] smt2: starting process &quot;cd fv_reg_x0/model; yosys -ql design_smt2.log design_smt2.ys&quot;
+SBY 12:37:09 [fv_reg_x0] smt2: finished (returncode=0)
+SBY 12:37:09 [fv_reg_x0] engine_0.basecase: starting process &quot;cd fv_reg_x0; yosys-smtbmc -s z3 --presat --noprogress -t 15  --append 0 --dump-vcd engine_0/trace.vcd --dump-yw engine_0/trace.yw --dump-vlogtb engine_0/trace_tb.v --dump-smtc engine_0/trace.smtc model/design_smt2.smt2&quot;
+SBY 12:37:09 [fv_reg_x0] engine_0.induction: starting process &quot;cd fv_reg_x0; yosys-smtbmc -s z3 --presat -i --noprogress -t 15  --append 0 --dump-vcd engine_0/trace_induct.vcd --dump-yw engine_0/trace_induct.yw --dump-vlogtb engine_0/trace_induct_tb.v --dump-smtc engine_0/trace_induct.smtc model/design_smt2.smt2&quot;
+SBY 12:37:09 [fv_reg_x0] engine_0.basecase: ##   0:00:00  Solver: z3
+SBY 12:37:09 [fv_reg_x0] engine_0.induction: ##   0:00:00  Solver: z3
+SBY 12:37:09 [fv_reg_x0] engine_0.induction: ##   0:00:00  Trying induction in step 15..
+SBY 12:37:09 [fv_reg_x0] engine_0.basecase: ##   0:00:00  Checking assumptions in step 0..
+SBY 12:37:09 [fv_reg_x0] engine_0.induction: ##   0:00:00  Trying induction in step 14..
+SBY 12:37:09 [fv_reg_x0] engine_0.basecase: ##   0:00:00  Checking assertions in step 0..
+SBY 12:37:09 [fv_reg_x0] engine_0.basecase: ##   0:00:00  Checking assumptions in step 1..
+SBY 12:37:09 [fv_reg_x0] engine_0.basecase: ##   0:00:00  Checking assertions in step 1..
+SBY 12:37:09 [fv_reg_x0] engine_0.basecase: ##   0:00:00  Checking assumptions in step 2..
+SBY 12:37:09 [fv_reg_x0] engine_0.induction: ##   0:00:00  Temporal induction successful.
+SBY 12:37:09 [fv_reg_x0] engine_0.induction: ##   0:00:00  Status: passed
+SBY 12:37:09 [fv_reg_x0] engine_0.basecase: ##   0:00:00  Checking assertions in step 2..
+SBY 12:37:09 [fv_reg_x0] engine_0.basecase: ##   0:00:00  Checking assumptions in step 3..
+SBY 12:37:09 [fv_reg_x0] engine_0.induction: finished (returncode=0)
+SBY 12:37:09 [fv_reg_x0] engine_0.induction: Status returned by engine for induction: pass
+SBY 12:37:09 [fv_reg_x0] engine_0.basecase: ##   0:00:00  Checking assertions in step 3..
+SBY 12:37:09 [fv_reg_x0] engine_0.basecase: ##   0:00:00  Checking assumptions in step 4..
+SBY 12:37:09 [fv_reg_x0] engine_0.basecase: ##   0:00:00  Checking assertions in step 4..
+SBY 12:37:09 [fv_reg_x0] engine_0.basecase: ##   0:00:00  Checking assumptions in step 5..
+SBY 12:37:09 [fv_reg_x0] engine_0.basecase: ##   0:00:00  Checking assertions in step 5..
+SBY 12:37:09 [fv_reg_x0] engine_0.basecase: ##   0:00:00  Checking assumptions in step 6..
+SBY 12:37:09 [fv_reg_x0] engine_0.basecase: ##   0:00:00  Checking assertions in step 6..
+SBY 12:37:09 [fv_reg_x0] engine_0.basecase: ##   0:00:00  Checking assumptions in step 7..
+SBY 12:37:10 [fv_reg_x0] engine_0.basecase: ##   0:00:00  Checking assertions in step 7..
+SBY 12:37:10 [fv_reg_x0] engine_0.basecase: ##   0:00:00  Checking assumptions in step 8..
+SBY 12:37:10 [fv_reg_x0] engine_0.basecase: ##   0:00:01  Checking assertions in step 8..
+SBY 12:37:10 [fv_reg_x0] engine_0.basecase: ##   0:00:01  Checking assumptions in step 9..
+SBY 12:37:10 [fv_reg_x0] engine_0.basecase: ##   0:00:01  Checking assertions in step 9..
+SBY 12:37:10 [fv_reg_x0] engine_0.basecase: ##   0:00:01  Checking assumptions in step 10..
+SBY 12:37:11 [fv_reg_x0] engine_0.basecase: ##   0:00:01  Checking assertions in step 10..
+SBY 12:37:11 [fv_reg_x0] engine_0.basecase: ##   0:00:01  Checking assumptions in step 11..
+SBY 12:37:12 [fv_reg_x0] engine_0.basecase: ##   0:00:02  Checking assertions in step 11..
+SBY 12:37:12 [fv_reg_x0] engine_0.basecase: ##   0:00:02  Checking assumptions in step 12..
+SBY 12:37:12 [fv_reg_x0] engine_0.basecase: ##   0:00:03  Checking assertions in step 12..
+SBY 12:37:12 [fv_reg_x0] engine_0.basecase: ##   0:00:03  Checking assumptions in step 13..
+SBY 12:37:13 [fv_reg_x0] engine_0.basecase: ##   0:00:03  Checking assertions in step 13..
+SBY 12:37:13 [fv_reg_x0] engine_0.basecase: ##   0:00:03  Checking assumptions in step 14..
+SBY 12:37:14 [fv_reg_x0] engine_0.basecase: ##   0:00:04  Checking assertions in step 14..
+SBY 12:37:14 [fv_reg_x0] engine_0.basecase: ##   0:00:04  Status: passed
+SBY 12:37:14 [fv_reg_x0] engine_0.basecase: finished (returncode=0)
+SBY 12:37:14 [fv_reg_x0] engine_0.basecase: Status returned by engine for basecase: pass
+SBY 12:37:14 [fv_reg_x0] summary: Elapsed clock time [H:MM:SS (secs)]: 0:00:05 (5)
+SBY 12:37:14 [fv_reg_x0] summary: Elapsed process time [H:MM:SS (secs)]: 0:00:05 (5)
+SBY 12:37:14 [fv_reg_x0] summary: engine_0 (smtbmc z3) returned pass for basecase
+SBY 12:37:14 [fv_reg_x0] summary: engine_0 (smtbmc z3) returned pass for induction
+SBY 12:37:14 [fv_reg_x0] summary: engine_0 did not produce any traces
+SBY 12:37:14 [fv_reg_x0] summary: successful proof by k-induction.
+SBY 12:37:14 [fv_reg_x0] DONE (PASS, rc=0)
 </system-out>
 <system-err>
 </system-err>

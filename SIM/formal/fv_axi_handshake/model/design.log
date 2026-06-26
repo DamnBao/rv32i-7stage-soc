@@ -617,6 +617,6 @@ Module fv_axi_handshake directly or indirectly contains formal properties -> set
 Output filename: ../model/design.il
 
 Warnings: 109 unique messages, 218 total
-End of script. Logfile hash: ce7193dcdc, CPU: user 0.06s system 0.00s, MEM: 14.66 MB peak
+End of script. Logfile hash: ce7193dcdc, CPU: user 0.05s system 0.02s, MEM: 14.57 MB peak
 Yosys 0.33 (git sha1 2584903a060)
-Time spent: 26% 5x opt_clean (0 sec), 19% 6x opt_expr (0 sec), ...
+Time spent: 24% 5x opt_clean (0 sec), 19% 6x opt_expr (0 sec), ...

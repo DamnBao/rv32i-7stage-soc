@@ -407,6 +407,6 @@ Module fv_fifo_gray directly or indirectly contains formal properties -> setting
 6. Executing RTLIL backend.
 Output filename: ../model/design.il
 
-End of script. Logfile hash: 930b3e8938, CPU: user 0.03s system 0.00s, MEM: 14.66 MB peak
+End of script. Logfile hash: 930b3e8938, CPU: user 0.04s system 0.00s, MEM: 14.66 MB peak
 Yosys 0.33 (git sha1 2584903a060)
-Time spent: 23% 5x opt_clean (0 sec), 23% 6x opt_expr (0 sec), ...
+Time spent: 23% 6x opt_expr (0 sec), 21% 5x opt_clean (0 sec), ...

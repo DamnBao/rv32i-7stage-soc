@@ -126,6 +126,6 @@ Module fv_axi_handshake directly or indirectly contains formal properties -> set
 Creating SMT-LIBv2 representation of module axi_interface.
 Creating SMT-LIBv2 representation of module fv_axi_handshake.
 
-End of script. Logfile hash: 6eef92e7e7, CPU: user 0.02s system 0.00s, MEM: 14.86 MB peak
+End of script. Logfile hash: 6eef92e7e7, CPU: user 0.02s system 0.00s, MEM: 14.77 MB peak
 Yosys 0.33 (git sha1 2584903a060)
-Time spent: 64% 2x write_smt2 (0 sec), 26% 2x read_rtlil (0 sec), ...
+Time spent: 60% 2x write_smt2 (0 sec), 30% 2x read_rtlil (0 sec), ...

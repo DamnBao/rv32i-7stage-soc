@@ -721,6 +721,6 @@ Module plic directly or indirectly contains formal properties -> setting "keep" 
 Output filename: ../model/design.il
 
 Warnings: 65 unique messages, 129 total
-End of script. Logfile hash: d739de1c55, CPU: user 0.10s system 0.02s, MEM: 14.66 MB peak
+End of script. Logfile hash: d739de1c55, CPU: user 0.14s system 0.02s, MEM: 14.60 MB peak
 Yosys 0.33 (git sha1 2584903a060)
-Time spent: 26% 7x opt_expr (0 sec), 22% 6x opt_clean (0 sec), ...
+Time spent: 24% 7x opt_expr (0 sec), 22% 6x opt_clean (0 sec), ...

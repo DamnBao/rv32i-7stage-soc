@@ -1,179 +1,179 @@
-SBY 12:28:00 [fv_plic_priority] Removing directory '/home/baoslinux/riscv_soc_thesis/SIM/formal/fv_plic_priority'.
-SBY 12:28:00 [fv_plic_priority] Copy '/home/baoslinux/riscv_soc_thesis/SIM/formal/../../RTL/plic.sv' to '/home/baoslinux/riscv_soc_thesis/SIM/formal/fv_plic_priority/src/plic.sv'.
-SBY 12:28:00 [fv_plic_priority] Copy '/home/baoslinux/riscv_soc_thesis/SIM/formal/fv_plic_priority.sv' to '/home/baoslinux/riscv_soc_thesis/SIM/formal/fv_plic_priority/src/fv_plic_priority.sv'.
-SBY 12:28:00 [fv_plic_priority] engine_0: smtbmc z3
-SBY 12:28:00 [fv_plic_priority] base: starting process "cd fv_plic_priority/src; yosys -ql ../model/design.log ../model/design.ys"
-SBY 12:28:00 [fv_plic_priority] base: Warning: Replacing memory \reg_priority with list of registers. See plic.sv:161
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\we is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [31] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [30] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [29] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [28] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [27] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [26] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [25] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [24] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [23] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [22] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [21] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [20] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [19] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [18] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [17] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [16] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [15] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [14] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [13] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [12] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [11] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [10] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [9] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [8] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [7] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [6] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [5] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [4] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [3] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [2] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [1] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [0] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\re is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\irq_src [5] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\irq_src [4] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\irq_src [3] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\irq_src [2] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\irq_src [1] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\irq_src [0] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [23] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [22] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [21] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [20] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [19] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [18] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [17] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [16] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [15] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [14] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [13] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [12] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [11] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [10] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [9] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [8] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [7] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [6] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [5] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [4] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [3] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [2] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [1] is used but has no driver.
-SBY 12:28:00 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [0] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] base: finished (returncode=0)
-SBY 12:28:01 [fv_plic_priority] prep: starting process "cd fv_plic_priority/model; yosys -ql design_prep.log design_prep.ys"
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\we is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [31] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [30] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [29] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [28] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [27] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [26] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [25] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [24] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [23] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [22] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [21] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [20] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [19] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [18] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [17] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [16] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [15] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [14] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [13] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [12] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [11] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [10] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [9] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [8] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [7] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [6] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [5] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [4] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [3] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [2] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [1] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [0] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\re is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\irq_src [5] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\irq_src [4] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\irq_src [3] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\irq_src [2] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\irq_src [1] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\irq_src [0] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [23] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [22] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [21] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [20] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [19] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [18] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [17] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [16] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [15] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [14] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [13] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [12] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [11] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [10] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [9] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [8] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [7] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [6] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [5] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [4] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [3] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [2] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [1] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [0] is used but has no driver.
-SBY 12:28:01 [fv_plic_priority] prep: finished (returncode=0)
-SBY 12:28:01 [fv_plic_priority] smt2: starting process "cd fv_plic_priority/model; yosys -ql design_smt2.log design_smt2.ys"
-SBY 12:28:01 [fv_plic_priority] smt2: finished (returncode=0)
-SBY 12:28:01 [fv_plic_priority] engine_0.basecase: starting process "cd fv_plic_priority; yosys-smtbmc -s z3 --presat --noprogress -t 10  --append 0 --dump-vcd engine_0/trace.vcd --dump-yw engine_0/trace.yw --dump-vlogtb engine_0/trace_tb.v --dump-smtc engine_0/trace.smtc model/design_smt2.smt2"
-SBY 12:28:01 [fv_plic_priority] engine_0.induction: starting process "cd fv_plic_priority; yosys-smtbmc -s z3 --presat -i --noprogress -t 10  --append 0 --dump-vcd engine_0/trace_induct.vcd --dump-yw engine_0/trace_induct.yw --dump-vlogtb engine_0/trace_induct_tb.v --dump-smtc engine_0/trace_induct.smtc model/design_smt2.smt2"
-SBY 12:28:01 [fv_plic_priority] engine_0.induction: ##   0:00:00  Solver: z3
-SBY 12:28:01 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Solver: z3
-SBY 12:28:01 [fv_plic_priority] engine_0.induction: ##   0:00:00  Trying induction in step 10..
-SBY 12:28:01 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assumptions in step 0..
-SBY 12:28:01 [fv_plic_priority] engine_0.induction: ##   0:00:00  Trying induction in step 9..
-SBY 12:28:01 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assertions in step 0..
-SBY 12:28:01 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assumptions in step 1..
-SBY 12:28:01 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assertions in step 1..
-SBY 12:28:01 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assumptions in step 2..
-SBY 12:28:01 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assertions in step 2..
-SBY 12:28:01 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assumptions in step 3..
-SBY 12:28:01 [fv_plic_priority] engine_0.induction: ##   0:00:00  Temporal induction successful.
-SBY 12:28:01 [fv_plic_priority] engine_0.induction: ##   0:00:00  Status: passed
-SBY 12:28:01 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assertions in step 3..
-SBY 12:28:01 [fv_plic_priority] engine_0.induction: finished (returncode=0)
-SBY 12:28:01 [fv_plic_priority] engine_0.induction: Status returned by engine for induction: pass
-SBY 12:28:01 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assumptions in step 4..
-SBY 12:28:01 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assertions in step 4..
-SBY 12:28:01 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assumptions in step 5..
-SBY 12:28:01 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assertions in step 5..
-SBY 12:28:01 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assumptions in step 6..
-SBY 12:28:01 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assertions in step 6..
-SBY 12:28:01 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assumptions in step 7..
-SBY 12:28:01 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assertions in step 7..
-SBY 12:28:01 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assumptions in step 8..
-SBY 12:28:01 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assertions in step 8..
-SBY 12:28:01 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assumptions in step 9..
-SBY 12:28:01 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assertions in step 9..
-SBY 12:28:01 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Status: passed
-SBY 12:28:01 [fv_plic_priority] engine_0.basecase: finished (returncode=0)
-SBY 12:28:01 [fv_plic_priority] engine_0.basecase: Status returned by engine for basecase: pass
-SBY 12:28:01 [fv_plic_priority] summary: Elapsed clock time [H:MM:SS (secs)]: 0:00:00 (0)
-SBY 12:28:01 [fv_plic_priority] summary: Elapsed process time [H:MM:SS (secs)]: 0:00:00 (0)
-SBY 12:28:01 [fv_plic_priority] summary: engine_0 (smtbmc z3) returned pass for basecase
-SBY 12:28:01 [fv_plic_priority] summary: engine_0 (smtbmc z3) returned pass for induction
-SBY 12:28:01 [fv_plic_priority] summary: engine_0 did not produce any traces
-SBY 12:28:01 [fv_plic_priority] summary: successful proof by k-induction.
-SBY 12:28:01 [fv_plic_priority] DONE (PASS, rc=0)
+SBY 12:37:22 [fv_plic_priority] Removing directory '/home/baoslinux/riscv_soc_thesis/SIM/formal/fv_plic_priority'.
+SBY 12:37:22 [fv_plic_priority] Copy '/home/baoslinux/riscv_soc_thesis/SIM/formal/../../RTL/plic.sv' to '/home/baoslinux/riscv_soc_thesis/SIM/formal/fv_plic_priority/src/plic.sv'.
+SBY 12:37:22 [fv_plic_priority] Copy '/home/baoslinux/riscv_soc_thesis/SIM/formal/fv_plic_priority.sv' to '/home/baoslinux/riscv_soc_thesis/SIM/formal/fv_plic_priority/src/fv_plic_priority.sv'.
+SBY 12:37:22 [fv_plic_priority] engine_0: smtbmc z3
+SBY 12:37:22 [fv_plic_priority] base: starting process "cd fv_plic_priority/src; yosys -ql ../model/design.log ../model/design.ys"
+SBY 12:37:22 [fv_plic_priority] base: Warning: Replacing memory \reg_priority with list of registers. See plic.sv:161
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\we is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [31] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [30] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [29] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [28] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [27] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [26] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [25] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [24] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [23] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [22] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [21] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [20] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [19] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [18] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [17] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [16] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [15] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [14] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [13] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [12] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [11] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [10] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [9] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [8] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [7] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [6] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [5] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [4] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [3] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [2] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [1] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\wdata [0] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\re is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\irq_src [5] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\irq_src [4] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\irq_src [3] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\irq_src [2] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\irq_src [1] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\irq_src [0] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [23] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [22] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [21] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [20] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [19] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [18] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [17] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [16] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [15] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [14] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [13] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [12] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [11] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [10] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [9] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [8] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [7] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [6] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [5] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [4] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [3] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [2] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [1] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: Warning: Wire fv_plic_priority.\addr [0] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] base: finished (returncode=0)
+SBY 12:37:22 [fv_plic_priority] prep: starting process "cd fv_plic_priority/model; yosys -ql design_prep.log design_prep.ys"
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\we is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [31] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [30] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [29] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [28] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [27] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [26] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [25] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [24] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [23] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [22] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [21] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [20] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [19] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [18] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [17] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [16] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [15] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [14] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [13] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [12] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [11] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [10] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [9] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [8] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [7] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [6] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [5] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [4] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [3] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [2] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [1] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\wdata [0] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\re is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\irq_src [5] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\irq_src [4] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\irq_src [3] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\irq_src [2] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\irq_src [1] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\irq_src [0] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [23] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [22] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [21] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [20] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [19] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [18] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [17] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [16] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [15] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [14] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [13] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [12] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [11] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [10] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [9] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [8] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [7] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [6] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [5] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [4] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [3] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [2] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [1] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: Warning: Wire fv_plic_priority.\addr [0] is used but has no driver.
+SBY 12:37:22 [fv_plic_priority] prep: finished (returncode=0)
+SBY 12:37:22 [fv_plic_priority] smt2: starting process "cd fv_plic_priority/model; yosys -ql design_smt2.log design_smt2.ys"
+SBY 12:37:22 [fv_plic_priority] smt2: finished (returncode=0)
+SBY 12:37:22 [fv_plic_priority] engine_0.basecase: starting process "cd fv_plic_priority; yosys-smtbmc -s z3 --presat --noprogress -t 10  --append 0 --dump-vcd engine_0/trace.vcd --dump-yw engine_0/trace.yw --dump-vlogtb engine_0/trace_tb.v --dump-smtc engine_0/trace.smtc model/design_smt2.smt2"
+SBY 12:37:22 [fv_plic_priority] engine_0.induction: starting process "cd fv_plic_priority; yosys-smtbmc -s z3 --presat -i --noprogress -t 10  --append 0 --dump-vcd engine_0/trace_induct.vcd --dump-yw engine_0/trace_induct.yw --dump-vlogtb engine_0/trace_induct_tb.v --dump-smtc engine_0/trace_induct.smtc model/design_smt2.smt2"
+SBY 12:37:22 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Solver: z3
+SBY 12:37:22 [fv_plic_priority] engine_0.induction: ##   0:00:00  Solver: z3
+SBY 12:37:22 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assumptions in step 0..
+SBY 12:37:22 [fv_plic_priority] engine_0.induction: ##   0:00:00  Trying induction in step 10..
+SBY 12:37:22 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assertions in step 0..
+SBY 12:37:22 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assumptions in step 1..
+SBY 12:37:22 [fv_plic_priority] engine_0.induction: ##   0:00:00  Trying induction in step 9..
+SBY 12:37:22 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assertions in step 1..
+SBY 12:37:22 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assumptions in step 2..
+SBY 12:37:22 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assertions in step 2..
+SBY 12:37:22 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assumptions in step 3..
+SBY 12:37:22 [fv_plic_priority] engine_0.induction: ##   0:00:00  Temporal induction successful.
+SBY 12:37:22 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assertions in step 3..
+SBY 12:37:22 [fv_plic_priority] engine_0.induction: ##   0:00:00  Status: passed
+SBY 12:37:22 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assumptions in step 4..
+SBY 12:37:22 [fv_plic_priority] engine_0.induction: finished (returncode=0)
+SBY 12:37:22 [fv_plic_priority] engine_0.induction: Status returned by engine for induction: pass
+SBY 12:37:22 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assertions in step 4..
+SBY 12:37:22 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assumptions in step 5..
+SBY 12:37:22 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assertions in step 5..
+SBY 12:37:22 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assumptions in step 6..
+SBY 12:37:22 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assertions in step 6..
+SBY 12:37:22 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assumptions in step 7..
+SBY 12:37:22 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assertions in step 7..
+SBY 12:37:22 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assumptions in step 8..
+SBY 12:37:23 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assertions in step 8..
+SBY 12:37:23 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assumptions in step 9..
+SBY 12:37:23 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Checking assertions in step 9..
+SBY 12:37:23 [fv_plic_priority] engine_0.basecase: ##   0:00:00  Status: passed
+SBY 12:37:23 [fv_plic_priority] engine_0.basecase: finished (returncode=0)
+SBY 12:37:23 [fv_plic_priority] engine_0.basecase: Status returned by engine for basecase: pass
+SBY 12:37:23 [fv_plic_priority] summary: Elapsed clock time [H:MM:SS (secs)]: 0:00:01 (1)
+SBY 12:37:23 [fv_plic_priority] summary: Elapsed process time [H:MM:SS (secs)]: 0:00:01 (1)
+SBY 12:37:23 [fv_plic_priority] summary: engine_0 (smtbmc z3) returned pass for basecase
+SBY 12:37:23 [fv_plic_priority] summary: engine_0 (smtbmc z3) returned pass for induction
+SBY 12:37:23 [fv_plic_priority] summary: engine_0 did not produce any traces
+SBY 12:37:23 [fv_plic_priority] summary: successful proof by k-induction.
+SBY 12:37:23 [fv_plic_priority] DONE (PASS, rc=0)

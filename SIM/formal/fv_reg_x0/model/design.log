@@ -633,6 +633,6 @@ Module fv_reg_x0 directly or indirectly contains formal properties -> setting "k
 Output filename: ../model/design.il
 
 Warnings: 49 unique messages, 97 total
-End of script. Logfile hash: 8112965379, CPU: user 0.20s system 0.02s, MEM: 14.68 MB peak
+End of script. Logfile hash: 8112965379, CPU: user 0.20s system 0.03s, MEM: 14.78 MB peak
 Yosys 0.33 (git sha1 2584903a060)
-Time spent: 25% 2x check (0 sec), 22% 5x opt_clean (0 sec), ...
+Time spent: 24% 2x check (0 sec), 21% 5x opt_clean (0 sec), ...

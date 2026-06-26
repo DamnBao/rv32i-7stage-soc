@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-<testsuite timestamp="2026-06-26T12:28:00" hostname="LAPTOP-7V2VIHT3" package="fv_uart_proto" id="0" name="default" tests="6" errors="0" failures="0" time="4" skipped="0">
+<testsuite timestamp="2026-06-26T12:37:19" hostname="LAPTOP-7V2VIHT3" package="fv_uart_proto" id="0" name="default" tests="6" errors="0" failures="0" time="4" skipped="0">
 <properties>
 <property name="os" value="Linux"/>
 <property name="expect" value="PASS"/>
@@ -20,302 +20,302 @@
 </testcase>
 <testcase classname="default" name="Property ASSERT in fv_uart_proto/dut at uart_axi.sv:422.19-423.39" time="0" type="ASSERT" location="uart_axi.sv:422.19-423.39" id="$assert$uart_axi.sv:422$135">
 </testcase>
-<system-out>SBY 12:27:56 [fv_uart_proto] Removing directory '/home/baoslinux/riscv_soc_thesis/SIM/formal/fv_uart_proto'.
-SBY 12:27:56 [fv_uart_proto] Copy '/home/baoslinux/riscv_soc_thesis/SIM/formal/../../RTL/uart_axi.sv' to '/home/baoslinux/riscv_soc_thesis/SIM/formal/fv_uart_proto/src/uart_axi.sv'.
-SBY 12:27:56 [fv_uart_proto] Copy '/home/baoslinux/riscv_soc_thesis/SIM/formal/fv_uart_proto.sv' to '/home/baoslinux/riscv_soc_thesis/SIM/formal/fv_uart_proto/src/fv_uart_proto.sv'.
-SBY 12:27:56 [fv_uart_proto] engine_0: smtbmc z3
-SBY 12:27:56 [fv_uart_proto] base: starting process &quot;cd fv_uart_proto/src; yosys -ql ../model/design.log ../model/design.ys&quot;
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\uart_rx is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WVALID is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WSTRB [3] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WSTRB [2] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WSTRB [1] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WSTRB [0] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [31] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [30] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [29] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [28] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [27] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [26] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [25] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [24] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [23] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [22] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [21] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [20] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [19] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [18] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [17] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [16] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [15] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [14] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [13] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [12] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [11] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [10] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [9] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [8] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [7] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [6] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [5] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [4] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [3] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [2] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [1] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [0] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\RREADY is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\BREADY is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWVALID is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWPROT [2] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWPROT [1] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWPROT [0] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [31] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [30] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [29] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [28] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [27] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [26] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [25] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [24] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [23] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [22] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [21] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [20] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [19] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [18] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [17] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [16] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [15] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [14] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [13] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [12] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [11] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [10] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [9] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [8] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [7] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [6] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [5] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [4] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [3] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [2] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [1] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [0] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARVALID is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARPROT [2] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARPROT [1] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARPROT [0] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [31] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [30] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [29] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [28] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [27] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [26] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [25] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [24] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [23] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [22] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [21] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [20] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [19] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [18] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [17] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [16] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [15] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [14] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [13] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [12] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [11] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [10] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [9] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [8] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [7] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [6] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [5] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [4] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [3] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [2] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [1] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [0] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] base: finished (returncode=0)
-SBY 12:27:56 [fv_uart_proto] prep: starting process &quot;cd fv_uart_proto/model; yosys -ql design_prep.log design_prep.ys&quot;
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\uart_rx is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WVALID is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WSTRB [3] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WSTRB [2] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WSTRB [1] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WSTRB [0] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [31] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [30] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [29] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [28] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [27] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [26] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [25] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [24] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [23] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [22] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [21] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [20] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [19] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [18] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [17] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [16] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [15] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [14] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [13] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [12] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [11] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [10] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [9] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [8] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [7] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [6] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [5] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [4] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [3] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [2] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [1] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [0] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\RREADY is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\BREADY is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWVALID is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWPROT [2] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWPROT [1] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWPROT [0] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [31] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [30] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [29] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [28] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [27] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [26] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [25] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [24] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [23] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [22] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [21] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [20] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [19] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [18] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [17] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [16] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [15] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [14] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [13] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [12] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [11] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [10] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [9] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [8] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [7] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [6] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [5] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [4] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [3] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [2] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [1] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [0] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARVALID is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARPROT [2] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARPROT [1] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARPROT [0] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [31] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [30] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [29] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [28] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [27] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [26] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [25] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [24] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [23] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [22] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [21] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [20] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [19] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [18] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [17] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [16] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [15] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [14] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [13] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [12] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [11] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [10] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [9] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [8] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [7] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [6] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [5] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [4] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [3] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [2] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [1] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [0] is used but has no driver.
-SBY 12:27:56 [fv_uart_proto] prep: finished (returncode=0)
-SBY 12:27:56 [fv_uart_proto] smt2: starting process &quot;cd fv_uart_proto/model; yosys -ql design_smt2.log design_smt2.ys&quot;
-SBY 12:27:56 [fv_uart_proto] smt2: finished (returncode=0)
-SBY 12:27:56 [fv_uart_proto] engine_0.basecase: starting process &quot;cd fv_uart_proto; yosys-smtbmc -s z3 --presat --noprogress -t 20  --append 0 --dump-vcd engine_0/trace.vcd --dump-yw engine_0/trace.yw --dump-vlogtb engine_0/trace_tb.v --dump-smtc engine_0/trace.smtc model/design_smt2.smt2&quot;
-SBY 12:27:56 [fv_uart_proto] engine_0.induction: starting process &quot;cd fv_uart_proto; yosys-smtbmc -s z3 --presat -i --noprogress -t 20  --append 0 --dump-vcd engine_0/trace_induct.vcd --dump-yw engine_0/trace_induct.yw --dump-vlogtb engine_0/trace_induct_tb.v --dump-smtc engine_0/trace_induct.smtc model/design_smt2.smt2&quot;
-SBY 12:27:56 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Solver: z3
-SBY 12:27:56 [fv_uart_proto] engine_0.induction: ##   0:00:00  Solver: z3
-SBY 12:27:56 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assumptions in step 0..
-SBY 12:27:56 [fv_uart_proto] engine_0.induction: ##   0:00:00  Trying induction in step 20..
-SBY 12:27:56 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assertions in step 0..
-SBY 12:27:56 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assumptions in step 1..
-SBY 12:27:56 [fv_uart_proto] engine_0.induction: ##   0:00:00  Trying induction in step 19..
-SBY 12:27:56 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assertions in step 1..
-SBY 12:27:56 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assumptions in step 2..
-SBY 12:27:56 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assertions in step 2..
-SBY 12:27:56 [fv_uart_proto] engine_0.induction: ##   0:00:00  Trying induction in step 18..
-SBY 12:27:56 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assumptions in step 3..
-SBY 12:27:56 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assertions in step 3..
-SBY 12:27:57 [fv_uart_proto] engine_0.induction: ##   0:00:00  Trying induction in step 17..
-SBY 12:27:57 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assumptions in step 4..
-SBY 12:27:57 [fv_uart_proto] engine_0.induction: ##   0:00:00  Temporal induction successful.
-SBY 12:27:57 [fv_uart_proto] engine_0.induction: ##   0:00:00  Status: passed
-SBY 12:27:57 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assertions in step 4..
-SBY 12:27:57 [fv_uart_proto] engine_0.induction: finished (returncode=0)
-SBY 12:27:57 [fv_uart_proto] engine_0.induction: Status returned by engine for induction: pass
-SBY 12:27:57 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assumptions in step 5..
-SBY 12:27:57 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assertions in step 5..
-SBY 12:27:57 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assumptions in step 6..
-SBY 12:27:57 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assertions in step 6..
-SBY 12:27:57 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assumptions in step 7..
-SBY 12:27:57 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assertions in step 7..
-SBY 12:27:57 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assumptions in step 8..
-SBY 12:27:57 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assertions in step 8..
-SBY 12:27:57 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assumptions in step 9..
-SBY 12:27:57 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assertions in step 9..
-SBY 12:27:57 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assumptions in step 10..
-SBY 12:27:57 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assertions in step 10..
-SBY 12:27:57 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assumptions in step 11..
-SBY 12:27:57 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assertions in step 11..
-SBY 12:27:57 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assumptions in step 12..
-SBY 12:27:57 [fv_uart_proto] engine_0.basecase: ##   0:00:01  Checking assertions in step 12..
-SBY 12:27:57 [fv_uart_proto] engine_0.basecase: ##   0:00:01  Checking assumptions in step 13..
-SBY 12:27:58 [fv_uart_proto] engine_0.basecase: ##   0:00:01  Checking assertions in step 13..
-SBY 12:27:58 [fv_uart_proto] engine_0.basecase: ##   0:00:01  Checking assumptions in step 14..
-SBY 12:27:58 [fv_uart_proto] engine_0.basecase: ##   0:00:01  Checking assertions in step 14..
-SBY 12:27:58 [fv_uart_proto] engine_0.basecase: ##   0:00:01  Checking assumptions in step 15..
-SBY 12:27:58 [fv_uart_proto] engine_0.basecase: ##   0:00:01  Checking assertions in step 15..
-SBY 12:27:58 [fv_uart_proto] engine_0.basecase: ##   0:00:02  Checking assumptions in step 16..
-SBY 12:27:59 [fv_uart_proto] engine_0.basecase: ##   0:00:02  Checking assertions in step 16..
-SBY 12:27:59 [fv_uart_proto] engine_0.basecase: ##   0:00:02  Checking assumptions in step 17..
-SBY 12:27:59 [fv_uart_proto] engine_0.basecase: ##   0:00:02  Checking assertions in step 17..
-SBY 12:27:59 [fv_uart_proto] engine_0.basecase: ##   0:00:02  Checking assumptions in step 18..
-SBY 12:27:59 [fv_uart_proto] engine_0.basecase: ##   0:00:02  Checking assertions in step 18..
-SBY 12:27:59 [fv_uart_proto] engine_0.basecase: ##   0:00:02  Checking assumptions in step 19..
-SBY 12:28:00 [fv_uart_proto] engine_0.basecase: ##   0:00:03  Checking assertions in step 19..
-SBY 12:28:00 [fv_uart_proto] engine_0.basecase: ##   0:00:03  Status: passed
-SBY 12:28:00 [fv_uart_proto] engine_0.basecase: finished (returncode=0)
-SBY 12:28:00 [fv_uart_proto] engine_0.basecase: Status returned by engine for basecase: pass
-SBY 12:28:00 [fv_uart_proto] summary: Elapsed clock time [H:MM:SS (secs)]: 0:00:03 (3)
-SBY 12:28:00 [fv_uart_proto] summary: Elapsed process time [H:MM:SS (secs)]: 0:00:04 (4)
-SBY 12:28:00 [fv_uart_proto] summary: engine_0 (smtbmc z3) returned pass for basecase
-SBY 12:28:00 [fv_uart_proto] summary: engine_0 (smtbmc z3) returned pass for induction
-SBY 12:28:00 [fv_uart_proto] summary: engine_0 did not produce any traces
-SBY 12:28:00 [fv_uart_proto] summary: successful proof by k-induction.
-SBY 12:28:00 [fv_uart_proto] DONE (PASS, rc=0)
+<system-out>SBY 12:37:14 [fv_uart_proto] Removing directory '/home/baoslinux/riscv_soc_thesis/SIM/formal/fv_uart_proto'.
+SBY 12:37:14 [fv_uart_proto] Copy '/home/baoslinux/riscv_soc_thesis/SIM/formal/../../RTL/uart_axi.sv' to '/home/baoslinux/riscv_soc_thesis/SIM/formal/fv_uart_proto/src/uart_axi.sv'.
+SBY 12:37:14 [fv_uart_proto] Copy '/home/baoslinux/riscv_soc_thesis/SIM/formal/fv_uart_proto.sv' to '/home/baoslinux/riscv_soc_thesis/SIM/formal/fv_uart_proto/src/fv_uart_proto.sv'.
+SBY 12:37:14 [fv_uart_proto] engine_0: smtbmc z3
+SBY 12:37:14 [fv_uart_proto] base: starting process &quot;cd fv_uart_proto/src; yosys -ql ../model/design.log ../model/design.ys&quot;
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\uart_rx is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WVALID is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WSTRB [3] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WSTRB [2] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WSTRB [1] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WSTRB [0] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [31] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [30] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [29] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [28] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [27] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [26] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [25] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [24] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [23] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [22] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [21] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [20] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [19] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [18] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [17] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [16] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [15] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [14] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [13] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [12] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [11] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [10] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [9] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [8] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [7] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [6] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [5] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [4] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [3] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [2] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [1] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\WDATA [0] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\RREADY is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\BREADY is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWVALID is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWPROT [2] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWPROT [1] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWPROT [0] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [31] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [30] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [29] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [28] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [27] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [26] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [25] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [24] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [23] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [22] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [21] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [20] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [19] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [18] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [17] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [16] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [15] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [14] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [13] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [12] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [11] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [10] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [9] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [8] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [7] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [6] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [5] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [4] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [3] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [2] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [1] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\AWADDR [0] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARVALID is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARPROT [2] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARPROT [1] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARPROT [0] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [31] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [30] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [29] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [28] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [27] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [26] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [25] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [24] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [23] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [22] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [21] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [20] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [19] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [18] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [17] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [16] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [15] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [14] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [13] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [12] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [11] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [10] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [9] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [8] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [7] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [6] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [5] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [4] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [3] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [2] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [1] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: Warning: Wire fv_uart_proto.\ARADDR [0] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] base: finished (returncode=0)
+SBY 12:37:15 [fv_uart_proto] prep: starting process &quot;cd fv_uart_proto/model; yosys -ql design_prep.log design_prep.ys&quot;
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\uart_rx is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WVALID is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WSTRB [3] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WSTRB [2] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WSTRB [1] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WSTRB [0] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [31] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [30] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [29] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [28] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [27] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [26] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [25] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [24] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [23] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [22] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [21] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [20] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [19] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [18] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [17] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [16] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [15] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [14] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [13] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [12] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [11] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [10] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [9] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [8] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [7] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [6] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [5] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [4] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [3] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [2] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [1] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\WDATA [0] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\RREADY is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\BREADY is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWVALID is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWPROT [2] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWPROT [1] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWPROT [0] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [31] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [30] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [29] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [28] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [27] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [26] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [25] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [24] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [23] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [22] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [21] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [20] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [19] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [18] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [17] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [16] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [15] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [14] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [13] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [12] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [11] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [10] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [9] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [8] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [7] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [6] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [5] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [4] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [3] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [2] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [1] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\AWADDR [0] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARVALID is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARPROT [2] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARPROT [1] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARPROT [0] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [31] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [30] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [29] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [28] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [27] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [26] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [25] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [24] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [23] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [22] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [21] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [20] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [19] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [18] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [17] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [16] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [15] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [14] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [13] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [12] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [11] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [10] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [9] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [8] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [7] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [6] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [5] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [4] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [3] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [2] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [1] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: Warning: Wire fv_uart_proto.\ARADDR [0] is used but has no driver.
+SBY 12:37:15 [fv_uart_proto] prep: finished (returncode=0)
+SBY 12:37:15 [fv_uart_proto] smt2: starting process &quot;cd fv_uart_proto/model; yosys -ql design_smt2.log design_smt2.ys&quot;
+SBY 12:37:15 [fv_uart_proto] smt2: finished (returncode=0)
+SBY 12:37:15 [fv_uart_proto] engine_0.basecase: starting process &quot;cd fv_uart_proto; yosys-smtbmc -s z3 --presat --noprogress -t 20  --append 0 --dump-vcd engine_0/trace.vcd --dump-yw engine_0/trace.yw --dump-vlogtb engine_0/trace_tb.v --dump-smtc engine_0/trace.smtc model/design_smt2.smt2&quot;
+SBY 12:37:15 [fv_uart_proto] engine_0.induction: starting process &quot;cd fv_uart_proto; yosys-smtbmc -s z3 --presat -i --noprogress -t 20  --append 0 --dump-vcd engine_0/trace_induct.vcd --dump-yw engine_0/trace_induct.yw --dump-vlogtb engine_0/trace_induct_tb.v --dump-smtc engine_0/trace_induct.smtc model/design_smt2.smt2&quot;
+SBY 12:37:15 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Solver: z3
+SBY 12:37:15 [fv_uart_proto] engine_0.induction: ##   0:00:00  Solver: z3
+SBY 12:37:15 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assumptions in step 0..
+SBY 12:37:15 [fv_uart_proto] engine_0.induction: ##   0:00:00  Trying induction in step 20..
+SBY 12:37:15 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assertions in step 0..
+SBY 12:37:15 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assumptions in step 1..
+SBY 12:37:15 [fv_uart_proto] engine_0.induction: ##   0:00:00  Trying induction in step 19..
+SBY 12:37:15 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assertions in step 1..
+SBY 12:37:15 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assumptions in step 2..
+SBY 12:37:15 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assertions in step 2..
+SBY 12:37:15 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assumptions in step 3..
+SBY 12:37:15 [fv_uart_proto] engine_0.induction: ##   0:00:00  Trying induction in step 18..
+SBY 12:37:15 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assertions in step 3..
+SBY 12:37:15 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assumptions in step 4..
+SBY 12:37:15 [fv_uart_proto] engine_0.induction: ##   0:00:00  Trying induction in step 17..
+SBY 12:37:15 [fv_uart_proto] engine_0.induction: ##   0:00:00  Temporal induction successful.
+SBY 12:37:15 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assertions in step 4..
+SBY 12:37:15 [fv_uart_proto] engine_0.induction: ##   0:00:00  Status: passed
+SBY 12:37:15 [fv_uart_proto] engine_0.induction: finished (returncode=0)
+SBY 12:37:15 [fv_uart_proto] engine_0.induction: Status returned by engine for induction: pass
+SBY 12:37:15 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assumptions in step 5..
+SBY 12:37:15 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assertions in step 5..
+SBY 12:37:15 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assumptions in step 6..
+SBY 12:37:15 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assertions in step 6..
+SBY 12:37:15 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assumptions in step 7..
+SBY 12:37:15 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assertions in step 7..
+SBY 12:37:15 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assumptions in step 8..
+SBY 12:37:15 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assertions in step 8..
+SBY 12:37:15 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assumptions in step 9..
+SBY 12:37:15 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assertions in step 9..
+SBY 12:37:15 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assumptions in step 10..
+SBY 12:37:16 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assertions in step 10..
+SBY 12:37:16 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assumptions in step 11..
+SBY 12:37:16 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assertions in step 11..
+SBY 12:37:16 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assumptions in step 12..
+SBY 12:37:16 [fv_uart_proto] engine_0.basecase: ##   0:00:00  Checking assertions in step 12..
+SBY 12:37:16 [fv_uart_proto] engine_0.basecase: ##   0:00:01  Checking assumptions in step 13..
+SBY 12:37:16 [fv_uart_proto] engine_0.basecase: ##   0:00:01  Checking assertions in step 13..
+SBY 12:37:16 [fv_uart_proto] engine_0.basecase: ##   0:00:01  Checking assumptions in step 14..
+SBY 12:37:17 [fv_uart_proto] engine_0.basecase: ##   0:00:01  Checking assertions in step 14..
+SBY 12:37:17 [fv_uart_proto] engine_0.basecase: ##   0:00:01  Checking assumptions in step 15..
+SBY 12:37:17 [fv_uart_proto] engine_0.basecase: ##   0:00:02  Checking assertions in step 15..
+SBY 12:37:17 [fv_uart_proto] engine_0.basecase: ##   0:00:02  Checking assumptions in step 16..
+SBY 12:37:17 [fv_uart_proto] engine_0.basecase: ##   0:00:02  Checking assertions in step 16..
+SBY 12:37:18 [fv_uart_proto] engine_0.basecase: ##   0:00:02  Checking assumptions in step 17..
+SBY 12:37:18 [fv_uart_proto] engine_0.basecase: ##   0:00:03  Checking assertions in step 17..
+SBY 12:37:18 [fv_uart_proto] engine_0.basecase: ##   0:00:03  Checking assumptions in step 18..
+SBY 12:37:18 [fv_uart_proto] engine_0.basecase: ##   0:00:03  Checking assertions in step 18..
+SBY 12:37:18 [fv_uart_proto] engine_0.basecase: ##   0:00:03  Checking assumptions in step 19..
+SBY 12:37:19 [fv_uart_proto] engine_0.basecase: ##   0:00:04  Checking assertions in step 19..
+SBY 12:37:19 [fv_uart_proto] engine_0.basecase: ##   0:00:04  Status: passed
+SBY 12:37:19 [fv_uart_proto] engine_0.basecase: finished (returncode=0)
+SBY 12:37:19 [fv_uart_proto] engine_0.basecase: Status returned by engine for basecase: pass
+SBY 12:37:19 [fv_uart_proto] summary: Elapsed clock time [H:MM:SS (secs)]: 0:00:04 (4)
+SBY 12:37:19 [fv_uart_proto] summary: Elapsed process time [H:MM:SS (secs)]: 0:00:04 (4)
+SBY 12:37:19 [fv_uart_proto] summary: engine_0 (smtbmc z3) returned pass for basecase
+SBY 12:37:19 [fv_uart_proto] summary: engine_0 (smtbmc z3) returned pass for induction
+SBY 12:37:19 [fv_uart_proto] summary: engine_0 did not produce any traces
+SBY 12:37:19 [fv_uart_proto] summary: successful proof by k-induction.
+SBY 12:37:19 [fv_uart_proto] DONE (PASS, rc=0)
 </system-out>
 <system-err>
 </system-err>

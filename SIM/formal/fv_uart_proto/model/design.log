@@ -790,6 +790,6 @@ Module uart_axi directly or indirectly contains formal properties -> setting "ke
 Output filename: ../model/design.il
 
 Warnings: 112 unique messages, 224 total
-End of script. Logfile hash: 671a154964, CPU: user 0.16s system 0.01s, MEM: 14.60 MB peak
+End of script. Logfile hash: 671a154964, CPU: user 0.16s system 0.01s, MEM: 14.66 MB peak
 Yosys 0.33 (git sha1 2584903a060)
 Time spent: 24% 6x opt_clean (0 sec), 19% 7x opt_expr (0 sec), ...

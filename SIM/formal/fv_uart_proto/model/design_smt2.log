@@ -134,6 +134,6 @@ Module fv_uart_proto directly or indirectly contains formal properties -> settin
 Creating SMT-LIBv2 representation of module uart_axi.
 Creating SMT-LIBv2 representation of module fv_uart_proto.
 
-End of script. Logfile hash: 708a0f53a9, CPU: user 0.02s system 0.00s, MEM: 14.95 MB peak
+End of script. Logfile hash: 708a0f53a9, CPU: user 0.01s system 0.01s, MEM: 15.01 MB peak
 Yosys 0.33 (git sha1 2584903a060)
-Time spent: 67% 2x write_smt2 (0 sec), 26% 2x read_rtlil (0 sec), ...
+Time spent: 68% 2x write_smt2 (0 sec), 23% 2x read_rtlil (0 sec), ...
