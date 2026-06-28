@@ -337,6 +337,21 @@ periph_uart: programs/prog_uart.hex system/tb_periph.vvp
 
 periph_all: periph_timer periph_gpio periph_uart
 
+# ───────── D2/D3: Misaligned Exception + MTIP path ─────────
+.PHONY: integ_misaligned integ_mtip integ_d2_d3
+
+integ_misaligned: programs/prog_misaligned.hex system/tb_periph.vvp
+	@echo "=== prog_misaligned (D2: misaligned load/store → mcause 4/6) ==="
+	$(VVP) system/tb_periph.vvp +HEX=programs/prog_misaligned.hex
+
+integ_mtip: programs/prog_mtip.hex system/tb_periph.vvp
+	@echo "=== prog_mtip (D3: MTIP path — mip[7] via timer, mcause=0x80000007) ==="
+	$(VVP) system/tb_periph.vvp +HEX=programs/prog_mtip.hex
+
+integ_d2_d3: integ_misaligned integ_mtip
+	@echo ""
+	@echo "=== D2 + D3: 2/2 PASS ==="
+
 # RV32I Formal Compliance (riscv-arch-test old-framework-2.x)
 # Runs 38 tests, reports PASS/SKIP/FAIL
 rv32i_compliance:
