@@ -241,10 +241,11 @@ module id_decoder (
             7'b1110011: begin // SYSTEM
                 if (funct3 == 3'b000) begin
                     // Sử dụng csr_addr đã khai báo bên ngoài thay vì instr[31:20]
-                    if (csr_addr == 12'h000) ecall = 1'b1;
+                    if      (csr_addr == 12'h000) ecall = 1'b1;
                     else if (csr_addr == 12'h001) ebreak = 1'b1;
                     else if (csr_addr == 12'h302) mret = 1'b1;
-                    else illegal_instr = 1'b1;
+                    else if (csr_addr == 12'h105) ;  // WFI: NOP for in-order CPU (Priv Spec §3.3.3)
+                    else                           illegal_instr = 1'b1;
                 end else begin
                     csr_we    = 1'b1;
                     wb_sel    = 2'b11;
