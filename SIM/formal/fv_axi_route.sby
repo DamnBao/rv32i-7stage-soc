@@ -1,0 +1,15 @@
+[options]
+mode prove
+depth 5
+
+[engines]
+smtbmc z3
+
+[script]
+read -formal axi_interconnect.sv
+read -formal fv_axi_route.sv
+prep -top fv_axi_route
+
+[files]
+../../RTL/axi_interconnect.sv
+fv_axi_route.sv

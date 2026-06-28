@@ -1,0 +1,15 @@
+[options]
+mode prove
+depth 3
+
+[engines]
+smtbmc z3
+
+[script]
+read -formal id_decoder.sv
+read -formal fv_decoder.sv
+prep -top fv_decoder
+
+[files]
+../../RTL/id_decoder.sv
+fv_decoder.sv

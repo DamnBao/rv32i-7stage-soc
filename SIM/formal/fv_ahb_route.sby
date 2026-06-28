@@ -1,0 +1,15 @@
+[options]
+mode prove
+depth 5
+
+[engines]
+smtbmc z3
+
+[script]
+read -formal ahb_interconnect.sv
+read -formal fv_ahb_route.sv
+prep -top fv_ahb_route
+
+[files]
+../../RTL/ahb_interconnect.sv
+fv_ahb_route.sv

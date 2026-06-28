@@ -1,0 +1,15 @@
+[options]
+mode prove
+depth 5
+
+[engines]
+smtbmc z3
+
+[script]
+read -formal mem1_stage.sv
+read -formal fv_mem1_addr.sv
+prep -top fv_mem1_addr
+
+[files]
+../../RTL/mem1_stage.sv
+fv_mem1_addr.sv

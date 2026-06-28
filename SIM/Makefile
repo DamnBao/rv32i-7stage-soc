@@ -357,6 +357,7 @@ SBY := ~/.local/bin/sby
 FORMAL_DIR := formal
 
 .PHONY: formal_x0 formal_fifo formal_uart formal_axi formal_plic formal_reg_wbr formal_stall formal_all
+.PHONY: formal_alu formal_decoder formal_mem1_addr formal_axi_route formal_ahb_route
 
 formal_x0:
 	@echo "=== Formal: register_file x0 always-zero ==="
@@ -386,9 +387,33 @@ formal_stall:
 	@echo "=== Formal: pipeline stall coherence (hazard_unit + IF1/IF2 + IF2/ID + ID/EX regs) ==="
 	cd $(FORMAL_DIR) && $(SBY) -f fv_stall_coherence.sby
 
-formal_all: formal_x0 formal_fifo formal_uart formal_axi formal_plic formal_reg_wbr formal_stall
+formal_alu:
+	@echo "=== Formal: ALU arithmetic/logic correctness (12 properties) ==="
+	cd $(FORMAL_DIR) && $(SBY) -f fv_alu.sby
+
+formal_decoder:
+	@echo "=== Formal: id_decoder encoding correctness (8 properties) ==="
+	cd $(FORMAL_DIR) && $(SBY) -f fv_decoder.sby
+
+formal_mem1_addr:
+	@echo "=== Formal: mem1_stage address decode + misaligned detection (7 properties) ==="
+	cd $(FORMAL_DIR) && $(SBY) -f fv_mem1_addr.sby
+
+formal_axi_route:
+	@echo "=== Formal: AXI interconnect routing mutex + correctness (6 properties) ==="
+	cd $(FORMAL_DIR) && $(SBY) -f fv_axi_route.sby
+
+formal_ahb_route:
+	@echo "=== Formal: AHB interconnect routing mutex + correctness (5 properties) ==="
+	cd $(FORMAL_DIR) && $(SBY) -f fv_ahb_route.sby
+
+formal_datapath: formal_alu formal_decoder formal_mem1_addr formal_axi_route formal_ahb_route
 	@echo ""
-	@echo "=== Formal verification: 7/7 PROVED ==="
+	@echo "=== Formal datapath: 5/5 PROVED ==="
+
+formal_all: formal_x0 formal_fifo formal_uart formal_axi formal_plic formal_reg_wbr formal_stall formal_datapath
+	@echo ""
+	@echo "=== Formal verification: 12/12 PROVED (7 infra + 5 datapath) ==="
 
 # ───────── Run All ─────────
 .PHONY: all clean
