@@ -2219,6 +2219,51 @@ Kiểm tra full soc_top với real peripherals; programs chạy trên CPU thật
 
 ---
 
+## 3.11 Out-of-Range Address & FENCE/WFI System Tests (D5 + D6)
+
+### D5 — prog_oob_addr: Unmapped Address → Load/Store Access Fault
+
+**Testbench:** `system/tb_periph.vvp` (+HEX) | **Make:** `make integ_oob`
+**DUT:** `mem1_stage.sv` — path `fault_sel → unmapped_fault → load/store_access_fault`
+**Verdict:** x31==1 tại EBREAK → **PASS**
+
+**Vùng địa chỉ không được ánh xạ:** 0x4000_0000 — không khớp DMEM/AXI/AHB/PLIC/IMEM
+- `fault_sel = ~dmem_sel & ~axi_sel & ~ahb_sel & ~plic_sel = 1`
+- `unmapped_fault = is_mem_access_valid & fault_sel & (state==IDLE) = 1`
+
+| TC | Instruction | Địa chỉ | fault_sel | mcause kỳ vọng | Kết quả |
+|----|-------------|---------|-----------|---------------|---------|
+| 1 | LW x0, 0(x2) | 0x4000_0000 | 1 → unmapped_fault | 5 (Load Access Fault) | PASS |
+| 2 | SW x0, 0(x2) | 0x4000_0000 | 1 → unmapped_fault | 7 (Store Access Fault) | PASS |
+
+**Cơ chế tương tự D2:** handler kiểm tra mcause, advance mepc+4, tăng counter. Pass khi counter==2.
+
+---
+
+### D6 — prog_fence_wfi: FENCE + WFI as NOP
+
+**Testbench:** `system/tb_periph.vvp` (+HEX) | **Make:** `make integ_fence_wfi`
+**RTL Fix:** `id_decoder.sv` — WFI (csr_addr==12'h105) trước đây → `illegal_instr=1`; sửa thành NOP
+**Verdict:** x31==1 tại EBREAK (không có exception) → **PASS**
+
+**Lý do WFI = NOP hợp lệ:** RISC-V Privileged Spec §3.3.3: "A WFI instruction MAY be treated as a NOP." Với CPU in-order không có sleep mode, đây là cách triển khai đúng.
+
+| TC | Instruction | Kỳ vọng | Kết quả |
+|----|-------------|---------|---------|
+| 1 | `fence` (0x0000000F) | Không exception; pipeline tiếp tục | PASS |
+| 2 | `wfi` (0x10500073) | Không exception (NOP sau fix); pipeline tiếp tục | PASS |
+| 3 | `add x12, x10, x11` sau WFI | x12 == 100 (42+58) — không có pipeline corruption | PASS |
+
+**RTL diff (id_decoder.sv):**
+```sv
+// Trước (bug): WFI → illegal_instr = 1'b1
+// Sau  (fix):
+else if (csr_addr == 12'h105) ;  // WFI: NOP for in-order CPU (Priv Spec §3.3.3)
+else                           illegal_instr = 1'b1;
+```
+
+---
+
 ## 3.10 Exception & MTIP System Tests (D2 + D3)
 
 **Mục tiêu:** Kiểm tra end-to-end hai gap RTL mới được thêm trong session này.
@@ -2282,6 +2327,8 @@ Kiểm tra full soc_top với real peripherals; programs chạy trên CPU thật
 | **Load Address Misaligned** | **Exception** | **4** | **`prog_misaligned`** (LH/LW tại địa chỉ lẻ) | **PASS** |
 | Load Access Fault — AXI SLVERR | Exception | 5 | `tb_soc_bus_err` (prog_read_err) | PASS |
 | **Store Address Misaligned** | **Exception** | **6** | **`prog_misaligned`** (SH/SW tại địa chỉ lẻ) | **PASS** |
+| **Load Access Fault — Unmapped Addr** | **Exception** | **5** | **`prog_oob_addr`** (LW tại 0x4000_0000 → fault_sel=1) | **PASS** |
+| **Store Access Fault — Unmapped Addr** | **Exception** | **7** | **`prog_oob_addr`** (SW tại 0x4000_0000 → fault_sel=1) | **PASS** |
 | Store Access Fault — AXI SLVERR | Exception | 7 | `tb_soc_bus_err` (prog_bus_err) | PASS |
 | Load Access Fault — AHB HRESP ERROR | Exception | 5 | `tb_soc_ahb_err` (prog_ahb_load_err) | PASS |
 | Store Access Fault — AHB HRESP ERROR | Exception | 7 | `tb_soc_ahb_err` (prog_ahb_store_err) | PASS |

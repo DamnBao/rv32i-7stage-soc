@@ -329,6 +329,8 @@ Dùng chung cho tất cả peripheral (AXI và AHB). Chuẩn tham chiếu: OpenT
 | Formal     | formal_x0 / reg_wbr / stall / fifo / axi / plic / uart | 7 jobs | PROVED | SymbiYosys k-induction (smtbmc z3); original 7 infra jobs |
 | **Formal D1** | **formal_alu / decoder / mem1_addr / axi_route / ahb_route** | **5 jobs** | **PROVED** | Datapath: ALU 12 props, decoder 8 props, mem1 addr 6 props, routing mutex |
 | **Formal D4** | **formal_precise_exc**             | **1 job**        | **PROVED** | Precise exception: bus_stall gates exception/interrupt flush; 6 props |
+| **D5**     | **integ_oob** (prog_oob_addr)      | **1**            | **PASS** | LW/SW tại 0x4000_0000 → fault_sel=1 → mcause 5/7 (unmapped fault) |
+| **D6**     | **integ_fence_wfi** (prog_fence_wfi) | **1**          | **PASS** | FENCE+WFI as NOP; WFI bug fixed (id_decoder.sv csr_addr==0x105) |
 
 ---
 
@@ -375,8 +377,12 @@ Testbench: tb_metrics (4 programs qua soc_top)
 | Illegal Instruction            | Exception | 2                   | tb_zicsr                                                 | PASS    |
 | **Load Address Misaligned**   | **Exception** | **4**           | **prog_misaligned** (LH/LW tại địa chỉ lẻ/không căn)   | **PASS** |
 | Load Access Fault (AXI SLVERR)| Exception | 5                   | tb_soc_bus_err                                           | PASS    |
+| **Load Access Fault (Unmapped)** | **Exception** | **5**        | **prog_oob_addr** (LW tại 0x4000_0000 → fault_sel=1)    | **PASS** |
 | **Store Address Misaligned**  | **Exception** | **6**           | **prog_misaligned** (SH/SW tại địa chỉ lẻ/không căn)   | **PASS** |
 | Store Access Fault (AXI SLVERR)| Exception | 7                   | tb_soc_bus_err                                           | PASS    |
+| **Store Access Fault (Unmapped)** | **Exception** | **7**       | **prog_oob_addr** (SW tại 0x4000_0000 → fault_sel=1)    | **PASS** |
+| **FENCE as NOP**              | **ISA note** | **—**           | **prog_fence_wfi** (FENCE không exception; pipeline intact) | **PASS** |
+| **WFI as NOP (id_decoder fix)** | **ISA note** | **—**         | **prog_fence_wfi** (WFI bug fixed → csr_addr==0x105 → NOP) | **PASS** |
 | Load Access Fault (AHB ERROR) | Exception | 5                   | tb_soc_ahb_err                                           | PASS    |
 | Store Access Fault (AHB ERROR)| Exception | 7                   | tb_soc_ahb_err                                           | PASS    |
 | ECALL from M-mode             | Exception | 11                  | tb_zicsr, prog_csr_hazard                                | PASS    |
