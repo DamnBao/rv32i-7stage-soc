@@ -217,6 +217,7 @@ module soc_top #(
     logic        mem1_csr_imm_sel;
     logic        mem1_ecall, mem1_ebreak, mem1_mret, mem1_illegal;
     logic        mem1_load_fault, mem1_store_fault;
+    logic        mem1_load_misaligned, mem1_store_misaligned;
     logic        bus_stall_req;
 
     // ── DMEM interface ───────────────────────────────────────
@@ -257,6 +258,7 @@ module soc_top #(
     logic        mem1mem2_csr_imm_sel;
     logic        mem1mem2_ecall, mem1mem2_ebreak, mem1mem2_mret, mem1mem2_illegal;
     logic        mem1mem2_load_fault, mem1mem2_store_fault;
+    logic        mem1mem2_load_misaligned, mem1mem2_store_misaligned;
 
     // ── MEM2 stage outputs ───────────────────────────────────
     logic [31:0] mem2_pc, mem2_alu_result, mem2_mem_rdata;
@@ -270,6 +272,7 @@ module soc_top #(
     logic        mem2_csr_imm_sel;
     logic        mem2_ecall, mem2_ebreak, mem2_mret, mem2_illegal;
     logic        mem2_load_fault, mem2_store_fault;
+    logic        mem2_load_misaligned, mem2_store_misaligned;
 
     // ── MEM2/WB pipeline register ────────────────────────────
     logic [31:0] wb_pc, wb_alu_result, wb_mem_rdata;
@@ -283,6 +286,7 @@ module soc_top #(
     logic        wb_csr_imm_sel;
     logic        wb_ecall, wb_ebreak, wb_mret, wb_illegal;
     logic        wb_load_fault, wb_store_fault;
+    logic        wb_load_misaligned, wb_store_misaligned;
 
     // ── WB stage outputs → register file ────────────────────
     logic [4:0]  rf_wr_addr;
@@ -293,6 +297,11 @@ module soc_top #(
     logic [31:0] csr_rdata;
     logic        zicsr_flush;
     logic [31:0] zicsr_pc;
+
+    // ── Timer interrupt (direct path → MTIP, bypassing PLIC) ──
+    // axi_S1_irq = Timer AXI (slave 1); also fed to PLIC src[1] for MEIP backward compat
+    logic        mtip_wire;
+    assign mtip_wire = axi_S1_irq;
 
     // ── PLIC interface (mem1_stage ↔ plic) ──────────────────
     logic        plic_re, plic_we;
@@ -703,9 +712,11 @@ module soc_top #(
         .plic_addr         (plic_addr),         // output: PLIC register address [23:0]
         .plic_wdata        (plic_wdata),        // output: PLIC write data
         // ── Control / Status ──
-        .bus_stall_req     (bus_stall_req),     // output: stall pipeline until bus done
-        .load_access_fault (mem1_load_fault),   // output: unmapped load → zicsr exception
-        .store_access_fault(mem1_store_fault),  // output: unmapped store → zicsr exception
+        .bus_stall_req      (bus_stall_req),          // output: stall pipeline until bus done
+        .load_access_fault  (mem1_load_fault),        // output: unmapped/bus-err load → zicsr
+        .store_access_fault (mem1_store_fault),       // output: unmapped/bus-err store → zicsr
+        .load_misaligned_out(mem1_load_misaligned),   // output: misaligned load  → zicsr mcause=4
+        .store_misaligned_out(mem1_store_misaligned), // output: misaligned store → zicsr mcause=6
         // ── Outputs to MEM1/MEM2 register ──
         .pc_out            (mem1_pc),
         .alu_result_out    (mem1_alu_result),
@@ -769,8 +780,10 @@ module soc_top #(
         .ebreak_in         (mem1_ebreak),
         .mret_in           (mem1_mret),
         .illegal_instr_in  (mem1_illegal),
-        .load_fault_in     (mem1_load_fault),
-        .store_fault_in    (mem1_store_fault),
+        .load_fault_in        (mem1_load_fault),
+        .store_fault_in       (mem1_store_fault),
+        .load_misaligned_in   (mem1_load_misaligned),
+        .store_misaligned_in  (mem1_store_misaligned),
         // ── Outputs to MEM2 stage ──
         .pc_out            (mem1mem2_pc),
         .alu_result_out    (mem1mem2_alu_result),
@@ -791,8 +804,10 @@ module soc_top #(
         .ebreak_out        (mem1mem2_ebreak),
         .mret_out          (mem1mem2_mret),
         .illegal_instr_out (mem1mem2_illegal),
-        .load_fault_out    (mem1mem2_load_fault),
-        .store_fault_out   (mem1mem2_store_fault)
+        .load_fault_out       (mem1mem2_load_fault),
+        .store_fault_out      (mem1mem2_store_fault),
+        .load_misaligned_out  (mem1mem2_load_misaligned),
+        .store_misaligned_out (mem1mem2_store_misaligned)
     );
 
     //=========================================================
@@ -819,8 +834,10 @@ module soc_top #(
         .ebreak_in         (mem1mem2_ebreak),
         .mret_in           (mem1mem2_mret),
         .illegal_instr_in  (mem1mem2_illegal),
-        .load_fault_in     (mem1mem2_load_fault),
-        .store_fault_in    (mem1mem2_store_fault),
+        .load_fault_in        (mem1mem2_load_fault),
+        .store_fault_in       (mem1mem2_store_fault),
+        .load_misaligned_in   (mem1mem2_load_misaligned),
+        .store_misaligned_in  (mem1mem2_store_misaligned),
         .dmem_rdata        (dmem_rdata),          // input:  DMEM read data (1-cycle from DMEM)
         .plic_rdata        (plic_rdata),          // input:  PLIC read data (1-cycle from PLIC)
         // ── Outputs to MEM2/WB register ──
@@ -840,8 +857,10 @@ module soc_top #(
         .ebreak_out        (mem2_ebreak),
         .mret_out          (mem2_mret),
         .illegal_instr_out (mem2_illegal),
-        .load_fault_out    (mem2_load_fault),
-        .store_fault_out   (mem2_store_fault)
+        .load_fault_out       (mem2_load_fault),
+        .store_fault_out      (mem2_store_fault),
+        .load_misaligned_out  (mem2_load_misaligned),
+        .store_misaligned_out (mem2_store_misaligned)
     );
 
     //=========================================================
@@ -869,8 +888,10 @@ module soc_top #(
         .ebreak_in         (mem2_ebreak),
         .mret_in           (mem2_mret),
         .illegal_instr_in  (mem2_illegal),
-        .load_fault_in     (mem2_load_fault),
-        .store_fault_in    (mem2_store_fault),
+        .load_fault_in        (mem2_load_fault),
+        .store_fault_in       (mem2_store_fault),
+        .load_misaligned_in   (mem2_load_misaligned),
+        .store_misaligned_in  (mem2_store_misaligned),
         // ── Outputs to WB stage + Zicsr ──
         .pc_out            (wb_pc),               // output: PC of retiring instruction
         .alu_result_out    (wb_alu_result),
@@ -888,8 +909,10 @@ module soc_top #(
         .ebreak_out        (wb_ebreak),
         .mret_out          (wb_mret),
         .illegal_instr_out (wb_illegal),
-        .load_fault_out    (wb_load_fault),
-        .store_fault_out   (wb_store_fault)
+        .load_fault_out       (wb_load_fault),
+        .store_fault_out      (wb_store_fault),
+        .load_misaligned_out  (wb_load_misaligned),
+        .store_misaligned_out (wb_store_misaligned)
     );
 
     //=========================================================
@@ -927,11 +950,14 @@ module soc_top #(
         .wb_ecall         (wb_ecall),         // input:  ECALL at WB → environment call exception
         .wb_ebreak        (wb_ebreak),        // input:  EBREAK at WB → breakpoint exception
         .wb_mret          (wb_mret),          // input:  MRET at WB  → return from trap
-        .wb_illegal_instr (wb_illegal),       // input:  illegal instruction exception
-        .wb_load_fault    (wb_load_fault),    // input:  load access fault from MEM1
-        .wb_store_fault   (wb_store_fault),   // input:  store access fault from MEM1
-        // ── External interrupt source ──
+        .wb_illegal_instr    (wb_illegal),            // input:  illegal instruction exception
+        .wb_load_fault       (wb_load_fault),         // input:  load access fault from MEM1
+        .wb_store_fault      (wb_store_fault),        // input:  store access fault from MEM1
+        .wb_load_misaligned  (wb_load_misaligned),    // input:  load address misaligned (mcause=4)
+        .wb_store_misaligned (wb_store_misaligned),   // input:  store address misaligned (mcause=6)
+        // ── External interrupt sources ──
         .meip_in          (plic_meip),        // input:  MEIP from PLIC (all sources arbitrated)
+        .mtip_in          (mtip_wire),        // input:  MTIP from Timer AXI (direct, HW-driven)
         // ── Bus stall interlock ──
         .bus_stall_req    (bus_stall_req),    // input:  suppress trap until bus transaction ends
         // ── Outputs ──

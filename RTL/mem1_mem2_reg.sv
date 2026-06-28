@@ -33,6 +33,8 @@ module mem1_mem2_reg (
     input  logic        illegal_instr_in,
     input  logic        load_fault_in,
     input  logic        store_fault_in,
+    input  logic        load_misaligned_in,
+    input  logic        store_misaligned_in,
 
     //----------------- OUTPUTS SANG MEM2 STAGE -----------------
     output logic [31:0] pc_out,
@@ -55,7 +57,9 @@ module mem1_mem2_reg (
     output logic        mret_out,
     output logic        illegal_instr_out,
     output logic        load_fault_out,
-    output logic        store_fault_out
+    output logic        store_fault_out,
+    output logic        load_misaligned_out,
+    output logic        store_misaligned_out
 );
 
     always_ff @(posedge clk or negedge rst_n) begin
@@ -79,8 +83,10 @@ module mem1_mem2_reg (
             ebreak_out        <= 1'b0;
             mret_out          <= 1'b0;
             illegal_instr_out <= 1'b0;
-            load_fault_out    <= 1'b0;
-            store_fault_out   <= 1'b0;
+            load_fault_out      <= 1'b0;
+            store_fault_out     <= 1'b0;
+            load_misaligned_out <= 1'b0;
+            store_misaligned_out<= 1'b0;
 
         end else if (flush) begin
             pc_out            <= '0;
@@ -90,8 +96,10 @@ module mem1_mem2_reg (
             ebreak_out        <= 1'b0;
             mret_out          <= 1'b0;
             illegal_instr_out <= 1'b0;
-            load_fault_out    <= 1'b0;
-            store_fault_out   <= 1'b0;
+            load_fault_out      <= 1'b0;
+            store_fault_out     <= 1'b0;
+            load_misaligned_out <= 1'b0;
+            store_misaligned_out<= 1'b0;
 
         end else if (!stall) begin
             pc_out            <= pc_in;
@@ -113,8 +121,10 @@ module mem1_mem2_reg (
             ebreak_out        <= ebreak_in;
             mret_out          <= mret_in;
             illegal_instr_out <= illegal_instr_in;
-            load_fault_out    <= load_fault_in;
-            store_fault_out   <= store_fault_in;
+            load_fault_out      <= load_fault_in;
+            store_fault_out     <= store_fault_in;
+            load_misaligned_out <= load_misaligned_in;
+            store_misaligned_out<= store_misaligned_in;
         end
         // stall=1, flush=0: giữ nguyên toàn bộ
     end

@@ -104,7 +104,9 @@ module mem1_stage (
     output logic        ecall_out,
     output logic        ebreak_out,
     output logic        mret_out,
-    output logic        illegal_instr_out
+    output logic        illegal_instr_out,
+    output logic        load_misaligned_out,   // mcause=4: Load Address Misaligned
+    output logic        store_misaligned_out   // mcause=6: Store Address Misaligned
 );
 
     //=========================================================
@@ -126,6 +128,19 @@ module mem1_stage (
 
     logic is_mem_access;
     assign is_mem_access = mem_read_in | mem_write_in;
+
+    // Misaligned detection (RV32I §2.6): halfword needs addr[0]=0, word needs addr[1:0]=00
+    logic addr_0, addr_1;
+    assign addr_0 = addr_in[0];
+    assign addr_1 = addr_in[1];
+    logic misaligned;
+    assign misaligned = (mem_size_in == 2'b01) ? addr_0 :
+                        (mem_size_in == 2'b10) ? (addr_0 | addr_1) :
+                        1'b0;
+
+    // Only valid (aligned) accesses proceed to bus
+    logic is_mem_access_valid;
+    assign is_mem_access_valid = is_mem_access & ~misaligned;
 
     //=========================================================
     // 2. Bus Transaction FSM
@@ -155,18 +170,19 @@ module mem1_stage (
     //=========================================================
     // 3. Bus Stall (Combinational)
     // Assert ngay khi phát hiện giao dịch bus, giữ đến khi có phản hồi
+    // Misaligned accesses never enter AXI_WAIT/AHB_WAIT so no extra guard needed.
     //=========================================================
     assign bus_stall_req =
-        (is_mem_access & (axi_sel | ahb_sel) & (state == IDLE)) |
-        (state == AXI_WAIT & ~axi_resp_valid)                    |
+        (is_mem_access_valid & (axi_sel | ahb_sel) & (state == IDLE)) |
+        (state == AXI_WAIT & ~axi_resp_valid)                          |
         (state == AHB_WAIT &  resp_fifo_rd_empty);
 
     //=========================================================
     // 4. DMEM Interface
     // Tín hiệu tổ hợp — DMEM đồng bộ hóa nội bộ, data ra ở MEM2
     //=========================================================
-    assign dmem_re    = is_mem_access & dmem_sel & mem_read_in;
-    assign dmem_we    = is_mem_access & dmem_sel & mem_write_in;
+    assign dmem_re    = is_mem_access_valid & dmem_sel & mem_read_in;
+    assign dmem_we    = is_mem_access_valid & dmem_sel & mem_write_in;
     assign dmem_addr  = addr_in;
     assign dmem_wdata = wdata_in;
     assign dmem_size  = mem_size_in;
@@ -175,7 +191,7 @@ module mem1_stage (
     // 5. AXI Interface
     // Giữ req_valid suốt AXI_WAIT (AXI Interface latch ở chu kỳ đầu)
     //=========================================================
-    assign axi_req_valid = is_mem_access & axi_sel & (state == IDLE || state == AXI_WAIT);
+    assign axi_req_valid = is_mem_access_valid & axi_sel & (state == IDLE || state == AXI_WAIT);
     assign axi_req_addr  = addr_in;
     assign axi_req_we    = mem_write_in;
     assign axi_req_wdata = wdata_in;
@@ -186,14 +202,14 @@ module mem1_stage (
     // wr_en chỉ assert 1 chu kỳ trong IDLE — sau đó FSM chuyển sang AHB_WAIT
     // nên wr_en=0, không ghi lại vào FIFO
     //=========================================================
-    assign req_fifo_wr_en   = is_mem_access & ahb_sel & (state == IDLE);
+    assign req_fifo_wr_en   = is_mem_access_valid & ahb_sel & (state == IDLE);
     assign req_fifo_wr_data = {addr_in, wdata_in, mem_write_in, mem_size_in};
 
     //=========================================================
     // 6b. PLIC Interface (synchronous, 1 cycle — không cần FSM/stall)
     //=========================================================
-    assign plic_re    = is_mem_access & plic_sel & mem_read_in;
-    assign plic_we    = is_mem_access & plic_sel & mem_write_in;
+    assign plic_re    = is_mem_access_valid & plic_sel & mem_read_in;
+    assign plic_we    = is_mem_access_valid & plic_sel & mem_write_in;
     assign plic_addr  = addr_in[23:0];
     assign plic_wdata = wdata_in;
 
@@ -228,12 +244,17 @@ module mem1_stage (
     // 9. Fault Signals → Zicsr
     //=========================================================
     logic unmapped_fault, bus_err;
-    assign unmapped_fault = is_mem_access & fault_sel & (state == IDLE);
+    // Unmapped fault: only on aligned accesses (misaligned takes exception priority)
+    assign unmapped_fault = is_mem_access_valid & fault_sel & (state == IDLE);
     assign bus_err = (state == AXI_WAIT & axi_resp_valid & axi_resp_err) |
                      (state == AHB_WAIT & ~resp_fifo_rd_empty & ahb_resp_err);
 
     assign load_access_fault  = (unmapped_fault | bus_err) & mem_read_in;
     assign store_access_fault = (unmapped_fault | bus_err) & mem_write_in;
+
+    // Misaligned exceptions (RV32I §2.6): mcause 4 (load) / 6 (store)
+    assign load_misaligned_out  = is_mem_access & misaligned & mem_read_in;
+    assign store_misaligned_out = is_mem_access & misaligned & mem_write_in;
 
     //=========================================================
     // 10. Pass-through → MEM1/MEM2 Register

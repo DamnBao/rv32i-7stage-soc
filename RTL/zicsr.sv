@@ -6,7 +6,7 @@
 //   mtvec   (0x305): BASE[31:2], MODE[1:0] (0=Direct, 1=Vectored)
 //   mepc    (0x341): Exception PC (IALIGN: bits [1:0] always 0 for RV32)
 //   mcause  (0x342): Interrupt[31], Cause[30:0]
-//   mip     (0x344): MSIP[3](rw), MEIP[11](ro=hw-driven)
+//   mip     (0x344): MSIP[3](rw), MTIP[7](ro=hw-driven), MEIP[11](ro=hw-driven)
 //
 // Exception handling (at WB stage, precise):
 //   mepc   = wb_pc
@@ -25,6 +25,8 @@
 //
 // Interrupt priority: MEI (11) > MTI (7) > MSI (3)
 // Exception priority: exceptions take priority over interrupts
+// Exception cause codes: illegal=2, breakpoint=3, load_misaligned=4, load_fault=5,
+//                        store_misaligned=6, store_fault=7, ecall=11
 //
 // 2-FF Synchronizer for AHB interrupt included in this module.
 //
@@ -49,8 +51,13 @@ module zicsr (
     input  logic        wb_load_fault,
     input  logic        wb_store_fault,
 
+    //----------------- FAULT TỪ MEM PIPELINE -----------------
+    input  logic        wb_load_misaligned,   // mcause=4: Load Address Misaligned
+    input  logic        wb_store_misaligned,  // mcause=6: Store Address Misaligned
+
     //----------------- NGẮT NGOÀI -----------------
     input  logic        meip_in,        // Từ PLIC (đã arbiter priority, đã sync) → MEIP
+    input  logic        mtip_in,        // Timer interrupt pending (direct from timer, HW-driven)
 
     //----------------- TỪ HAZARD UNIT -----------------
     input  logic        bus_stall_req,  // Không flush khi đang có bus transaction
@@ -85,12 +92,13 @@ module zicsr (
     assign mtvec_mode = mtvec[1:0];
     assign mtvec_base = {mtvec[31:2], 2'b00};
 
-    // mip full value (MEIP read-only from hardware — driven by PLIC output)
-    logic mip_meip;
+    // mip: MEIP[11] and MTIP[7] are read-only, hardware-driven (Privileged Spec §3.1.9)
+    logic mip_meip, mip_mtip;
     assign mip_meip = meip_in;
+    assign mip_mtip = mtip_in;
 
     logic [31:0] mip_val;
-    assign mip_val = {20'b0, mip_meip, 3'b0, 1'b0, 3'b0, mip_msip, 3'b0};
+    assign mip_val = {20'b0, mip_meip, 3'b0, mip_mtip, 3'b0, mip_msip, 3'b0};
 
     //=========================================================
     // 3. CSR Read (Combinational)
@@ -131,17 +139,19 @@ module zicsr (
     //=========================================================
     // 5. Interrupt / Exception Detection
     //=========================================================
-    logic int_mei, int_msi;
-    assign int_mei = mip_meip & mie_meie;
-    assign int_msi = mip_msip & mie_msie;
+    logic int_mei, int_mti, int_msi;
+    assign int_mei = mip_meip & mie_meie;  // Machine External Interrupt
+    assign int_mti = mip_mtip & mie_mtie;  // Machine Timer Interrupt
+    assign int_msi = mip_msip & mie_msie;  // Machine Software Interrupt
 
     logic any_exception;
     assign any_exception = wb_ecall | wb_ebreak | wb_illegal_instr |
-                           wb_load_fault | wb_store_fault;
+                           wb_load_fault  | wb_store_fault |
+                           wb_load_misaligned | wb_store_misaligned;
 
     logic take_exception, take_interrupt;
     assign take_exception = any_exception & ~bus_stall_req;
-    assign take_interrupt = ~any_exception & mstatus_mie & (int_mei | int_msi) & ~bus_stall_req;
+    assign take_interrupt = ~any_exception & mstatus_mie & (int_mei | int_mti | int_msi) & ~bus_stall_req;
 
     //=========================================================
     // 6. mcause Value (Combinational)
@@ -149,15 +159,18 @@ module zicsr (
     logic [31:0] next_mcause;
     always_comb begin
         if (take_exception) begin
-            if      (wb_illegal_instr) next_mcause = 32'd2;   // Illegal instruction
-            else if (wb_ebreak)        next_mcause = 32'd3;   // Breakpoint
-            else if (wb_load_fault)    next_mcause = 32'd5;   // Load access fault
-            else if (wb_store_fault)   next_mcause = 32'd7;   // Store access fault
-            else                       next_mcause = 32'd11;  // ecall from M-mode
+            if      (wb_illegal_instr)   next_mcause = 32'd2;   // Illegal instruction
+            else if (wb_ebreak)          next_mcause = 32'd3;   // Breakpoint
+            else if (wb_load_misaligned) next_mcause = 32'd4;   // Load address misaligned
+            else if (wb_load_fault)      next_mcause = 32'd5;   // Load access fault
+            else if (wb_store_misaligned)next_mcause = 32'd6;   // Store address misaligned
+            else if (wb_store_fault)     next_mcause = 32'd7;   // Store access fault
+            else                         next_mcause = 32'd11;  // ecall from M-mode
         end else begin
-            // Interrupt cause: bit31=1
-            if   (int_mei) next_mcause = {1'b1, 31'd11};     // Machine external
-            else           next_mcause = {1'b1, 31'd3};      // Machine software
+            // Interrupt cause: bit31=1, priority MEI > MTI > MSI
+            if      (int_mei) next_mcause = {1'b1, 31'd11};    // Machine external
+            else if (int_mti) next_mcause = {1'b1, 31'd7};     // Machine timer
+            else              next_mcause = {1'b1, 31'd3};     // Machine software
         end
     end
 
@@ -169,8 +182,9 @@ module zicsr (
     // Vectored interrupts: BASE + 4*cause
     logic [31:0] int_vec_addr;
     always_comb begin
-        if (int_mei) int_vec_addr = mtvec_base + 32'd44;    // 4*11
-        else         int_vec_addr = mtvec_base + 32'd12;    // 4*3
+        if      (int_mei) int_vec_addr = mtvec_base + 32'd44;  // 4*11
+        else if (int_mti) int_vec_addr = mtvec_base + 32'd28;  // 4*7
+        else              int_vec_addr = mtvec_base + 32'd12;  // 4*3
     end
 
     logic mtvec_mode0;

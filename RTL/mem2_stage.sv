@@ -31,6 +31,8 @@ module mem2_stage (
     input  logic        illegal_instr_in,
     input  logic        load_fault_in,
     input  logic        store_fault_in,
+    input  logic        load_misaligned_in,
+    input  logic        store_misaligned_in,
 
     //----------------- DMEM (kết nối trực tiếp, không qua pipeline reg) -----------------
     input  logic [31:0] dmem_rdata,      // Output đã register của DMEM, valid ở chu kỳ MEM2
@@ -56,7 +58,9 @@ module mem2_stage (
     output logic        mret_out,
     output logic        illegal_instr_out,
     output logic        load_fault_out,
-    output logic        store_fault_out
+    output logic        store_fault_out,
+    output logic        load_misaligned_out,
+    output logic        store_misaligned_out
 );
 
     //=========================================================
@@ -139,7 +143,9 @@ module mem2_stage (
     assign ebreak_out      = ebreak_in;
     assign mret_out        = mret_in;
     assign illegal_instr_out = illegal_instr_in;
-    assign load_fault_out  = load_fault_in;
-    assign store_fault_out = store_fault_in;
+    assign load_fault_out       = load_fault_in;
+    assign store_fault_out      = store_fault_in;
+    assign load_misaligned_out  = load_misaligned_in;
+    assign store_misaligned_out = store_misaligned_in;
 
 endmodule
