@@ -373,6 +373,7 @@ FORMAL_DIR := formal
 
 .PHONY: formal_x0 formal_fifo formal_uart formal_axi formal_plic formal_reg_wbr formal_stall formal_all
 .PHONY: formal_alu formal_decoder formal_mem1_addr formal_axi_route formal_ahb_route
+.PHONY: formal_precise_exc
 
 formal_x0:
 	@echo "=== Formal: register_file x0 always-zero ==="
@@ -422,13 +423,17 @@ formal_ahb_route:
 	@echo "=== Formal: AHB interconnect routing mutex + correctness (5 properties) ==="
 	cd $(FORMAL_DIR) && $(SBY) -f fv_ahb_route.sby
 
+formal_precise_exc:
+	@echo "=== Formal: zicsr precise exception — no trap during bus transaction (6 properties) ==="
+	cd $(FORMAL_DIR) && $(SBY) -f fv_precise_exc.sby
+
 formal_datapath: formal_alu formal_decoder formal_mem1_addr formal_axi_route formal_ahb_route
 	@echo ""
 	@echo "=== Formal datapath: 5/5 PROVED ==="
 
-formal_all: formal_x0 formal_fifo formal_uart formal_axi formal_plic formal_reg_wbr formal_stall formal_datapath
+formal_all: formal_x0 formal_fifo formal_uart formal_axi formal_plic formal_reg_wbr formal_stall formal_datapath formal_precise_exc
 	@echo ""
-	@echo "=== Formal verification: 12/12 PROVED (7 infra + 5 datapath) ==="
+	@echo "=== Formal verification: 13/13 PROVED (7 infra + 5 datapath + 1 precise-exc) ==="
 
 # ───────── Run All ─────────
 .PHONY: all clean

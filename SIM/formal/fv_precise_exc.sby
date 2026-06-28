@@ -1,0 +1,15 @@
+[options]
+mode prove
+depth 5
+
+[engines]
+smtbmc z3
+
+[script]
+read -formal zicsr.sv
+read -formal fv_precise_exc.sv
+prep -top fv_precise_exc
+
+[files]
+../../RTL/zicsr.sv
+fv_precise_exc.sv

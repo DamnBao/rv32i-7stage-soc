@@ -328,6 +328,7 @@ Dùng chung cho tất cả peripheral (AXI và AHB). Chuẩn tham chiếu: OpenT
 | Compliance | riscv-arch-test                    | 37 PASS + 1 SKIP | PASS     | jal-01 SKIP (~1.7MB > 64KB IMEM) |
 | Formal     | formal_x0 / reg_wbr / stall / fifo / axi / plic / uart | 7 jobs | PROVED | SymbiYosys k-induction (smtbmc z3); original 7 infra jobs |
 | **Formal D1** | **formal_alu / decoder / mem1_addr / axi_route / ahb_route** | **5 jobs** | **PROVED** | Datapath: ALU 12 props, decoder 8 props, mem1 addr 6 props, routing mutex |
+| **Formal D4** | **formal_precise_exc**             | **1 job**        | **PROVED** | Precise exception: bus_stall gates exception/interrupt flush; 6 props |
 
 ---
 
@@ -533,9 +534,11 @@ Tool: SymbiYosys k-induction (smtbmc backend, solver z3)
 | **formal_mem1_addr** | **mem1_stage**          | **P_BUS_MUTEX..P_FAULT_MUTEX** | **6 props: bus interfaces mutex, misaligned block, flags, byte always aligned** | **5** | **PROVED** |
 | **formal_axi_route** | **axi_interconnect**    | **P_AW_MUTEX..P_AR_ROUTE_S2** | **6 props: AW/AR mutex, routing S0/S1/S2 đúng địa chỉ** | **5** | **PROVED** |
 | **formal_ahb_route** | **ahb_interconnect**    | **P_AHB_HSEL_MUTEX..P_AHB_IDLE_NO_SEL** | **5 props: HSEL one-hot, routing đúng, no HSEL when IDLE** | **5** | **PROVED** |
+| **formal_precise_exc** | **zicsr**             | **P_BUS_STALL_GATE..P_NO_DOUBLE_GATE** | **6 props: bus stall gates exception/interrupt flush; only MRET not gated** | **5** | **PROVED** |
 
 **Ghi chú:** Phát hiện và sửa 1 RTL bug trong uart_axi (TX FSM) trong quá trình chạy formal.
-**Ghi chú D1:** formal_mem1_addr trực tiếp xác nhận tính đúng đắn của misaligned detection (P_MISALIGN_BLOCK, P_MISALIGN_LOAD/STORE_FLAG) được thêm vào trong session này.
+**Ghi chú D1:** formal_mem1_addr trực tiếp xác nhận tính đúng đắn của misaligned detection (P_MISALIGN_BLOCK, P_MISALIGN_LOAD/STORE_FLAG).
+**Ghi chú D4:** formal_precise_exc prove "precise exception" invariant: bus transaction không bị abort bởi exception/interrupt (chờ bus_stall_req=0 trước khi flush).
 
 ---
 

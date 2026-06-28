@@ -2752,6 +2752,43 @@ Formal verification không có `pass_cnt`; đơn vị đo là **property PROVED*
 
 ---
 
+---
+
+### Job 13: formal_precise_exc — Precise Exception Invariant (D4)
+
+**File:** `SIM/formal/fv_precise_exc.sby` + `fv_precise_exc.sv`
+**DUT:** `zicsr`
+**Depth:** 5 | **Method:** k-induction | **Result:** PROVED
+
+**Bối cảnh:** RISC-V Privileged Spec yêu cầu "precise exceptions" — không có side effect từ instruction sau instruction lỗi. Với bus transaction: khi `bus_stall_req=1` (AXI/AHB transaction đang chờ response), exception hay interrupt không được phép flush pipeline và cancel transaction đang dở.
+
+**RTL implementation (zicsr.sv):**
+```
+take_exception = any_exception & ~bus_stall_req      ← gated
+take_interrupt = ~any_exc & mstatus_mie & irq & ~bus_stall_req  ← gated
+zicsr_flush    = take_exception | take_interrupt | wb_mret
+```
+`wb_mret` KHÔNG bị gate bởi `~bus_stall_req` — đây là thiết kế đúng vì MRET là control instruction, không có memory side effect.
+
+**6 properties:**
+
+| Property | Assertion | Ý nghĩa |
+|----------|-----------|---------|
+| P_BUS_STALL_GATE | `bus_stall_req → (zicsr_flush == wb_mret)` | Core invariant: trong bus stall, chỉ MRET có thể flush |
+| P_MRET_FLUSH | `wb_mret → zicsr_flush` | MRET luôn flush (không gate bởi bus_stall) |
+| P_EXC_FLUSH | `any_exc & !bus_stall_req → zicsr_flush` | Completeness: exception + bus idle → flush (không bị drop) |
+| P_EXC_HELD | `bus_stall_req & any_exc & !wb_mret → !zicsr_flush` | Exception pending trong bus stall → flush=0 |
+| P_FLUSH_IDLE_BUS | `zicsr_flush & !wb_mret → !bus_stall_req` | Contrapositive: non-MRET flush → bus phải rảnh |
+| P_NO_DOUBLE_GATE | `bus_stall_req & any_exc & !wb_mret → !zicsr_flush` | Strongest: bus stall + exc + no MRET → strictly no flush |
+
+**Ghi chú kỹ thuật:**
+- `any_exc` được derive trong formal wrapper bằng cách mirror chính xác assignment trong zicsr.sv (7 exception signals OR'd lại)
+- Hierarchical references đến internal signals không được Yosys resolve khi dùng SymbiYosys — properties được viết hoàn toàn qua DUT ports
+- P_EXC_HELD và P_NO_DOUBLE_GATE là cùng logic nhưng phát biểu theo 2 hướng khác nhau để rõ ràng hơn về semantic
+- Properties 1, 4, 5, 6 cùng nắm bắt một invariant từ các góc nhìn khác nhau; mỗi cái có giá trị documentation riêng
+
+---
+
 ### Tổng kết Formal Verification
 
 | Job | DUT | Properties | Assertions | Depth | Kết quả |
@@ -2768,10 +2805,12 @@ Formal verification không có `pass_cnt`; đơn vị đo là **property PROVED*
 | **formal_mem1_addr** | **mem1_stage** | **P_BUS_MUTEX..P_FAULT_MUTEX (6 props)** | **6** | **5** | **PROVED** |
 | **formal_axi_route** | **axi_interconnect** | **P_AW_MUTEX..P_AR_ROUTE_S2 (6 props)** | **6** | **5** | **PROVED** |
 | **formal_ahb_route** | **ahb_interconnect** | **P_HSEL_MUTEX..P_IDLE_NO_SEL (5 props)** | **5** | **5** | **PROVED** |
-| **Tổng** | | **18 named groups** | **~67** | | **12/12 PROVED** |
+| **formal_precise_exc** | **zicsr** | **P_BUS_STALL_GATE..P_NO_DOUBLE_GATE (6 props)** | **6** | **5** | **PROVED** |
+| **Tổng** | | **19 named groups** | **~73** | | **13/13 PROVED** |
 
 **Ghi chú:** Phát hiện và sửa 1 RTL bug trong `uart_axi` (TX FSM) trong quá trình chạy formal.
 **D1 datapath (Jobs 8–12):** Chứng minh tính đúng đắn của các module datapath/routing — bổ sung cho Jobs 1–7 tập trung vào infrastructure/protocol invariants.
+**D4 (Job 13):** Chứng minh invariant "precise exception" — bus transaction không bị abort bởi exception/interrupt, mà phải chờ đến khi bus_stall_req=0.
 
 ---
 
