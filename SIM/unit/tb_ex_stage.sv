@@ -33,39 +33,46 @@ module tb_ex_stage;
     // ── Outputs ───────────────────────────────────────────────────────────
     logic [31:0] ex_rs1_fwd, ex_rs2_fwd;
     logic [31:0] ex_alu_result;
-    logic        ex_branch_taken;
     logic [31:0] ex_jump_addr;
+    logic        ex_actual_redirect, bp_mismatch, bp_update_en;
+    logic [31:0] bp_correct_pc;
 
     ex_stage u_dut (
-        .idex_pc        (idex_pc),
-        .idex_rs1_data  (idex_rs1_data),
-        .idex_rs2_data  (idex_rs2_data),
-        .idex_imm       (idex_imm),
-        .idex_rs1_addr  (idex_rs1_addr),
-        .idex_rs2_addr  (idex_rs2_addr),
-        .idex_alu_op    (idex_alu_op),
-        .idex_alu_src_a (idex_alu_src_a),
-        .idex_alu_src_b (idex_alu_src_b),
-        .idex_funct3    (idex_funct3),
-        .idex_branch    (idex_branch),
-        .idex_jump      (idex_jump),
-        .idex_jump_reg  (idex_jump_reg),
-        .mem1_rd_addr   (mem1_rd_addr),
-        .mem1_reg_write (mem1_reg_write),
-        .mem1_alu_result(mem1_alu_result),
-        .mem2_rd_addr   (mem2_rd_addr),
-        .mem2_reg_write (mem2_reg_write),
-        .mem2_wb_sel    (mem2_wb_sel),
-        .mem2_alu_result(mem2_alu_result),
-        .mem2_mem_rdata (mem2_mem_rdata),
-        .wb_rd_addr     (wb_rd_addr),
-        .wb_reg_write   (wb_reg_write),
-        .wb_wr_data     (wb_wr_data),
-        .ex_rs1_fwd     (ex_rs1_fwd),
-        .ex_rs2_fwd     (ex_rs2_fwd),
-        .ex_alu_result  (ex_alu_result),
-        .ex_branch_taken(ex_branch_taken),
-        .ex_jump_addr   (ex_jump_addr)
+        .idex_pc          (idex_pc),
+        .idex_rs1_data    (idex_rs1_data),
+        .idex_rs2_data    (idex_rs2_data),
+        .idex_imm         (idex_imm),
+        .idex_rs1_addr    (idex_rs1_addr),
+        .idex_rs2_addr    (idex_rs2_addr),
+        .idex_alu_op      (idex_alu_op),
+        .idex_alu_src_a   (idex_alu_src_a),
+        .idex_alu_src_b   (idex_alu_src_b),
+        .idex_funct3      (idex_funct3),
+        .idex_branch      (idex_branch),
+        .idex_jump        (idex_jump),
+        .idex_jump_reg    (idex_jump_reg),
+        .idex_bp_taken    (1'b0),
+        .idex_bp_target   (32'h0),
+        .bus_stall_req    (1'b0),
+        .mem1_rd_addr     (mem1_rd_addr),
+        .mem1_reg_write   (mem1_reg_write),
+        .mem1_alu_result  (mem1_alu_result),
+        .mem2_rd_addr     (mem2_rd_addr),
+        .mem2_reg_write   (mem2_reg_write),
+        .mem2_wb_sel      (mem2_wb_sel),
+        .mem2_alu_result  (mem2_alu_result),
+        .mem2_mem_rdata   (mem2_mem_rdata),
+        .wb_rd_addr       (wb_rd_addr),
+        .wb_reg_write     (wb_reg_write),
+        .wb_wr_data       (wb_wr_data),
+        .ex_rs1_fwd       (ex_rs1_fwd),
+        .ex_rs2_fwd       (ex_rs2_fwd),
+        .ex_alu_result    (ex_alu_result),
+        .ex_jump_addr     (ex_jump_addr),
+        .ex_actual_redirect(ex_actual_redirect),
+        .bp_mismatch      (bp_mismatch),
+        .bp_correct_pc    (bp_correct_pc),
+        .bp_update_en     (bp_update_en)
     );
 
     // ALU op constants (from alu.sv encoding)
@@ -257,7 +264,7 @@ module tb_ex_stage;
         idex_funct3    = BEQ;
         idex_branch    = 1;
         #1;
-        chk1("T12: BEQ taken when rs1==rs2",              ex_branch_taken, 1'b1);
+        chk1("T12: BEQ taken when rs1==rs2",              ex_actual_redirect, 1'b1);
 
         // T13: BEQ not taken (rs1 != rs2)
         idle();
@@ -266,7 +273,7 @@ module tb_ex_stage;
         idex_funct3    = BEQ;
         idex_branch    = 1;
         #1;
-        chk1("T13: BEQ not taken when rs1!=rs2",          ex_branch_taken, 1'b0);
+        chk1("T13: BEQ not taken when rs1!=rs2",          ex_actual_redirect, 1'b0);
 
         // T14: BNE taken (rs1 != rs2)
         idle();
@@ -275,7 +282,7 @@ module tb_ex_stage;
         idex_funct3    = BNE;
         idex_branch    = 1;
         #1;
-        chk1("T14: BNE taken when rs1!=rs2",              ex_branch_taken, 1'b1);
+        chk1("T14: BNE taken when rs1!=rs2",              ex_actual_redirect, 1'b1);
 
         // T15: Branch target = PC + imm (independent of taken/not-taken)
         idle();
@@ -310,7 +317,7 @@ module tb_ex_stage;
         idex_funct3    = BEQ;
         idex_branch    = 0;             // not a branch instruction
         #1;
-        chk1("T18: branch=0 → not taken despite equal",   ex_branch_taken, 1'b0);
+        chk1("T18: branch=0 → not taken despite equal",   ex_actual_redirect, 1'b0);
 
         // ── Group 4: Forwarded value used in ALU / branch comp ───────────
         $display("--- G4: Combined forwarding + computation ---");
@@ -343,7 +350,7 @@ module tb_ex_stage;
         idex_funct3    = BEQ;
         idex_branch    = 1;
         #1;
-        chk1("T20: fwd rs1=MEM1 rs2=MEM2 BEQ taken",     ex_branch_taken, 1'b1);
+        chk1("T20: fwd rs1=MEM1 rs2=MEM2 BEQ taken",     ex_actual_redirect, 1'b1);
 
         // T21: JALR target computed from forwarded rs1 (gap-3 WB)
         idle();

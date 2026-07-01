@@ -16,8 +16,12 @@ module tb_zicsr;
     logic        wb_ecall, wb_ebreak, wb_mret;
     logic        wb_illegal_instr, wb_load_fault, wb_store_fault;
 
+    // Misaligned faults (added to zicsr after testbench was written)
+    logic        wb_load_misaligned, wb_store_misaligned;
+
     // External
     logic        meip_in;
+    logic        mtip_in;
     logic        bus_stall_req;
 
     // Outputs
@@ -38,11 +42,14 @@ module tb_zicsr;
         .wb_ecall        (wb_ecall),
         .wb_ebreak       (wb_ebreak),
         .wb_mret         (wb_mret),
-        .wb_illegal_instr(wb_illegal_instr),
-        .wb_load_fault   (wb_load_fault),
-        .wb_store_fault  (wb_store_fault),
-        .meip_in         (meip_in),
-        .bus_stall_req   (bus_stall_req),
+        .wb_illegal_instr    (wb_illegal_instr),
+        .wb_load_fault       (wb_load_fault),
+        .wb_store_fault      (wb_store_fault),
+        .wb_load_misaligned  (wb_load_misaligned),
+        .wb_store_misaligned (wb_store_misaligned),
+        .meip_in             (meip_in),
+        .mtip_in             (mtip_in),
+        .bus_stall_req       (bus_stall_req),
         .csr_rdata       (csr_rdata),
         .zicsr_flush     (zicsr_flush),
         .zicsr_pc        (zicsr_pc)
@@ -107,6 +114,7 @@ module tb_zicsr;
         wb_csr_we = 0; wb_csr_op = 2'b00;
         wb_ecall = 0; wb_ebreak = 0; wb_mret = 0;
         wb_illegal_instr = 0; wb_load_fault = 0; wb_store_fault = 0;
+        wb_load_misaligned = 0; wb_store_misaligned = 0;
         @(posedge clk); #0.1;
         @(negedge clk);
     endtask
@@ -122,7 +130,8 @@ module tb_zicsr;
         wb_csr_imm_sel = 0;
         wb_ecall = 0; wb_ebreak = 0; wb_mret = 0;
         wb_illegal_instr = 0; wb_load_fault = 0; wb_store_fault = 0;
-        meip_in = 0; bus_stall_req = 0;
+        wb_load_misaligned = 0; wb_store_misaligned = 0;
+        meip_in = 0; mtip_in = 0; bus_stall_req = 0;
 
         // Reset
         rst_n = 0;

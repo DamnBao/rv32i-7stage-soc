@@ -15,7 +15,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SIM_DIR="$(dirname "$SCRIPT_DIR")"
 BASENAME=$(basename "$ELF" .elf)
 HEX="/tmp/compliance_${BASENAME}_$$.hex"
-VVP="${SIM_DIR}/system/tb_compliance.vvp"
+VVP="${SIM_DIR}/build/system/tb_compliance.vvp"
 LOG="/tmp/compliance_${BASENAME}_$$.log"
 
 cleanup() { rm -f "$HEX" "$LOG"; }

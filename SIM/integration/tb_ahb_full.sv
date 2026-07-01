@@ -68,7 +68,6 @@ module tb_ahb_full;
     logic        HSEL2, HREADY2_in, HREADYOUT2, HRESP2;
     logic [31:0] HRDATA2;
     logic        irq2;
-    logic        ahb_irq;
 
     // ── AHB Interconnect ──────────────────────────────────────────
     ahb_interconnect u_intc (
@@ -81,8 +80,7 @@ module tb_ahb_full;
         .HSEL1(HSEL1), .HREADY1_in(HREADY1_in),
         .HREADYOUT1(HREADYOUT1), .HRDATA1(HRDATA1), .HRESP1(HRESP1), .irq1(irq1),
         .HSEL2(HSEL2), .HREADY2_in(HREADY2_in),
-        .HREADYOUT2(HREADYOUT2), .HRDATA2(HRDATA2), .HRESP2(HRESP2), .irq2(irq2),
-        .ahb_irq(ahb_irq)
+        .HREADYOUT2(HREADYOUT2), .HRDATA2(HRDATA2), .HRESP2(HRESP2), .irq2(irq2)
     );
 
     // ── AHB SFR Slaves ────────────────────────────────────────────
@@ -201,7 +199,9 @@ module tb_ahb_full;
         pass_if(rdata === 32'h5566_7788);
 
         // ── Group 2: IRQ — INTR_ENABLE (0x08) + INTR_TEST (0x10) ──
-        // S0: enable bit0, trigger via INTR_TEST → irq0=1 → ahb_irq=1
+        // ahb_interconnect không còn OR-aggregate IRQ (PLIC tự arbitrate từng
+        // nguồn irq0/1/2 trực tiếp) — chỉ còn kiểm tra SFR tự sinh/xoá IRQ đúng.
+        // S0: enable bit0, trigger via INTR_TEST → irq0=1
         tnum=tnum+1;
         do_txn(32'h3000_0008, 32'h0000_0001, 1'b1, 2'b10, rdata, err);
         pass_if(err === 1'b0);
@@ -209,9 +209,9 @@ module tb_ahb_full;
         do_txn(32'h3000_0010, 32'h0000_0001, 1'b1, 2'b10, rdata, err);
         pass_if(err === 1'b0);
         repeat(2) @(posedge clk_ahb);
-        tnum=tnum+1; pass_if(ahb_irq === 1'b1);
+        tnum=tnum+1; pass_if(irq0 === 1'b1);
 
-        // S1: enable + trigger → ahb_irq still 1 (OR)
+        // S1: enable + trigger → irq1=1
         tnum=tnum+1;
         do_txn(32'h3000_1008, 32'h0000_0001, 1'b1, 2'b10, rdata, err);
         pass_if(err === 1'b0);
@@ -219,23 +219,23 @@ module tb_ahb_full;
         do_txn(32'h3000_1010, 32'h0000_0001, 1'b1, 2'b10, rdata, err);
         pass_if(err === 1'b0);
         repeat(2) @(posedge clk_ahb);
-        tnum=tnum+1; pass_if(ahb_irq === 1'b1);
+        tnum=tnum+1; pass_if(irq1 === 1'b1);
 
-        // W1C clear S0 INTR_STATE → ahb_irq=1 (S1 still set)
+        // W1C clear S0 INTR_STATE → irq0=0
         tnum=tnum+1;
         do_txn(32'h3000_000C, 32'h0000_0001, 1'b1, 2'b10, rdata, err);
         pass_if(err === 1'b0);
         repeat(2) @(posedge clk_ahb);
-        tnum=tnum+1; pass_if(ahb_irq === 1'b1);
+        tnum=tnum+1; pass_if(irq0 === 1'b0);
 
-        // W1C clear S1 → ahb_irq=0
+        // W1C clear S1 → irq1=0
         tnum=tnum+1;
         do_txn(32'h3000_100C, 32'h0000_0001, 1'b1, 2'b10, rdata, err);
         pass_if(err === 1'b0);
         repeat(2) @(posedge clk_ahb);
-        tnum=tnum+1; pass_if(ahb_irq === 1'b0);
+        tnum=tnum+1; pass_if(irq1 === 1'b0);
 
-        // S2: trigger → ahb_irq=1
+        // S2: trigger → irq2=1
         tnum=tnum+1;
         do_txn(32'h3000_2008, 32'h0000_0001, 1'b1, 2'b10, rdata, err);
         pass_if(err === 1'b0);
@@ -243,14 +243,14 @@ module tb_ahb_full;
         do_txn(32'h3000_2010, 32'h0000_0001, 1'b1, 2'b10, rdata, err);
         pass_if(err === 1'b0);
         repeat(2) @(posedge clk_ahb);
-        tnum=tnum+1; pass_if(ahb_irq === 1'b1);
+        tnum=tnum+1; pass_if(irq2 === 1'b1);
 
-        // W1C clear S2 → ahb_irq=0
+        // W1C clear S2 → irq2=0
         tnum=tnum+1;
         do_txn(32'h3000_200C, 32'h0000_0001, 1'b1, 2'b10, rdata, err);
         pass_if(err === 1'b0);
         repeat(2) @(posedge clk_ahb);
-        tnum=tnum+1; pass_if(ahb_irq === 1'b0);
+        tnum=tnum+1; pass_if(irq2 === 1'b0);
 
         // ── Group 3: Multiple regs in Slave 1 — DATA0 (0x14), DATA1 (0x18) ──
         tnum=tnum+1;

@@ -32,7 +32,6 @@ module fv_ahb_route (
     logic        HSEL0; logic HREADY0_in;
     logic        HSEL1; logic HREADY1_in;
     logic        HSEL2; logic HREADY2_in;
-    logic        ahb_irq;
 
     ahb_interconnect dut (
         .clk_ahb    (clk),
@@ -50,8 +49,7 @@ module fv_ahb_route (
         .HSEL1      (HSEL1),      .HREADY1_in (HREADY1_in),
         .HREADYOUT1 (HREADYOUT1), .HRDATA1    (HRDATA1),    .HRESP1 (HRESP1), .irq1 (irq1),
         .HSEL2      (HSEL2),      .HREADY2_in (HREADY2_in),
-        .HREADYOUT2 (HREADYOUT2), .HRDATA2    (HRDATA2),    .HRESP2 (HRESP2), .irq2 (irq2),
-        .ahb_irq    (ahb_irq)
+        .HREADYOUT2 (HREADYOUT2), .HRDATA2    (HRDATA2),    .HRESP2 (HRESP2), .irq2 (irq2)
     );
 
     initial assume (!rst_n);

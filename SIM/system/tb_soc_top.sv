@@ -179,30 +179,30 @@ module tb_soc_top;
 
     initial begin
         // Phase 3
-        programs[0]  = "programs/prog_arithmetic.hex";
-        programs[1]  = "programs/prog_forwarding.hex";
-        programs[2]  = "programs/prog_load_store.hex";
-        programs[3]  = "programs/prog_branch_jump.hex";
-        programs[4]  = "programs/prog_csr.hex";
-        programs[5]  = "programs/prog_ecall.hex";
-        programs[6]  = "programs/prog_interrupt_msi.hex";
-        programs[7]  = "programs/prog_interrupt_mei.hex";
-        programs[8]  = "programs/prog_load_fault.hex";
+        programs[0]  = "programs/bin/prog_arithmetic.hex";
+        programs[1]  = "programs/bin/prog_forwarding.hex";
+        programs[2]  = "programs/bin/prog_load_store.hex";
+        programs[3]  = "programs/bin/prog_branch_jump.hex";
+        programs[4]  = "programs/bin/prog_csr.hex";
+        programs[5]  = "programs/bin/prog_ecall.hex";
+        programs[6]  = "programs/bin/prog_interrupt_msi.hex";
+        programs[7]  = "programs/bin/prog_interrupt_mei.hex";
+        programs[8]  = "programs/bin/prog_load_fault.hex";
         // Phase 5
-        programs[9]  = "programs/prog_axi_sfr.hex";
-        programs[10] = "programs/prog_ahb_sfr.hex";
-        programs[11] = "programs/prog_axi_irq.hex";
-        programs[12] = "programs/prog_ahb_irq.hex";
+        programs[9]  = "programs/bin/prog_axi_sfr.hex";
+        programs[10] = "programs/bin/prog_ahb_sfr.hex";
+        programs[11] = "programs/bin/prog_axi_irq.hex";
+        programs[12] = "programs/bin/prog_ahb_irq.hex";
         // Phase 6
-        programs[13] = "programs/prog_rv32i_shifts.hex";
-        programs[14] = "programs/prog_rv32i_compare.hex";
-        programs[15] = "programs/prog_dmem_endurance.hex";
+        programs[13] = "programs/bin/prog_rv32i_shifts.hex";
+        programs[14] = "programs/bin/prog_rv32i_compare.hex";
+        programs[15] = "programs/bin/prog_dmem_endurance.hex";
         // Phase 7
-        programs[16] = "programs/prog_plic_basic.hex";
-        programs[17] = "programs/prog_plic_priority.hex";
-        programs[18] = "programs/prog_plic_threshold.hex";
+        programs[16] = "programs/bin/prog_plic_basic.hex";
+        programs[17] = "programs/bin/prog_plic_priority.hex";
+        programs[18] = "programs/bin/prog_plic_threshold.hex";
         // Phase 8
-        programs[19] = "programs/prog_csr_hazard.hex";
+        programs[19] = "programs/bin/prog_csr_hazard.hex";
 
         pass_cnt = 0;
         fail_cnt = 0;

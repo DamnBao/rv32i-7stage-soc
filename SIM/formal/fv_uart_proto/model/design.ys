@@ -1,9 +1,0 @@
-# running in fv_uart_proto/src/
-read -formal -DFORMAL uart_axi.sv
-read -formal fv_uart_proto.sv
-prep -top fv_uart_proto
-
-hierarchy -smtcheck
-rename -witness
-write_jny -no-connections ../model/design.json
-write_rtlil ../model/design.il

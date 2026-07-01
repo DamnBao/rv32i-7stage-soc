@@ -114,6 +114,16 @@ module plic (
     assign src_active[5] = reg_pending[5] & reg_enable[5] & (pri5 > reg_threshold);
     assign src_active[6] = reg_pending[6] & reg_enable[6] & (pri6 > reg_threshold);
 
+    // Scalar copies: Icarus không hỗ trợ đọc bit-select của vector ngay trong
+    // always_comb (constant select), nên bóc ra từng biến scalar riêng.
+    logic src_active_1, src_active_2, src_active_3, src_active_4, src_active_5, src_active_6;
+    assign src_active_1 = src_active[1];
+    assign src_active_2 = src_active[2];
+    assign src_active_3 = src_active[3];
+    assign src_active_4 = src_active[4];
+    assign src_active_5 = src_active[5];
+    assign src_active_6 = src_active[6];
+
     //=========================================================
     // 3. Complete Write → pending_clr (Combinational)
     //=========================================================
@@ -143,12 +153,12 @@ module plic (
     always_comb begin
         winner_id = 3'd0;
         win_pri   = 3'd0;
-        if (src_active[1] && (pri1 > win_pri)) begin winner_id = 3'd1; win_pri = pri1; end
-        if (src_active[2] && (pri2 > win_pri)) begin winner_id = 3'd2; win_pri = pri2; end
-        if (src_active[3] && (pri3 > win_pri)) begin winner_id = 3'd3; win_pri = pri3; end
-        if (src_active[4] && (pri4 > win_pri)) begin winner_id = 3'd4; win_pri = pri4; end
-        if (src_active[5] && (pri5 > win_pri)) begin winner_id = 3'd5; win_pri = pri5; end
-        if (src_active[6] && (pri6 > win_pri)) begin winner_id = 3'd6; win_pri = pri6; end
+        if (src_active_1 && (pri1 > win_pri)) begin winner_id = 3'd1; win_pri = pri1; end
+        if (src_active_2 && (pri2 > win_pri)) begin winner_id = 3'd2; win_pri = pri2; end
+        if (src_active_3 && (pri3 > win_pri)) begin winner_id = 3'd3; win_pri = pri3; end
+        if (src_active_4 && (pri4 > win_pri)) begin winner_id = 3'd4; win_pri = pri4; end
+        if (src_active_5 && (pri5 > win_pri)) begin winner_id = 3'd5; win_pri = pri5; end
+        if (src_active_6 && (pri6 > win_pri)) begin winner_id = 3'd6; win_pri = pri6; end
     end
 
     assign meip = (winner_id != 3'd0);

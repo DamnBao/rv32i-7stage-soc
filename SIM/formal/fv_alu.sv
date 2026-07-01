@@ -31,11 +31,16 @@ module fv_alu (
     // DUT output
     logic [31:0] alu_result;
 
+    // alu_src_a=0, alu_src_b=0: bypass the input MUX, operand_a/b feed ALU directly
     alu dut (
-        .operand_a  (operand_a),
-        .operand_b  (operand_b),
-        .alu_op     (alu_op),
-        .alu_result (alu_result)
+        .rs1_fwd   (operand_a),
+        .rs2_fwd   (operand_b),
+        .pc_in     (32'h0),
+        .imm_in    (32'h0),
+        .alu_src_a (1'b0),
+        .alu_src_b (1'b0),
+        .alu_op    (alu_op),
+        .alu_result(alu_result)
     );
 
     // ALU opcodes (must match alu.sv)

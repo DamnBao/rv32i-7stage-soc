@@ -1,9 +1,0 @@
-# running in fv_reg_x0/src/
-read -formal register_file.sv
-read -formal fv_reg_x0.sv
-prep -top fv_reg_x0
-
-hierarchy -smtcheck
-rename -witness
-write_jny -no-connections ../model/design.json
-write_rtlil ../model/design.il

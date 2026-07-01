@@ -56,8 +56,6 @@ module fv_axi_route (
     logic S2_BREADY;
     logic [31:0] S2_ARADDR; logic [2:0] S2_ARPROT; logic S2_ARVALID; logic S2_RREADY;
 
-    logic axi_irq;
-
     axi_interconnect dut (
         .clk        (clk),       .rst_n      (rst_n),
         .M_AWADDR   (M_AWADDR),  .M_AWPROT   (M_AWPROT),  .M_AWVALID  (M_AWVALID),  .M_AWREADY  (M_AWREADY),
@@ -82,8 +80,7 @@ module fv_axi_route (
         .S2_BRESP   (S2_BRESP),  .S2_BVALID  (S2_BVALID), .S2_BREADY  (S2_BREADY),
         .S2_ARADDR  (S2_ARADDR), .S2_ARPROT  (S2_ARPROT), .S2_ARVALID (S2_ARVALID), .S2_ARREADY (S2_ARREADY),
         .S2_RDATA   (S2_RDATA),  .S2_RRESP   (S2_RRESP),  .S2_RVALID  (S2_RVALID),  .S2_RREADY  (S2_RREADY),
-        .irq2       (irq2),
-        .axi_irq    (axi_irq)
+        .irq2       (irq2)
     );
 
     initial assume (!rst_n);

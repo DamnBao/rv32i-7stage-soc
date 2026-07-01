@@ -54,8 +54,6 @@ module tb_axi_full;
     logic [1:0]  S2_RRESP;  logic S2_RVALID, S2_RREADY;
     logic        irq2;
 
-    logic axi_irq;
-
     // ── DUT instantiations ────────────────────────────────────────
     axi_interface u_iface (
         .clk(clk), .rst_n(rst_n),
@@ -93,8 +91,7 @@ module tb_axi_full;
         .S2_BRESP(S2_BRESP),  .S2_BVALID(S2_BVALID), .S2_BREADY(S2_BREADY),
         .S2_ARADDR(S2_ARADDR),.S2_ARPROT(S2_ARPROT),.S2_ARVALID(S2_ARVALID),.S2_ARREADY(S2_ARREADY),
         .S2_RDATA(S2_RDATA),  .S2_RRESP(S2_RRESP),  .S2_RVALID(S2_RVALID), .S2_RREADY(S2_RREADY),
-        .irq2(irq2),
-        .axi_irq(axi_irq)
+        .irq2(irq2)
     );
 
     axi_sfr u_sfr0 (
@@ -181,32 +178,34 @@ module tb_axi_full;
         do_read (32'h2000_2000, 32'hEEFF_3300);
 
         // ── Group 2: IRQ — INTR_ENABLE (0x08) + INTR_TEST (0x10) ──
-        // S0: enable bit0, trigger via INTR_TEST → irq0=1 → axi_irq=1
+        // axi_interconnect không còn OR-aggregate IRQ (PLIC tự arbitrate từng
+        // nguồn irq0/1/2 trực tiếp) — chỉ còn kiểm tra SFR tự sinh/xoá IRQ đúng.
+        // S0: enable bit0, trigger via INTR_TEST → irq0=1
         do_write(32'h2000_0008, 32'h0000_0001, 2'b10, 4'b1111); // INTR_ENABLE[0]=1
         do_write(32'h2000_0010, 32'h0000_0001, 2'b10, 4'b1111); // INTR_TEST[0]=1 → set INTR_STATE[0]
-        tnum=tnum+1; pass_if(axi_irq === 1'b1);
+        tnum=tnum+1; pass_if(irq0 === 1'b1);
 
-        // S1: same → axi_irq still 1 (OR)
+        // S1: same → irq1=1
         do_write(32'h2000_1008, 32'h0000_0001, 2'b10, 4'b1111);
         do_write(32'h2000_1010, 32'h0000_0001, 2'b10, 4'b1111);
-        tnum=tnum+1; pass_if(axi_irq === 1'b1);
+        tnum=tnum+1; pass_if(irq1 === 1'b1);
 
-        // W1C clear S0: write 1 to INTR_STATE → irq0 clears; axi_irq=1 (S1 still set)
+        // W1C clear S0: write 1 to INTR_STATE → irq0 clears
         do_write(32'h2000_000C, 32'h0000_0001, 2'b10, 4'b1111); // INTR_STATE W1C
-        tnum=tnum+1; pass_if(axi_irq === 1'b1);
+        tnum=tnum+1; pass_if(irq0 === 1'b0);
 
-        // W1C clear S1 → axi_irq=0
+        // W1C clear S1 → irq1=0
         do_write(32'h2000_100C, 32'h0000_0001, 2'b10, 4'b1111);
-        tnum=tnum+1; pass_if(axi_irq === 1'b0);
+        tnum=tnum+1; pass_if(irq1 === 1'b0);
 
-        // S2: trigger → axi_irq=1
+        // S2: trigger → irq2=1
         do_write(32'h2000_2008, 32'h0000_0001, 2'b10, 4'b1111);
         do_write(32'h2000_2010, 32'h0000_0001, 2'b10, 4'b1111);
-        tnum=tnum+1; pass_if(axi_irq === 1'b1);
+        tnum=tnum+1; pass_if(irq2 === 1'b1);
 
-        // W1C clear S2 → axi_irq=0
+        // W1C clear S2 → irq2=0
         do_write(32'h2000_200C, 32'h0000_0001, 2'b10, 4'b1111);
-        tnum=tnum+1; pass_if(axi_irq === 1'b0);
+        tnum=tnum+1; pass_if(irq2 === 1'b0);
 
         // ── Group 3: Multiple standard regs in Slave 0 ────────────
         // DATA0 (0x14), DATA1 (0x18), DATA2 (0x1C)

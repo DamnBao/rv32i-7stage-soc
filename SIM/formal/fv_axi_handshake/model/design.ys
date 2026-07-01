@@ -1,9 +1,0 @@
-# running in fv_axi_handshake/src/
-read -formal axi_interface.sv
-read -formal fv_axi_handshake.sv
-prep -top fv_axi_handshake
-
-hierarchy -smtcheck
-rename -witness
-write_jny -no-connections ../model/design.json
-write_rtlil ../model/design.il

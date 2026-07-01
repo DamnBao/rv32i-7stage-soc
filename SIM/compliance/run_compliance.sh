@@ -11,8 +11,9 @@ RTL_DIR="$SIM_DIR/../RTL"
 
 TESTS_SRC="$SCRIPT_DIR/tests/src"
 TESTS_REF="$SCRIPT_DIR/tests/references"
-WORK_DIR="$SCRIPT_DIR/work"
-VVP="$SCRIPT_DIR/tb_compliance_run.vvp"
+BUILD_DIR="$SIM_DIR/build/compliance"
+WORK_DIR="$BUILD_DIR/work"
+VVP="$BUILD_DIR/tb_compliance_run.vvp"
 
 GCC="riscv64-unknown-elf-gcc"
 OBJCOPY="riscv64-unknown-elf-objcopy"

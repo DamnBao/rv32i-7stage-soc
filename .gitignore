@@ -10,6 +10,9 @@
 # Object files
 *.o
 
+# SIM build output (vvp/vcd/formal workdirs/compliance work) — out-of-tree
+SIM/build/
+
 # Vim swap files
 *.swp
 *.swo

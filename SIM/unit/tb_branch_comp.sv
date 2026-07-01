@@ -4,9 +4,40 @@ module tb_branch_comp;
 
     logic [31:0] rs1_data, rs2_data;
     logic [2:0]  funct3;
-    logic        branch, branch_taken;
+    logic        idex_branch;
+    logic        actual_redirect;
 
-    branch_comp u_dut (.*);
+    // Addr/prediction/jump ports — tied off; not exercised by comparison tests
+    logic        idex_jump      = 1'b0;
+    logic        idex_jump_reg  = 1'b0;
+    logic [31:0] idex_pc        = 32'h0;
+    logic [31:0] idex_imm       = 32'h0;
+    logic        idex_bp_taken  = 1'b0;
+    logic [31:0] idex_bp_target = 32'h0;
+    logic        bus_stall_req  = 1'b0;
+    logic [31:0] jump_addr;
+    logic        bp_mismatch;
+    logic [31:0] bp_correct_pc;
+    logic        bp_update_en;
+
+    branch_unit u_dut (
+        .rs1_data       (rs1_data),
+        .rs2_data       (rs2_data),
+        .funct3         (funct3),
+        .idex_branch    (idex_branch),
+        .idex_jump      (idex_jump),
+        .idex_jump_reg  (idex_jump_reg),
+        .idex_pc        (idex_pc),
+        .idex_imm       (idex_imm),
+        .idex_bp_taken  (idex_bp_taken),
+        .idex_bp_target (idex_bp_target),
+        .bus_stall_req  (bus_stall_req),
+        .jump_addr      (jump_addr),
+        .actual_redirect(actual_redirect),
+        .bp_mismatch    (bp_mismatch),
+        .bp_correct_pc  (bp_correct_pc),
+        .bp_update_en   (bp_update_en)
+    );
 
     int pass_cnt = 0, fail_cnt = 0;
 
@@ -31,12 +62,12 @@ module tb_branch_comp;
         input logic        br,
         input logic        expected
     );
-        funct3   = f3;
-        rs1_data = a;
-        rs2_data = b;
-        branch   = br;
+        funct3       = f3;
+        rs1_data     = a;
+        rs2_data     = b;
+        idex_branch  = br;
         #1;
-        check(name, branch_taken, expected);
+        check(name, actual_redirect, expected);
     endtask
 
     initial begin
@@ -79,9 +110,7 @@ module tb_branch_comp;
         $display("--- BLTU (unsigned) ---");
         test("BLTU: 1 <u 2 => taken",   3'b110, 32'd1,           32'd2,          1'b1, 1'b1);
         test("BLTU: 2 <u 1 => not",     3'b110, 32'd2,           32'd1,          1'b1, 1'b0);
-        // 0x8000_0000 = 2^31 (unsigned) > 1
         test("BLTU: 0x80..0 <u 1 =>no", 3'b110, 32'h8000_0000,   32'd1,          1'b1, 1'b0);
-        // 1 < 0x8000_0000 unsigned
         test("BLTU: 1 <u 0x80..0 =>yes",3'b110, 32'd1,           32'h8000_0000,  1'b1, 1'b1);
 
         // ── BGEU unsigned (funct3=111) ──

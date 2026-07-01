@@ -104,10 +104,10 @@ imem #(.SIZE_KB(64)) u_imem (
 
 | Program | File | Kiểm tra gì |
 |---------|------|------------|
-| `prog_ecall.s` | `programs/prog_ecall.s` | ECALL sinh exception, mtvec setup, handler đọc mepc/mcause, advance mepc+4, MRET trả về đúng vị trí, mstatus.MIE restore sau MRET |
-| `prog_interrupt_msi.s` | `programs/prog_interrupt_msi.s` | M-mode software interrupt (MSIP), vectored handler, xóa MIP.MSIP trong handler, MRET |
-| `prog_interrupt_mei.s` | `programs/prog_interrupt_mei.s` | M-mode external interrupt từ AXI IRQ, vectored handler, xóa IRQ source, MRET |
-| `prog_load_fault.s` | `programs/prog_load_fault.s` | Load access fault (load từ địa chỉ không hợp lệ), mcause=5, mepc đúng, handler MRET |
+| `prog_ecall.s` | `programs/src/prog_ecall.s` | ECALL sinh exception, mtvec setup, handler đọc mepc/mcause, advance mepc+4, MRET trả về đúng vị trí, mstatus.MIE restore sau MRET |
+| `prog_interrupt_msi.s` | `programs/src/prog_interrupt_msi.s` | M-mode software interrupt (MSIP), vectored handler, xóa MIP.MSIP trong handler, MRET |
+| `prog_interrupt_mei.s` | `programs/src/prog_interrupt_mei.s` | M-mode external interrupt từ AXI IRQ, vectored handler, xóa IRQ source, MRET |
+| `prog_load_fault.s` | `programs/src/prog_load_fault.s` | Load access fault (load từ địa chỉ không hợp lệ), mcause=5, mepc đúng, handler MRET |
 
 ---
 
@@ -137,10 +137,10 @@ prog_load_fault    → PASS
 |------|---------|
 | `RTL/imem.sv` | Thêm port `flush`; `always_ff` output NOP khi flush=1 |
 | `RTL/soc_top.sv` | Wire `flush_if1if2` → `u_imem.flush` |
-| `SIM/programs/prog_ecall.s` | Viết mới: ECALL/MRET test với DMEM trace stores |
-| `SIM/programs/prog_interrupt_msi.s` | Viết mới: MSI interrupt test |
-| `SIM/programs/prog_interrupt_mei.s` | Viết mới: MEI interrupt test |
-| `SIM/programs/prog_load_fault.s` | Viết mới: load fault exception test |
+| `SIM/programs/src/prog_ecall.s` | Viết mới: ECALL/MRET test với DMEM trace stores |
+| `SIM/programs/src/prog_interrupt_msi.s` | Viết mới: MSI interrupt test |
+| `SIM/programs/src/prog_interrupt_mei.s` | Viết mới: MEI interrupt test |
+| `SIM/programs/src/prog_load_fault.s` | Viết mới: load fault exception test |
 | `SIM/TEST_LOG.md` | Cập nhật: thêm 4 programs, thêm Bug 4, cập nhật tổng kết |
 | `CLAUDE.md` | Cập nhật: imem.sv status, Phase 3 = 9/9 PASS |
 
@@ -953,10 +953,10 @@ assign flush_id_ex = zicsr_flush | (fetch_stall & ~bus_stall_req) | ctrl_flush;
 
 **Files cập nhật:**
 - `RTL/hazard_unit.sv` — Fix: suppress fetch_stall flush khi bus_stall_req active
-- `SIM/programs/prog_axi_sfr.s` — Phase 5 program (mới)
-- `SIM/programs/prog_ahb_sfr.s` — Phase 5 program (mới)
-- `SIM/programs/prog_axi_irq.s` — Phase 5 program (mới)
-- `SIM/programs/prog_ahb_irq.s` — Phase 5 program (mới)
+- `SIM/programs/src/prog_axi_sfr.s` — Phase 5 program (mới)
+- `SIM/programs/src/prog_ahb_sfr.s` — Phase 5 program (mới)
+- `SIM/programs/src/prog_axi_irq.s` — Phase 5 program (mới)
+- `SIM/programs/src/prog_ahb_irq.s` — Phase 5 program (mới)
 - `SIM/Makefile` — p5_axi_sfr, p5_ahb_sfr, p5_axi_irq, p5_ahb_irq, p5_all targets
 
 ---
@@ -971,22 +971,22 @@ Testbench `system/tb_soc_top.sv` chạy toàn bộ 16 programs (Phase 3 + 5 + 6)
 
 ```
 === System Test: 16 programs ===
-PASS  [programs/prog_arithmetic.hex]
-PASS  [programs/prog_forwarding.hex]
-PASS  [programs/prog_load_store.hex]
-PASS  [programs/prog_branch_jump.hex]
-PASS  [programs/prog_csr.hex]
-PASS  [programs/prog_ecall.hex]
-PASS  [programs/prog_interrupt_msi.hex]
-PASS  [programs/prog_interrupt_mei.hex]
-PASS  [programs/prog_load_fault.hex]
-PASS  [programs/prog_axi_sfr.hex]
-PASS  [programs/prog_ahb_sfr.hex]
-PASS  [programs/prog_axi_irq.hex]
-PASS  [programs/prog_ahb_irq.hex]
-PASS  [programs/prog_rv32i_shifts.hex]
-PASS  [programs/prog_rv32i_compare.hex]
-PASS  [programs/prog_dmem_endurance.hex]
+PASS  [programs/bin/prog_arithmetic.hex]
+PASS  [programs/bin/prog_forwarding.hex]
+PASS  [programs/bin/prog_load_store.hex]
+PASS  [programs/bin/prog_branch_jump.hex]
+PASS  [programs/bin/prog_csr.hex]
+PASS  [programs/bin/prog_ecall.hex]
+PASS  [programs/bin/prog_interrupt_msi.hex]
+PASS  [programs/bin/prog_interrupt_mei.hex]
+PASS  [programs/bin/prog_load_fault.hex]
+PASS  [programs/bin/prog_axi_sfr.hex]
+PASS  [programs/bin/prog_ahb_sfr.hex]
+PASS  [programs/bin/prog_axi_irq.hex]
+PASS  [programs/bin/prog_ahb_irq.hex]
+PASS  [programs/bin/prog_rv32i_shifts.hex]
+PASS  [programs/bin/prog_rv32i_compare.hex]
+PASS  [programs/bin/prog_dmem_endurance.hex]
 === SYSTEM TEST: 16/16 PASS ===
 ALL PASS
 ```
@@ -1009,9 +1009,9 @@ ALL PASS
 ```
 
 **Files thêm mới:**
-- `SIM/programs/prog_rv32i_shifts.s`
-- `SIM/programs/prog_rv32i_compare.s`
-- `SIM/programs/prog_dmem_endurance.s`
+- `SIM/programs/src/prog_rv32i_shifts.s`
+- `SIM/programs/src/prog_rv32i_compare.s`
+- `SIM/programs/src/prog_dmem_endurance.s`
 - `SIM/system/tb_soc_top.sv` — batch testbench 16 programs
 - `SIM/system/tb_compliance.sv` — compliance framework (TEST_PASS/TEST_FAIL output)
 - `SIM/scripts/run_one_test.sh` — ELF→hex→simulate runner
@@ -1081,24 +1081,24 @@ Kiểm tra toàn bộ EX stage tích hợp: forwarding path A/B, LUI passthrough
 
 ```
 === System Test: 18 programs ===
-PASS  [programs/prog_arithmetic.hex]
-PASS  [programs/prog_forwarding.hex]
-PASS  [programs/prog_load_store.hex]
-PASS  [programs/prog_branch_jump.hex]
-PASS  [programs/prog_csr.hex]
-PASS  [programs/prog_ecall.hex]
-PASS  [programs/prog_interrupt_msi.hex]
-PASS  [programs/prog_interrupt_mei.hex]
-PASS  [programs/prog_load_fault.hex]
-PASS  [programs/prog_axi_sfr.hex]
-PASS  [programs/prog_ahb_sfr.hex]
-PASS  [programs/prog_axi_irq.hex]
-PASS  [programs/prog_ahb_irq.hex]
-PASS  [programs/prog_rv32i_shifts.hex]
-PASS  [programs/prog_rv32i_compare.hex]
-PASS  [programs/prog_dmem_endurance.hex]
-PASS  [programs/prog_plic_basic.hex]
-PASS  [programs/prog_plic_priority.hex]
+PASS  [programs/bin/prog_arithmetic.hex]
+PASS  [programs/bin/prog_forwarding.hex]
+PASS  [programs/bin/prog_load_store.hex]
+PASS  [programs/bin/prog_branch_jump.hex]
+PASS  [programs/bin/prog_csr.hex]
+PASS  [programs/bin/prog_ecall.hex]
+PASS  [programs/bin/prog_interrupt_msi.hex]
+PASS  [programs/bin/prog_interrupt_mei.hex]
+PASS  [programs/bin/prog_load_fault.hex]
+PASS  [programs/bin/prog_axi_sfr.hex]
+PASS  [programs/bin/prog_ahb_sfr.hex]
+PASS  [programs/bin/prog_axi_irq.hex]
+PASS  [programs/bin/prog_ahb_irq.hex]
+PASS  [programs/bin/prog_rv32i_shifts.hex]
+PASS  [programs/bin/prog_rv32i_compare.hex]
+PASS  [programs/bin/prog_dmem_endurance.hex]
+PASS  [programs/bin/prog_plic_basic.hex]
+PASS  [programs/bin/prog_plic_priority.hex]
 === SYSTEM TEST: 18/18 PASS ===
 ```
 
@@ -1110,9 +1110,9 @@ PASS  [programs/prog_plic_priority.hex]
 |------|---------|
 | `unit/tb_ex_stage.sv` | Viết mới: EX stage integration test (23/23 PASS) |
 | `integration/tb_soc_bus_err.sv` | Viết mới: AXI BRESP error → store_access_fault test |
-| `programs/prog_bus_err.s` | Viết mới: program cho integ_bus_err |
-| `programs/prog_plic_priority.s` | Viết mới: PLIC priority arbitration (2 sources, verify claim order) |
-| `programs/prog_plic_basic.s` | Viết mới: PLIC basic claim/complete |
+| `programs/src/prog_bus_err.s` | Viết mới: program cho integ_bus_err |
+| `programs/src/prog_plic_priority.s` | Viết mới: PLIC priority arbitration (2 sources, verify claim order) |
+| `programs/src/prog_plic_basic.s` | Viết mới: PLIC basic claim/complete |
 | `system/tb_soc_top.sv` | Cập nhật: N_PROGS=18, thêm plic_basic + plic_priority |
 | `SIM/Makefile` | Thêm: `unit_ex`, `integ_bus_err`, `p7_plic_priority` targets; P7_PROGS list; unit_all includes unit_ex |
 
@@ -1129,8 +1129,8 @@ Hoàn thành tất cả item còn lại từ backlog:
 | `unit/tb_irq_sync2ff.sv` | 10/10 PASS |
 | `unit/tb_gpio_sfr.sv` | 22/22 PASS |
 | `unit/tb_zicsr.sv` | 38/38 PASS |
-| `programs/prog_plic_threshold.s` | PASS (system test) |
-| `programs/prog_csr_hazard.s` | PASS (system test) |
+| `programs/src/prog_plic_threshold.s` | PASS (system test) |
+| `programs/src/prog_csr_hazard.s` | PASS (system test) |
 | `system/tb_soc_top.sv` N_PROGS | 18 → 20, **20/20 PASS** |
 
 ---
@@ -1207,8 +1207,8 @@ check32("T27: zicsr_pc = BASE+44", 32'h0000_202C, zicsr_pc);
 | `unit/tb_irq_sync2ff.sv` | Viết mới: 2-FF synchronizer unit test (10/10 PASS) |
 | `unit/tb_gpio_sfr.sv` | Viết mới: GPIO SFR unit test; fix AXI task timing (22/22 PASS) |
 | `unit/tb_zicsr.sv` | Viết mới: Zicsr unit test; fix interrupt check timing (38/38 PASS) |
-| `programs/prog_plic_threshold.s` | Viết mới: PLIC threshold filtering test; fix `la` usage |
-| `programs/prog_csr_hazard.s` | Viết mới: CSR-use stall gaps 0-4 test; fix `la` usage |
+| `programs/src/prog_plic_threshold.s` | Viết mới: PLIC threshold filtering test; fix `la` usage |
+| `programs/src/prog_csr_hazard.s` | Viết mới: CSR-use stall gaps 0-4 test; fix `la` usage |
 | `system/tb_soc_top.sv` | N_PROGS 18→20, thêm prog_plic_threshold + prog_csr_hazard |
 | `Makefile` | Thêm unit_irq_sync/unit_gpio/unit_zicsr targets; P7_PROGS += threshold; P8_PROGS |
 | `TEST_LOG.md` | Cập nhật bảng tổng kết: Total 621 cases + 36 programs |

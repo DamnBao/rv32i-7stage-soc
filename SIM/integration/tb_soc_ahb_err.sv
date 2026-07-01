@@ -13,7 +13,7 @@
 //   prog_ahb_store_err.hex: SW to S0 → HRESP=ERROR → store_access_fault (mcause=7)
 //   prog_ahb_load_err.hex:  LW from S0 → HRESP=ERROR → load_access_fault (mcause=5)
 //
-// Usage: vvp integration/tb_soc_ahb_err.vvp +HEX=programs/prog_ahb_store_err.hex
+// Usage: vvp integration/tb_soc_ahb_err.vvp +HEX=programs/bin/prog_ahb_store_err.hex
 
 module tb_soc_ahb_err;
 

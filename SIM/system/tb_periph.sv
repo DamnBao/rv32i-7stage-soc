@@ -8,8 +8,8 @@
 //   AHB Slave 1: ahb_sfr   (generic placeholder, 0x3000_1000)
 //   AHB Slave 2: ahb_sfr   (generic placeholder, 0x3000_2000)
 //
-// Usage: vvp system/tb_periph.vvp +HEX=programs/prog_timer.hex
-//        vvp system/tb_periph.vvp +HEX=programs/prog_gpio_ahb.hex
+// Usage: vvp system/tb_periph.vvp +HEX=programs/bin/prog_timer.hex
+//        vvp system/tb_periph.vvp +HEX=programs/bin/prog_gpio_ahb.hex
 
 `timescale 1ns/1ps
 

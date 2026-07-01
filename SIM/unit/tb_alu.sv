@@ -2,14 +2,19 @@
 
 module tb_alu;
 
-    logic [31:0] operand_a, operand_b, alu_result;
+    logic [31:0] rs1_fwd, rs2_fwd, pc_in, imm_in, alu_result;
+    logic        alu_src_a, alu_src_b;
     logic [3:0]  alu_op;
 
     alu u_dut (
-        .operand_a  (operand_a),
-        .operand_b  (operand_b),
-        .alu_op     (alu_op),
-        .alu_result (alu_result)
+        .rs1_fwd   (rs1_fwd),
+        .rs2_fwd   (rs2_fwd),
+        .pc_in     (pc_in),
+        .imm_in    (imm_in),
+        .alu_src_a (alu_src_a),
+        .alu_src_b (alu_src_b),
+        .alu_op    (alu_op),
+        .alu_result(alu_result)
     );
 
     // ALU op encoding (khớp với alu.sv)
@@ -35,22 +40,24 @@ module tb_alu;
         end
     endtask
 
-    // Helper: drive và check (propagate #1 cho combinational)
     task automatic test(
         input string  name,
         input logic [3:0]  op,
         input logic [31:0] a, b,
         input logic [31:0] expected
     );
-        alu_op    = op;
-        operand_a = a;
-        operand_b = b;
+        alu_op  = op;
+        rs1_fwd = a;
+        rs2_fwd = b;
         #1;
         check(name, alu_result, expected);
     endtask
 
     initial begin
         $display("======= tb_alu =======");
+        // Default: bypass MUX (rs1/rs2 pass straight through)
+        alu_src_a = 1'b0; alu_src_b = 1'b0;
+        pc_in = 32'h0; imm_in = 32'h0;
 
         // ── ADD ──
         $display("--- ADD ---");
@@ -77,7 +84,7 @@ module tb_alu;
         test("8 >> 1",             SRL, 32'd8,           32'd1,          32'd4);
         test("0x8000_0000 >> 1",   SRL, 32'h8000_0000,  32'd1,          32'h4000_0000);
         test("0xFFFF_FFFF >> 4",   SRL, 32'hFFFF_FFFF,  32'd4,          32'h0FFF_FFFF);
-        test("shamt only 5 bits",  SRL, 32'hFFFF_FFFF,  32'd32,         32'hFFFF_FFFF); // shift 0
+        test("shamt only 5 bits",  SRL, 32'hFFFF_FFFF,  32'd32,         32'hFFFF_FFFF);
 
         // ── SRA (Shift Right Arithmetic) ──
         $display("--- SRA ---");
@@ -92,13 +99,13 @@ module tb_alu;
         test("2 < 1 => 0",         SLT, 32'd2,           32'd1,          32'd0);
         test("0 < 0 => 0",         SLT, 32'd0,           32'd0,          32'd0);
         test("-1 < 0 => 1",        SLT, 32'hFFFF_FFFF,  32'd0,          32'd1);
-        test("0x8000_0000 < 1=>1", SLT, 32'h8000_0000,  32'd1,          32'd1); // -2^31 < 1
+        test("0x8000_0000 < 1=>1", SLT, 32'h8000_0000,  32'd1,          32'd1);
 
         // ── SLTU (Set Less Than Unsigned) ──
         $display("--- SLTU ---");
         test("1 <u 2 => 1",        SLTU, 32'd1,          32'd2,          32'd1);
         test("2 <u 1 => 0",        SLTU, 32'd2,          32'd1,          32'd0);
-        test("0x8000_0000<u 1=>0", SLTU, 32'h8000_0000, 32'd1,          32'd0); // 2^31 > 1 unsigned
+        test("0x8000_0000<u 1=>0", SLTU, 32'h8000_0000, 32'd1,          32'd0);
 
         // ── XOR ──
         $display("--- XOR ---");
@@ -122,6 +129,18 @@ module tb_alu;
         $display("--- PASSB ---");
         test("passb: a ignored",   PASSB, 32'hDEAD_BEEF, 32'hABCD_1234, 32'hABCD_1234);
         test("passb: b=0",         PASSB, 32'hFFFF_FFFF,  32'd0,         32'd0);
+
+        // ── ALU src MUX: alu_src_a=1 uses pc_in ──
+        $display("--- ALU src MUX ---");
+        alu_src_a = 1'b1; pc_in = 32'h0000_1000;
+        rs1_fwd = 32'hDEAD_BEEF; rs2_fwd = 32'd4; alu_op = ADD; #1;
+        check("src_a=PC: PC+4",    alu_result, 32'h0000_1004);
+
+        alu_src_a = 1'b0; alu_src_b = 1'b1; imm_in = 32'h0000_0008;
+        rs1_fwd = 32'h0000_0010; rs2_fwd = 32'hDEAD_BEEF; alu_op = ADD; #1;
+        check("src_b=imm: rs1+imm", alu_result, 32'h0000_0018);
+
+        alu_src_b = 1'b0;
 
         // ── Kết quả ──
         $display("=======================");

@@ -8,7 +8,7 @@
 // Tests the path: SW to S0 → BRESP=SLVERR → mem1_stage.bus_err=1
 // → store_access_fault → zicsr exception → mcause=7 → handler → x31=1
 //
-// Usage: vvp integration/tb_soc_bus_err.vvp +HEX=programs/prog_bus_err.hex
+// Usage: vvp integration/tb_soc_bus_err.vvp +HEX=programs/bin/prog_bus_err.hex
 
 module tb_soc_bus_err;
 

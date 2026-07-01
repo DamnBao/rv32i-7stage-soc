@@ -225,6 +225,14 @@ Mọi peripheral muốn kết nối với `soc_top` phải implement register ma
 
 ---
 
+## Cấu Trúc Thư Mục SIM/
+
+- `unit/`, `integration/`, `system/`, `formal/` — **chỉ chứa source** (`.sv`, `.sby`). Toàn bộ output build (`.vvp`, `.vcd`, workdir SymbiYosys) đi vào `SIM/build/` (gitignored), không nằm chung với source nữa.
+- `compliance/` — source + `env/` (header vendor) + `tests/` (riscv-arch-test vendored). Output build (`work/`, `tb_compliance_run.vvp`) đi vào `build/compliance/`.
+- `programs/src/` — assembly source (`.s`). `programs/bin/` — `.hex` (tracked, cần cho testbench chạy không cần rebuild toolchain), `.elf`/`.dump` (gitignored).
+- `make clean` xoá `build/` + `programs/bin/*.elf,*.hex,*.dump`.
+- Không cần tạo thư mục `build/*` thủ công — Makefile tự `mkdir -p` khi parse.
+
 ## Trạng Thái Testing
 
 | Phase | Testbench | Kết quả |
@@ -312,9 +320,19 @@ Chi tiết xem `SIM/TEST_LOG.md`.
 
 ---
 
+## Cấu Trúc Thư Mục Document/
+
+- `Document/Reference/` — mẫu tham khảo (word/latex template) + hình ảnh quy định (logo trường...). Không chứa nội dung báo cáo thật.
+- `Document/Report/` — toàn bộ nội dung báo cáo, chia 3 thư mục con:
+  - `Report/latex/` — LaTeX thesis source: `main.tex`, `myacronyms.sty`, `Title/`, `Content/` (chapter1-6.tex), `Appendix/`, `References/references.bib`, `images/` (hình nội dung), `SourceCode/hello.c`
+  - `Report/Spec/` — tài liệu kỹ thuật dạng Markdown: `SPEC.md`, `TESTPLAN.md`, `TESTRESULT.md`, `IMPLEMENTATION.md`, `TESTBENCH_STRATEGY.md`, `TOOLCHAIN_AND_COMPLIANCE.md`, `DECODER_TABLE.md`, `formal_verification_report.md`, `testcase.md`, `Excel.md`, `thesis_draft.md`, `bao_cao_giua_ky.md`
+  - `Report/word/` — bản Word (.docx) tương ứng: `DECODER_TABLE.docx`, `TESTBENCH_STRATEGY.docx`, `TESTPLAN.docx`, `thesis_draft.docx`, `Báo cáo giữa kỳ Khóa Luận Tốt Nghiệp.docx`
+- `Document/Record/` — file review + change log (RTL_DV_REVIEW.md, các bản ghi thay đổi theo ngày).
+- `Document/Github_Token_Code` — file nhạy cảm, đã gitignore, nằm ngoài 3 thư mục trên.
+
 ## Trạng Thái Báo Cáo Khóa Luận
 
-**Thư mục:** `Document/Requirement/`
+**Thư mục:** `Document/Report/latex/`
 
 | File | Trạng thái |
 |------|-----------|
@@ -328,8 +346,7 @@ Chi tiết xem `SIM/TEST_LOG.md`.
 | `References/references.bib` | Hoàn thành — 16 tài liệu tham khảo (riscv-spec, AXI, AHB, PLIC, CDC, v.v.) |
 | `myacronyms.sty` | Hoàn thành — 24 acronym (SoC, PLIC, CDC, AXI, AHB, ISA, CPU, ALU, v.v.) |
 | `main.tex` | Hoàn thành — Cập nhật tên đề tài và bộ môn |
-| `thesis_draft.docx` | Hoàn thành — Bản nháp DOCX (pandoc via markdown) |
-| `thesis_draft.md` | Hoàn thành — Bản nháp Markdown trung gian |
+| `../Spec/thesis_draft.md` / `../word/thesis_draft.docx` | Hoàn thành — Bản nháp Markdown + DOCX (pandoc) |
 
 **Tên đề tài:** THIẾT KẾ VÀ KIỂM CHỨNG VI XỬ LÝ RISC-V TÍCH HỢP TRÊN CHIP (SoC) VỚI GIAO DIỆN AXI-Lite VÀ AHB-Lite
 

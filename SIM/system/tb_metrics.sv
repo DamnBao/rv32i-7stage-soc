@@ -344,7 +344,7 @@ module tb_metrics;
         $display("");
         $display("--- [1/3] prog_forwarding : IPC + Stall Breakdown -----");
         reset_counters();
-        run_program("programs/prog_forwarding.hex");
+        run_program("programs/bin/prog_forwarding.hex");
 
         $display("  Total cycles     : %0d", total_cycles);
         $display("  Instr retired    : %0d  (counted at EX exit)", instr_retired);
@@ -376,7 +376,7 @@ module tb_metrics;
         $display("--- [2/3] prog_branch_pred : Branch Predictor Hit Rate --");
         reset_counters();
         measure_bp_phases = 1;
-        run_program("programs/prog_branch_pred.hex");
+        run_program("programs/bin/prog_branch_pred.hex");
 
         $display("  Total cycles     : %0d", total_cycles);
         $display("  Instr retired    : %0d", instr_retired);
@@ -427,7 +427,7 @@ module tb_metrics;
         $display("--- [3/3] prog_ahb_sfr : AHB CDC Transaction Latency ---");
         reset_counters();
         measure_ahb = 1;
-        run_program("programs/prog_ahb_sfr.hex");
+        run_program("programs/bin/prog_ahb_sfr.hex");
 
         $display("  Total cycles          : %0d", total_cycles);
         $display("  Instr retired         : %0d", instr_retired);
@@ -457,7 +457,7 @@ module tb_metrics;
         $display("--- [4/4] prog_fib : IPC Under Realistic Compute Workload --");
         $display("  (fib[0..9] generation + sum; 18 intended load-use stalls)");
         reset_counters();
-        run_program("programs/prog_fib.hex");
+        run_program("programs/bin/prog_fib.hex");
 
         $display("  Total cycles          : %0d", total_cycles);
         $display("  Instr retired         : %0d", instr_retired);
